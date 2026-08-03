@@ -1,0 +1,91 @@
+# ==========================
+# Auto generated files
+# ==========================
+# ignore the ._ file
+*._
+*._*
+
+# ignore the .DS_Store file
+.DS_Store
+
+
+# ignore the .idea folder
+.idea/
+
+# ignre the .vscode folder
+.vscode/
+
+
+
+# design files
+claude.md
+design.md
+clean.sh
+# notes folder
+/notes/
+
+# ==========================
+# Environment variables
+# ==========================
+.env
+.env.*
+!.env.example
+
+# ==========================
+# Python / FastAPI
+# ==========================
+__pycache__/
+*.py[cod]
+
+.venv/
+backend/venv/
+backend/.venv/
+venv/
+env/
+
+.pytest_cache/
+.mypy_cache/
+.coverage
+
+# ==========================
+# React / Node
+# ==========================
+node_modules/
+frontend/node_modules/
+dist/
+build/
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+node_modules
+dist
+dist-ssr
+*.local
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+
+# ==========================
+# IDE
+# ==========================
+.vscode/
+.idea/
+
+# ==========================
+# OS files
+# ==========================
+Thumbs.db
