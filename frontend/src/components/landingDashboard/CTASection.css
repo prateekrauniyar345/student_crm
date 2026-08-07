@@ -1,9 +1,8 @@
-/* CTA Section Styles */
+/* CTA Section Styles - Student CRM Theme */
 
 .cta-section {
-  background: linear-gradient(135deg, var(--color-primary-light) 0%, var(--color-bg-secondary) 100%);
-  padding: var(--space-3xl) 0;
-  border-top: 1px solid var(--color-border);
+  background-color: var(--color-bg-primary);
+  padding: 56px 0;
 }
 
 .cta-container {
@@ -19,126 +18,179 @@
 .cta-content {
   display: flex;
   flex-direction: column;
-  gap: var(--space-lg);
+  gap: var(--space-sm);
 }
 
 .cta-content h2 {
-  font-size: var(--font-size-4xl);
+  font-size: var(--font-size-3xl);
   font-weight: var(--font-weight-bold);
   color: var(--color-text-primary);
-  line-height: 1.2;
+  line-height: 1.25;
+  letter-spacing: -0.3px;
+  margin: 0;
 }
 
 .cta-content > p {
-  font-size: var(--font-size-lg);
+  font-size: var(--font-size-base);
   color: var(--color-text-secondary);
   line-height: 1.6;
+  margin: 0 0 var(--space-sm) 0;
 }
 
 .cta-benefits {
   display: flex;
   flex-direction: column;
-  gap: var(--space-md);
+  gap: var(--space-xs);
+  margin-bottom: var(--space-sm);
 }
 
 .benefit-item {
   display: flex;
   align-items: center;
-  gap: var(--space-md);
+  gap: var(--space-sm);
   color: var(--color-text-primary);
+  font-size: var(--font-size-sm);
   font-weight: var(--font-weight-medium);
 }
 
-.benefit-item svg {
+.benefit-icon {
   color: var(--color-success);
   flex-shrink: 0;
 }
 
 .cta-buttons {
   display: flex;
+  align-items: center;
   gap: var(--space-md);
-  margin-top: var(--space-md);
+  margin-top: var(--space-xs);
 }
 
-.btn-link {
-  background: transparent;
-  color: var(--color-primary);
+.btn-cta-primary {
+  background-color: var(--color-primary);
+  color: #FFFFFF;
   border: none;
-  padding: var(--space-md) 0;
-  font-weight: var(--font-weight-medium);
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-semibold);
+  padding: 12px 24px;
+  border-radius: var(--radius-md);
   cursor: pointer;
-  transition: color var(--transition-base);
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-sm);
+  box-shadow: var(--shadow-sm);
+  transition: background-color var(--transition-fast);
 }
 
-.btn-link:hover {
-  color: var(--color-primary-hover);
+.btn-cta-primary:hover {
+  background-color: var(--color-primary-hover);
+  box-shadow: var(--shadow-md);
 }
 
-.cta-footer {
-  font-size: var(--font-size-sm);
-  color: var(--color-text-secondary);
+.btn-cta-secondary {
+  background-color: transparent;
+  color: var(--color-text-primary);
+  border: 1px solid var(--color-border-dark);
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-medium);
+  padding: 12px 20px;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: background-color var(--transition-fast);
 }
 
-/* Stats Visual */
+.btn-cta-secondary:hover {
+  background-color: var(--color-bg-hover);
+}
+
+/* System Specifications Card */
 .cta-visual {
   display: flex;
   justify-content: center;
-  align-items: center;
 }
 
-.stats-box {
-  background: var(--color-bg-secondary);
-  padding: var(--space-2xl);
-  border-radius: var(--radius-xl);
+.spec-card {
+  background-color: var(--color-bg-secondary);
   border: 1px solid var(--color-border);
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: var(--space-xl);
-  text-align: center;
-  box-shadow: var(--shadow-lg);
-}
-
-.stat {
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  padding: var(--space-lg);
+  width: 100%;
   display: flex;
   flex-direction: column;
-  gap: var(--space-sm);
+  gap: var(--space-md);
 }
 
-.stat-value {
-  font-size: var(--font-size-3xl);
+.spec-card-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  font-size: var(--font-size-xs);
   font-weight: var(--font-weight-bold);
+  color: var(--color-text-primary);
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  padding-bottom: var(--space-sm);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.spec-shield {
   color: var(--color-primary);
 }
 
-.stat-label {
-  font-size: var(--font-size-sm);
-  color: var(--color-text-secondary);
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
+.spec-grid {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
 }
 
-/* Responsive */
-@media (max-width: 768px) {
+.spec-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+}
+
+.spec-icon-box {
+  width: 36px;
+  height: 36px;
+  background-color: var(--color-bg-primary);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-primary);
+}
+
+.spec-details {
+  display: flex;
+  flex-direction: column;
+}
+
+.spec-title {
+  font-size: 0.72rem;
+  color: var(--color-text-secondary);
+  text-transform: uppercase;
+}
+
+.spec-value {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+}
+
+.spec-footer {
+  background-color: #F1F3F5;
+  border-radius: var(--radius-sm);
+  padding: 8px 12px;
+  font-size: 0.73rem;
+  color: var(--color-text-secondary);
+  text-align: center;
+}
+
+@media (max-width: 1024px) {
   .cta-container {
     grid-template-columns: 1fr;
     gap: var(--space-2xl);
   }
-
-  .cta-content h2 {
-    font-size: var(--font-size-3xl);
-  }
-
-  .cta-buttons {
-    flex-direction: column;
-  }
-
-  .btn {
-    width: 100%;
-    justify-content: center;
-  }
-
-  .stats-box {
-    grid-template-columns: 1fr;
-    gap: var(--space-md);
-  }
 }
+

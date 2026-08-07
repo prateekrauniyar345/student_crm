@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Menu, X } from "lucide-react";
+import { Menu, X, Shield, ChevronRight, UserCheck } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import "./Header.css";
 
@@ -10,18 +10,24 @@ export default function Header() {
   return (
     <header className="header">
       <div className="header-container">
-        {/* Logo */}
-        <div className="logo">
-          <div className="logo-icon">📊</div>
-          <span className="logo-text">StudentCRM</span>
+        {/* Logo & Institution Tag */}
+        <div className="logo-group" onClick={() => navigate("/")}>
+          <div className="logo-icon-box">
+            <Shield size={20} className="logo-icon" />
+          </div>
+          <div className="logo-titles">
+            <span className="logo-text">GS StudentCRM</span>
+            <span className="logo-subtext">Enrollment Analytics & AI</span>
+          </div>
         </div>
 
         {/* Navigation - Desktop */}
         <nav className="nav-desktop">
-          <a href="#features" className="nav-link">Features</a>
-          <a href="#agents" className="nav-link">AI Agents</a>
-          <a href="#cta" className="nav-link">Pricing</a>
-          <a href="#" className="nav-link">Docs</a>
+          <a href="#overview" className="nav-link">Overview</a>
+          <a href="#analytics" className="nav-link">Student Analytics</a>
+          <a href="#ai-copilot" className="nav-link">AI Co-Pilot</a>
+          <a href="#roster-demo" className="nav-link">Live Roster Demo</a>
+          <a href="#specifications" className="nav-link">Architecture</a>
         </nav>
 
         {/* CTA Buttons - Desktop */}
@@ -30,13 +36,15 @@ export default function Header() {
             className="btn-login"
             onClick={() => navigate("/login")}
           >
-            Sign In
+            <UserCheck size={16} />
+            <span>Sign In</span>
           </button>
           <button
-            className="btn-signup"
+            className="btn-primary-action"
             onClick={() => navigate("/login")}
           >
-            Get Started
+            <span>Launch CRM Workspace</span>
+            <ChevronRight size={16} />
           </button>
         </div>
 
@@ -44,38 +52,43 @@ export default function Header() {
         <button
           className="mobile-menu-btn"
           onClick={() => setIsMenuOpen(!isMenuOpen)}
+          aria-label="Toggle Navigation Menu"
         >
-          {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
+          {isMenuOpen ? <X size={22} /> : <Menu size={22} />}
         </button>
       </div>
 
-      {/* Mobile Navigation */}
+      {/* Mobile Navigation Drawer */}
       {isMenuOpen && (
         <nav className="nav-mobile">
-          <a href="#features" className="nav-link" onClick={() => setIsMenuOpen(false)}>Features</a>
-          <a href="#agents" className="nav-link" onClick={() => setIsMenuOpen(false)}>AI Agents</a>
-          <a href="#cta" className="nav-link" onClick={() => setIsMenuOpen(false)}>Pricing</a>
-          <a href="#" className="nav-link" onClick={() => setIsMenuOpen(false)}>Docs</a>
-          <button
-            className="btn-login"
-            onClick={() => {
-              navigate("/login");
-              setIsMenuOpen(false);
-            }}
-          >
-            Sign In
-          </button>
-          <button
-            className="btn-signup"
-            onClick={() => {
-              navigate("/login");
-              setIsMenuOpen(false);
-            }}
-          >
-            Get Started
-          </button>
+          <a href="#overview" className="nav-link" onClick={() => setIsMenuOpen(false)}>Overview</a>
+          <a href="#analytics" className="nav-link" onClick={() => setIsMenuOpen(false)}>Student Analytics</a>
+          <a href="#ai-copilot" className="nav-link" onClick={() => setIsMenuOpen(false)}>AI Co-Pilot</a>
+          <a href="#roster-demo" className="nav-link" onClick={() => setIsMenuOpen(false)}>Live Roster Demo</a>
+          <a href="#specifications" className="nav-link" onClick={() => setIsMenuOpen(false)}>Architecture</a>
+          <div className="mobile-cta-group">
+            <button
+              className="btn-login"
+              onClick={() => {
+                navigate("/login");
+                setIsMenuOpen(false);
+              }}
+            >
+              Sign In
+            </button>
+            <button
+              className="btn-primary-action"
+              onClick={() => {
+                navigate("/login");
+                setIsMenuOpen(false);
+              }}
+            >
+              Launch CRM Workspace
+            </button>
+          </div>
         </nav>
       )}
     </header>
   );
 }
+

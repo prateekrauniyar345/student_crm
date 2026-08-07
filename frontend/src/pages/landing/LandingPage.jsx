@@ -1,6 +1,7 @@
 import HeroSection from "../../components/landingDashboard/HeroSection";
 import FeaturesSection from "../../components/landingDashboard/FeaturesSection";
 import AgentCapabilitiesSection from "../../components/landingDashboard/AgentCapabilitiesSection";
+import LiveRosterSection from "../../components/landingDashboard/LiveRosterSection";
 import CTASection from "../../components/landingDashboard/CTASection";
 import Header from "./Header";
 import Footer from "./Footer";
@@ -15,6 +16,7 @@ export default function LandingPage() {
         <HeroSection />
         <FeaturesSection />
         <AgentCapabilitiesSection />
+        <LiveRosterSection />
         <CTASection />
       </main>
 
@@ -22,3 +24,4 @@ export default function LandingPage() {
     </div>
   );
 }
+

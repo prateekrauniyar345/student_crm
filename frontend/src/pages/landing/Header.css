@@ -1,12 +1,12 @@
-/* Header Styles */
+/* Header Styles - Minimalist Student CRM Theme */
 
 .header {
-  background: var(--color-bg-secondary);
+  background-color: var(--color-bg-secondary);
   border-bottom: 1px solid var(--color-border);
-  padding: var(--space-md) 0;
+  padding: 12px 0;
   position: sticky;
   top: 0;
-  z-index: var(--z-fixed);
+  z-index: var(--z-sticky);
   box-shadow: var(--shadow-sm);
 }
 
@@ -19,142 +19,146 @@
   padding: 0 var(--space-xl);
 }
 
-/* Logo */
-.logo {
+/* Logo & Branding */
+.logo-group {
   display: flex;
   align-items: center;
   gap: var(--space-sm);
-  font-size: var(--font-size-xl);
-  font-weight: var(--font-weight-bold);
-  color: var(--color-text-primary);
-  text-decoration: none;
   cursor: pointer;
+  user-select: none;
 }
 
-.logo-icon {
-  font-size: 1.8rem;
+.logo-icon-box {
+  width: 36px;
+  height: 36px;
+  background-color: var(--color-primary-light);
+  color: var(--color-primary);
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(0, 123, 255, 0.2);
+}
+
+.logo-titles {
+  display: flex;
+  flex-direction: column;
 }
 
 .logo-text {
-  background: linear-gradient(135deg, var(--color-primary), #0056b3);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  font-size: 1.1rem;
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-primary);
+  letter-spacing: -0.2px;
+  line-height: 1.2;
 }
 
-/* Desktop Navigation */
+.logo-subtext {
+  font-size: 0.72rem;
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+
+/* Desktop Navigation Links */
 .nav-desktop {
   display: flex;
   gap: var(--space-xl);
 }
 
 .nav-link {
-  color: var(--color-text-primary);
+  color: var(--color-text-secondary);
   text-decoration: none;
+  font-size: var(--font-size-sm);
   font-weight: var(--font-weight-medium);
-  transition: color var(--transition-base);
-  position: relative;
-}
+  transition: color var(--transition-fast);
+  padding: var(--space-xs) 0;
 
-.nav-link::after {
-  content: "";
-  position: absolute;
-  bottom: -2px;
-  left: 0;
-  width: 0;
-  height: 2px;
-  background: var(--color-primary);
-  transition: width var(--transition-base);
 }
 
 .nav-link:hover {
   color: var(--color-primary);
 }
 
-.nav-link:hover::after {
-  width: 100%;
-}
-
-/* Header CTA Buttons */
+/* Header Buttons */
 .header-cta {
   display: flex;
-  gap: var(--space-md);
   align-items: center;
+  gap: var(--space-md);
 }
 
 .btn-login {
   background: transparent;
-  border: none;
-  color: var(--color-primary);
+  border: 1px solid var(--color-border);
+  color: var(--color-text-primary);
+  font-size: var(--font-size-sm);
   font-weight: var(--font-weight-medium);
   cursor: pointer;
-  padding: var(--space-sm) var(--space-md);
-  transition: all var(--transition-base);
+  padding: 8px 16px;
   border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  transition: all var(--transition-fast);
 }
 
 .btn-login:hover {
-  background: var(--color-primary-light);
+  background-color: var(--color-bg-hover);
+  border-color: var(--color-border-dark);
 }
 
-.btn-signup {
-  background: var(--color-primary);
-  color: white;
+.btn-primary-action {
+  background-color: var(--color-primary);
+  color: #FFFFFF;
   border: none;
-  font-weight: var(--font-weight-medium);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
   cursor: pointer;
-  padding: var(--space-sm) var(--space-lg);
+  padding: 8px 18px;
   border-radius: var(--radius-md);
-  transition: all var(--transition-base);
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  transition: background-color var(--transition-fast), box-shadow var(--transition-fast);
+  box-shadow: var(--shadow-sm);
 }
 
-.btn-signup:hover {
-  background: var(--color-primary-hover);
+.btn-primary-action:hover {
+  background-color: var(--color-primary-hover);
   box-shadow: var(--shadow-md);
 }
 
-/* Mobile Menu Button */
+/* Mobile Controls */
 .mobile-menu-btn {
   display: none;
   background: transparent;
-  border: none;
+  border: 1px solid var(--color-border);
   color: var(--color-text-primary);
+  border-radius: var(--radius-md);
+  padding: 6px;
   cursor: pointer;
-  padding: var(--space-sm);
 }
 
-/* Mobile Navigation */
 .nav-mobile {
   display: none;
   flex-direction: column;
   gap: var(--space-md);
   padding: var(--space-lg) var(--space-xl);
-  background: var(--color-bg-primary);
+  background-color: var(--color-bg-secondary);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.mobile-cta-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  margin-top: var(--space-sm);
+  padding-top: var(--space-md);
   border-top: 1px solid var(--color-border);
 }
 
-.nav-mobile .nav-link {
-  width: 100%;
-  padding: var(--space-md) 0;
-}
-
-.nav-mobile .nav-link::after {
-  display: none;
-}
-
-.nav-mobile .btn-login,
-.nav-mobile .btn-signup {
-  width: 100%;
-  text-align: center;
-  padding: var(--space-md);
-}
-
-/* Responsive */
-@media (max-width: 768px) {
-  .header-container {
-    padding: 0 var(--space-lg);
-  }
-
+@media (max-width: 900px) {
   .nav-desktop {
     display: none;
   }
@@ -164,14 +168,13 @@
   }
 
   .mobile-menu-btn {
-    display: block;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 
   .nav-mobile {
     display: flex;
   }
-
-  .logo-text {
-    display: none;
-  }
 }
+

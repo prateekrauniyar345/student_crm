@@ -1,62 +1,83 @@
-import { Sparkles, Target, TrendingUp, Users } from "lucide-react";
+import { Terminal, Shield, BarChart, SaveCheck } from "lucide-react";
 import "./AgentCapabilitiesSection.css";
 
-const capabilities = [
+const agentSteps = [
   {
-    icon: <Sparkles size={32} />,
-    title: "Intelligent Query Building",
+    step: "01",
+    icon: <Terminal size={20} />,
+    title: "Natural Language Ingestion",
     description:
-      "Ask questions in plain English and let AI agents generate optimized SQL queries automatically.",
-    examples: ["Show me students at risk", "Enrollment trends this year", "Course performance analysis"],
+      "Advisors and analysts ask complex questions in plain English without requiring manual SQL writing.",
+    examples: [
+      '"Show enrollment yield rate for transfer students in Fall 2025"',
+      '"List students with unreviewed credit evaluations"',
+    ],
   },
   {
-    icon: <TrendingUp size={32} />,
-    title: "Predictive Analytics",
+    step: "02",
+    icon: <Shield size={20} />,
+    title: "Read-Only SQL Validation",
     description:
-      "Identify patterns and predict future outcomes using advanced machine learning models.",
-    examples: ["Student success predictions", "Retention risk assessment", "Resource optimization"],
+      "The agent translates the prompt into strict SELECT statements. Write, UPDATE, or DROP operations are automatically blocked.",
+    examples: [
+      "Parameterized query execution against Postgres schema",
+      "Enforced row-level security & user permissions",
+    ],
   },
   {
-    icon: <Target size={32} />,
-    title: "Automated Insights",
+    step: "03",
+    icon: <BarChart size={20} />,
+    title: "Data Aggregation & Visuals",
     description:
-      "Get AI-generated summaries and recommendations without writing a single line of code.",
-    examples: ["Key metrics summary", "Anomaly detection", "Trend analysis"],
+      "Query results are returned instantly in structured JSON tables, summary stats, or chart render configurations.",
+    examples: [
+      "Sub-20ms database response times",
+      "Instant breakdown by student type and status",
+    ],
   },
   {
-    icon: <Users size={32} />,
-    title: "Collaborative Intelligence",
+    step: "04",
+    icon: <SaveCheck size={20} />,
+    title: "Routine Report Archiving",
     description:
-      "Work with agents to explore data, test hypotheses, and make informed decisions together.",
-    examples: ["Interactive data exploration", "Shared analysis sessions", "Real-time collaboration"],
+      "Save ad-hoc query outputs directly to the institutional canvas as permanent routine reports for recurring compliance audits.",
+    examples: [
+      "Direct mapping to institutional report needs",
+      "One-click CSV/PDF data export",
+    ],
   },
 ];
 
 export default function AgentCapabilitiesSection() {
   return (
-    <section className="agents-section">
+    <section className="agents-section" id="ai-copilot">
       <div className="agents-container">
         <div className="agents-header">
-          <h2>AI Agents That Work for You</h2>
+          <div className="section-kicker">Agentic AI Architecture</div>
+          <h2>AI Co-Pilot Workflow: Natural Language to SQL</h2>
           <p>
-            Meet your team of intelligent assistants designed to help educators, 
-            analysts, and administrators unlock the full potential of student data.
+            Eliminate manual reporting bottlenecks. Enable non-technical staff to perform deep ad-hoc analysis securely.
           </p>
         </div>
 
         <div className="agents-grid">
-          {capabilities.map((capability, index) => (
+          {agentSteps.map((item, index) => (
             <div key={index} className="agent-card">
-              <div className="agent-icon">{capability.icon}</div>
-              <h3>{capability.title}</h3>
-              <p>{capability.description}</p>
+              <div className="agent-card-header">
+                <div className="step-badge">{item.step}</div>
+                <div className="agent-icon">{item.icon}</div>
+              </div>
+
+              <h3>{item.title}</h3>
+              <p>{item.description}</p>
+
               <div className="agent-examples">
-                <span className="examples-label">Try asking:</span>
+                <span className="examples-label">Execution Details:</span>
                 <ul>
-                  {capability.examples.map((example, idx) => (
+                  {item.examples.map((example, idx) => (
                     <li key={idx}>
-                      <span className="example-dot">•</span>
-                      {example}
+                      <span className="example-bullet">•</span>
+                      <span>{example}</span>
                     </li>
                   ))}
                 </ul>
@@ -68,3 +89,4 @@ export default function AgentCapabilitiesSection() {
     </section>
   );
 }
+

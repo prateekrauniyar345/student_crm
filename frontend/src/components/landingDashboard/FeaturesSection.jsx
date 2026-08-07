@@ -1,73 +1,105 @@
 import {
-  BarChart3,
+  TrendingUp,
   Brain,
-  MessageSquare,
-  FileText,
+  FileSpreadsheet,
   Database,
-  Zap,
+  ShieldCheck,
+  ClipboardList,
 } from "lucide-react";
 import "./FeaturesSection.css";
 
-const features = [
+const crmFeatures = [
   {
-    icon: <BarChart3 size={28} />,
-    title: "Data Visualization",
+    icon: <TrendingUp size={22} />,
+    tag: "PostgreSQL Stored Procedure",
+    title: "Enrollment & Term Yield Analytics",
     description:
-      "Transform raw data into beautiful, interactive visualizations that reveal hidden patterns and trends.",
+      "Calculate admissions yield rates automatically across student cohorts (Transfer, Veteran, First-Gen, International) with built-in database stored procedures.",
   },
   {
-    icon: <Brain size={28} />,
-    title: "AI Agent Assistants",
+    icon: <Brain size={22} />,
+    tag: "LangChain SQL Agent",
+    title: "AI Text-to-SQL Co-Pilot",
     description:
-      "Leverage intelligent agents to automate complex queries, analyze data, and generate actionable insights.",
+      "Allow advisors and analysts to ask complex data questions in plain English. The agent translates inquiries into validated, read-only SELECT queries.",
   },
   {
-    icon: <MessageSquare size={28} />,
-    title: "Conversational AI",
+    icon: <ClipboardList size={22} />,
+    tag: "Student Lifecycle",
+    title: "Advising & Interaction Logging",
     description:
-      "Chat naturally with AI agents to retrieve data, execute SQL queries, and generate comprehensive reports.",
+      "Maintain a 360-degree timeline of 1-on-1 advisor interactions, credit evaluations, degree milestone audits, and follow-up flags.",
   },
   {
-    icon: <FileText size={28} />,
-    title: "Smart Reports",
+    icon: <Database size={22} />,
+    tag: "Postgres Relational Core",
+    title: "Summary Views & Schema Governance",
     description:
-      "Generate professional reports automatically with AI-powered analysis and recommendations.",
+      "Leverage optimized views like v_student_enrollment_summary with citext email indexing, pgcrypto UUID keys, and strict relational integrity.",
   },
   {
-    icon: <Database size={28} />,
-    title: "Data Management",
+    icon: <ShieldCheck size={22} />,
+    tag: "Supabase OAuth & JWT",
+    title: "Role-Based Access Control (RBAC)",
     description:
-      "Manage student records, institutional data, and custom datasets with powerful tools.",
+      "Enforce granular permissions for Admins, Analysts, Advisors, Faculty, and Viewers. All API endpoints validate Supabase JWT bearer tokens.",
   },
   {
-    icon: <Zap size={28} />,
-    title: "Real-time Collaboration",
+    icon: <FileSpreadsheet size={22} />,
+    tag: "Ad-Hoc to Routine Reports",
+    title: "Saved Report Canvas",
     description:
-      "Work together seamlessly with team members, share insights, and track progress in real time.",
+      "Save ad-hoc AI query results into persistent routine reports. Export data tables or charts instantly for institutional reporting compliance.",
   },
 ];
 
 export default function FeaturesSection() {
+  const topFeatures = crmFeatures.slice(0, 4);
+  const bottomFeatures = crmFeatures.slice(4);
+
   return (
-    <section className="features-section">
+    <section className="features-section" id="analytics">
       <div className="features-container">
         <div className="features-header">
-          <h2>Powerful Features Built for Education</h2>
+          <div className="section-kicker">Core System Architecture</div>
+          <h2>Purpose-Built for Higher Ed Enrollment Analytics</h2>
           <p>
-            Everything you need to make data-driven decisions about student success.
+            Combining modern relational database design with secure AI co-pilots to serve non-traditional student management.
           </p>
         </div>
 
-        <div className="features-grid">
-          {features.map((feature, index) => (
-            <div key={index} className="feature-card">
-              <div className="feature-icon">{feature.icon}</div>
-              <h3>{feature.title}</h3>
-              <p>{feature.description}</p>
-            </div>
-          ))}
+        <div className="features-grid-container">
+          {/* Top Row: 4 Cards */}
+          <div className="features-grid-top">
+            {topFeatures.map((feature, index) => (
+              <div key={index} className="feature-card">
+                <div className="card-top-row">
+                  <div className="feature-icon">{feature.icon}</div>
+                  <span className="status-pill status-pill-neutral">{feature.tag}</span>
+                </div>
+                <h3>{feature.title}</h3>
+                <p>{feature.description}</p>
+              </div>
+            ))}
+          </div>
+
+          {/* Bottom Row: 2 Cards Centered Horizontally */}
+          <div className="features-grid-bottom">
+            {bottomFeatures.map((feature, index) => (
+              <div key={index} className="feature-card">
+                <div className="card-top-row">
+                  <div className="feature-icon">{feature.icon}</div>
+                  <span className="status-pill status-pill-neutral">{feature.tag}</span>
+                </div>
+                <h3>{feature.title}</h3>
+                <p>{feature.description}</p>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     </section>
   );
 }
+
+

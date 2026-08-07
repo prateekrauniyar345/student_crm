@@ -1,4 +1,4 @@
-import { Mail, Code, Users, MessageCircle } from "lucide-react";
+import { Shield, Database, Lock } from "lucide-react";
 import "./Footer.css";
 
 export default function Footer() {
@@ -7,94 +7,69 @@ export default function Footer() {
   return (
     <footer className="footer">
       <div className="footer-container">
-        {/* Footer Content */}
         <div className="footer-content">
-          {/* Company Info */}
-          <div className="footer-section">
+          {/* Institutional Branding */}
+          <div className="footer-section main-section">
             <div className="footer-logo">
-              <div className="logo-icon">📊</div>
-              <span className="logo-text">StudentCRM</span>
+              <Shield size={22} className="footer-logo-icon" />
+              <span className="logo-text">GS StudentCRM</span>
             </div>
             <p className="footer-tagline">
-              Intelligent data management for educational institutions.
+              Intelligent enrollment management, advising interaction tracking, and read-only AI SQL co-pilots for higher education institutions.
             </p>
-            <div className="social-links">
-              <a href="#" className="social-link" title="Email">
-                <Mail size={20} />
-              </a>
-              <a href="#" className="social-link" title="GitHub">
-                <Code size={20} />
-              </a>
-              <a href="#" className="social-link" title="Team">
-                <Users size={20} />
-              </a>
-              <a href="#" className="social-link" title="Contact">
-                <MessageCircle size={20} />
-              </a>
+            <div className="system-status-pill">
+              <span className="status-dot">●</span>
+              <span>PostgreSQL & Supabase Services Operational</span>
             </div>
           </div>
 
-          {/* Product Links */}
+          {/* Core Modules */}
           <div className="footer-section">
-            <h4>Product</h4>
+            <h4>CRM Modules</h4>
             <ul>
-              <li><a href="#features">Features</a></li>
-              <li><a href="#agents">AI Agents</a></li>
-              <li><a href="#pricing">Pricing</a></li>
-              <li><a href="#roadmap">Roadmap</a></li>
-              <li><a href="#changelog">Changelog</a></li>
+              <li><a href="#overview">Overview & Dashboard</a></li>
+              <li><a href="#analytics">Enrollment & Yield Rates</a></li>
+              <li><a href="#ai-copilot">AI Text-to-SQL Co-Pilot</a></li>
+              <li><a href="#roster-demo">Student Advising Roster</a></li>
+              <li><a href="#specifications">System Specifications</a></li>
             </ul>
           </div>
 
-          {/* Company Links */}
+          {/* Database & Architecture */}
           <div className="footer-section">
-            <h4>Company</h4>
+            <h4>Architecture</h4>
             <ul>
-              <li><a href="#about">About</a></li>
-              <li><a href="#blog">Blog</a></li>
-              <li><a href="#careers">Careers</a></li>
-              <li><a href="#press">Press Kit</a></li>
-              <li><a href="#contact">Contact</a></li>
+              <li><a href="#schema">PostgreSQL 15+ Schema</a></li>
+              <li><a href="#procedures">Stored Procedures (Yield)</a></li>
+              <li><a href="#views">v_student_enrollment_summary</a></li>
+              <li><a href="#fastapi">FastAPI Python REST API</a></li>
+              <li><a href="#langchain">LangChain Agent Tools</a></li>
             </ul>
           </div>
 
-          {/* Resources Links */}
+          {/* Data Governance & Compliance */}
           <div className="footer-section">
-            <h4>Resources</h4>
+            <h4>Security & Compliance</h4>
             <ul>
-              <li><a href="#docs">Documentation</a></li>
-              <li><a href="#api">API Reference</a></li>
-              <li><a href="#help">Help Center</a></li>
-              <li><a href="#community">Community</a></li>
-              <li><a href="#status">Status Page</a></li>
-            </ul>
-          </div>
-
-          {/* Legal Links */}
-          <div className="footer-section">
-            <h4>Legal</h4>
-            <ul>
-              <li><a href="#privacy">Privacy Policy</a></li>
-              <li><a href="#terms">Terms of Service</a></li>
-              <li><a href="#security">Security</a></li>
-              <li><a href="#compliance">Compliance</a></li>
-              <li><a href="#dpa">Data Processing</a></li>
+              <li><a href="#privacy">FERPA Compliance Guidelines</a></li>
+              <li><a href="#sso">Microsoft Azure SSO</a></li>
+              <li><a href="#jwt">Supabase JWT Auth</a></li>
+              <li><a href="#rbac">Role-Based Access Control</a></li>
+              <li><a href="#terms">Terms & Privacy Policy</a></li>
             </ul>
           </div>
         </div>
 
-        {/* Footer Bottom */}
+        {/* Bottom Bar */}
         <div className="footer-bottom">
-          <p>
-            © {currentYear} StudentCRM. All rights reserved.
-          </p>
-          <div className="footer-links">
-            <a href="#privacy">Privacy</a>
-            <a href="#terms">Terms</a>
-            <a href="#cookies">Cookies</a>
+          <p>© {currentYear} GS StudentCRM Platform. Built for Higher Education Analytics.</p>
+          <div className="footer-meta-links">
+            <span className="meta-item"><Database size={13} /> PostgreSQL Schema v0.1.0</span>
+            <span className="meta-item"><Lock size={13} /> OAuth 2.0 / Bearer JWT Protected</span>
           </div>
         </div>
       </div>
     </footer>
   );
 }
+
