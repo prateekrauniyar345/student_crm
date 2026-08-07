@@ -3,6 +3,7 @@ from app.routes import (
     default_routes,
     user_routes,
 )
+from fastapi.middleware.cors import CORSMiddleware
 import os
 from dotenv import load_dotenv
 
@@ -23,6 +24,21 @@ app = FastAPI(
     openapi_url=f"/api/{VERSION_TAG}/openapi.json",
     docs_url=f"/api/{VERSION_TAG}/docs",
 )
+
+
+# setup CORS middleware
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+        "http://localhost:5173",
+        "http://localhost:3000",
+    ],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+
 
 
 # include all the router

@@ -6,7 +6,7 @@ import os
 # load environment variables from .env file
 load_dotenv()
 
-user_routes = APIRouter(prefix=f"{os.getenv('API_PREFIX', '/api/v1/')}/users", tags=["users"])
+user_routes = APIRouter(prefix=f"{os.getenv('API_PREFIX')}/users", tags=["users"])
 
 
 users = [
