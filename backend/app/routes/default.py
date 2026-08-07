@@ -8,15 +8,15 @@ import os
 
 load_dotenv()
 
-default_routes = APIRouter(tags=["default"])
+default_routes = APIRouter(prefix=f"{os.getenv('API_PREFIX')}", tags=["default"])
 
 @default_routes.get("/")
-def index() -> Dict[str, Any]:
+def default() -> Dict[str, Any]:
     return {
             "message": "Welcome to the Student CRM",
-            "Status": "Running",
-            "Version": os.getenv("VERSION", "0.1.0"),
-            "Date" : datetime.now().strftime("%Y-%m-%d %H:%M:%S"), 
-            "Version_Tag": os.getenv("VERSION_TAG", "v1"), 
+            "status": "Running",
+            "version": os.getenv("VERSION", "0.1.0"),
+            "date" : datetime.now().strftime("%Y-%m-%d %H:%M:%S"), 
+            "version_tag": os.getenv("VERSION_TAG", "v1"), 
             "docs_url": f"/api/{os.getenv('VERSION_TAG', 'v1')}/docs",
         }

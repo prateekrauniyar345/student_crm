@@ -6,6 +6,7 @@ from app.routes import (
 from fastapi.middleware.cors import CORSMiddleware
 import os
 from dotenv import load_dotenv
+from datetime import datetime
 
 
 #  from dotenv import load_dotenv
@@ -24,6 +25,20 @@ app = FastAPI(
     openapi_url=f"/api/{VERSION_TAG}/openapi.json",
     docs_url=f"/api/{VERSION_TAG}/docs",
 )
+
+
+@app.get("/")
+def read_root():
+    return {
+                "message": "Welcome to the Student CRM",
+                "status": "Running",
+                "version": os.getenv("VERSION", "0.1.0"),
+                "date" : datetime.now().strftime("%Y-%m-%d %H:%M:%S"), 
+                "version_tag": os.getenv("VERSION_TAG", "v1"), 
+                "docs_url": f"/api/{os.getenv('VERSION_TAG', 'v1')}/docs",
+            }
+
+
 
 
 # setup CORS middleware
