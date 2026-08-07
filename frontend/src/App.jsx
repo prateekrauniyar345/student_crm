@@ -1,36 +1,51 @@
-import { useState, useEffect } from 'react'
-import './App.css'
+import {
+  BrowserRouter,
+  Navigate,
+  Route,
+  Routes,
+} from "react-router-dom";
 
-// tes the api endpoint
-import { getDefaultData } from "./api/default"
+import { AuthProvider } from "./context/AuthContext";
+import ProtectedRoute from "./components/ProtectedRoute";
+import LoginPage from "./pages/auth/LoginPage";
+import AuthCallbackPage from "./pages/auth/AuthCallbackPage";
+import DashboardPage from "./pages/dashboard/DashboardPage";
 
 function App() {
-  const [count, setCount] = useState(0)
-
-  const [data, setData] = useState(null); 
-
-
-  useEffect(() => {
-    try {
-      getDefaultData().then((response) => {
-        setData(response);
-        console.log("Default data fetched successfully:", response);
-      }).catch((error) => {
-        console.error("Error fetching default data:", error);
-      });
-    } catch (error) {
-      console.error("Unexpected error:", error);
-    }
-  }, []);
-
   return (
-    <>
+    <BrowserRouter>
+      <AuthProvider>
+        <Routes>
+          {/* Redirect root to dashboard */}
+          <Route
+            path="/"
+            element={<Navigate to="/dashboard" replace />}
+          />
 
-    <h1>React frontend</h1>
+          {/* Public routes */}
+          <Route path="/login" element={<LoginPage />} />
+          <Route
+            path="/auth/callback"
+            element={<AuthCallbackPage />}
+          />
 
-      
-    </>
-  )
+          {/* Protected routes */}
+          <Route element={<ProtectedRoute />}>
+            <Route
+              path="/dashboard"
+              element={<DashboardPage />}
+            />
+          </Route>
+
+          {/* Catch all - redirect to dashboard */}
+          <Route
+            path="*"
+            element={<Navigate to="/dashboard" replace />}
+          />
+        </Routes>
+      </AuthProvider>
+    </BrowserRouter>
+  );
 }
 
-export default App
+export default App;

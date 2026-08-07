@@ -2,6 +2,7 @@ from fastapi import FastAPI, APIRouter
 from app.routes import (
     default_routes,
     user_routes,
+    auth_routes,
 )
 from fastapi.middleware.cors import CORSMiddleware
 import os
@@ -59,6 +60,7 @@ app.add_middleware(
 # include all the router
 app.include_router(default_routes)
 app.include_router(user_routes)
+app.include_router(auth_routes)
 
 
 

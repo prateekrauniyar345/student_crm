@@ -1,9 +1,9 @@
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
 from sqlalchemy.orm import sessionmaker
 from sqlmodel import SQLModel
-import os
 from dotenv import load_dotenv
 from typing import AsyncGenerator
+import os
 
 
 # load the environment variables
@@ -11,7 +11,7 @@ load_dotenv()
 
 
 
-database_url = os.getenv("SUPABASE_DATABASE_URL")
+database_url = os.getenv("SUPABASE_ASYNC_DATABASE_URL")
 
 # create the engine
 engine = create_async_engine(
