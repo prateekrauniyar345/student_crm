@@ -7,6 +7,7 @@ import {
 
 import { AuthProvider } from "./context/AuthContext";
 import ProtectedRoute from "./components/ProtectedRoute";
+import LandingPage from "./pages/landing/LandingPage";
 import LoginPage from "./pages/auth/LoginPage";
 import AuthCallbackPage from "./pages/auth/AuthCallbackPage";
 import DashboardPage from "./pages/dashboard/DashboardPage";
@@ -16,10 +17,10 @@ function App() {
     <BrowserRouter>
       <AuthProvider>
         <Routes>
-          {/* Redirect root to dashboard */}
+          {/* Public Landing Page - Default Route */}
           <Route
             path="/"
-            element={<Navigate to="/dashboard" replace />}
+            element={<LandingPage />}
           />
 
           {/* Public routes */}

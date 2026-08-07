@@ -1,0 +1,25 @@
+/* Landing Page Styles */
+
+.landing-page {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background: var(--color-bg-primary);
+}
+
+.landing-main {
+  flex: 1;
+}
+
+/* Smooth scroll behavior */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Global responsive padding */
+@media (max-width: 768px) {
+  :root {
+    --space-3xl: 2rem;
+    --space-2xl: 1.5rem;
+  }
+}
