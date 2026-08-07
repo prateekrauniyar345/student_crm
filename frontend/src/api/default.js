@@ -1,5 +1,5 @@
 import Default from "../models/default";
-import apiClient from "../config/apiClient";
+import apiClient from "../lib/apiClient";
 
 
 export const getDefaultData = async () => {
