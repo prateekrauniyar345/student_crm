@@ -42,7 +42,7 @@ export default function LoginPage() {
         <div className="login-nav-content">
           <button className="btn-back-landing" onClick={() => navigate("/")}>
             <ArrowLeft size={16} />
-            <span>Return to Landing Page</span>
+            <span>Go To Home</span>
           </button>
         </div>
       </div>
