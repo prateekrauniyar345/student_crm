@@ -75,7 +75,7 @@ export default function FeaturesSection() {
               <div key={index} className="feature-card">
                 <div className="card-top-row">
                   <div className="feature-icon">{feature.icon}</div>
-                  <span className="status-pill status-pill-neutral">{feature.tag}</span>
+                  <span className="status-pill status-pill-neutral" style={{background: '#FFF8E1'}}>{feature.tag}</span>
                 </div>
                 <h3>{feature.title}</h3>
                 <p>{feature.description}</p>
@@ -89,7 +89,7 @@ export default function FeaturesSection() {
               <div key={index} className="feature-card">
                 <div className="card-top-row">
                   <div className="feature-icon">{feature.icon}</div>
-                  <span className="status-pill status-pill-neutral">{feature.tag}</span>
+                  <span className="status-pill status-pill-neutral" style={{background: '#FFF8E1'}}>{feature.tag}</span>
                 </div>
                 <h3>{feature.title}</h3>
                 <p>{feature.description}</p>
