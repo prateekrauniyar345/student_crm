@@ -12,7 +12,7 @@ export default function Footer() {
           <div className="footer-section main-section">
             <div className="footer-logo">
               <Shield size={22} className="footer-logo-icon" />
-              <span className="logo-text">GS StudentCRM</span>
+              <span className="logo-tex text-white">GS StudentCRM</span>
             </div>
             <p className="footer-tagline">
               Intelligent enrollment management, advising interaction tracking, and read-only AI SQL co-pilots for higher education institutions.
