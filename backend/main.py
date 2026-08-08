@@ -8,11 +8,24 @@ from fastapi.middleware.cors import CORSMiddleware
 import os
 from dotenv import load_dotenv
 from datetime import datetime
+from app.db.db import init_db, close_db
+from contextlib import asynccontextmanager
 
 
 #  from dotenv import load_dotenv
 load_dotenv()
 
+
+
+
+# async context manager for lifespan events
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # startup event
+    await init_db()
+    yield
+    # shutdown event
+    await close_db()
 
 
 # configuration
@@ -25,6 +38,7 @@ app = FastAPI(
     version=VERSION,
     openapi_url=f"/api/{VERSION_TAG}/openapi.json",
     docs_url=f"/api/{VERSION_TAG}/docs",
+    lifespan=lifespan,
 )
 
 
