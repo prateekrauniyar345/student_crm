@@ -1,3 +1,5 @@
+# backend/app/db/__init__.py
+
 from .db import (
     engine,
     async_session,

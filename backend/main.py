@@ -1,3 +1,5 @@
+# backend/main.py
+
 from fastapi import FastAPI, APIRouter
 from app.routes import (
     default_routes,

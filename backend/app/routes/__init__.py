@@ -1,3 +1,5 @@
+# backend/app/routes/__init__.py
+
 from .default import default_routes
 from .users import user_routes
 from .auth import auth_routes

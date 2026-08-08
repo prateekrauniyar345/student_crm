@@ -1,3 +1,5 @@
+# backend/app/auth/supabase_client.py
+
 import os
 from supabase import Client, create_client
 
