@@ -15,18 +15,26 @@ export function AuthProvider({ children }) {
   const [isLoading, setIsLoading] = useState(true);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [currentUser, setCurrentUser] = useState(null);
+  const [isInitializing, setIsInitializing] = useState(true); // ← NEW: Track initial load
 
   useEffect(() => {
     let isMounted = true;
 
     async function loadInitialSession() {
-      const {
-        data: { session: currentSession },
-      } = await supabase.auth.getSession();
+      try {
+        const {
+          data: { session: currentSession },
+        } = await supabase.auth.getSession();
 
-      if (isMounted) {
-        setSession(currentSession);
-        // Don't set isLoading to false here - wait for API call
+        if (isMounted) {
+          setSession(currentSession);
+        }
+      } catch (error) {
+        console.error("Error loading initial session:", error);
+      } finally {
+        if (isMounted) {
+          setIsInitializing(false);
+        }
       }
     }
 
@@ -37,15 +45,10 @@ export function AuthProvider({ children }) {
       data: { subscription },
     } = supabase.auth.onAuthStateChange(
       async (event, currentSession) => {
-        // Handle token refresh
-        if (event === "TOKEN_REFRESHED") {
-          console.log("Token refreshed automatically");
-        }
-
         // Update session for ALL events
         if (isMounted) {
           setSession(currentSession);
-          // Don't set isLoading to false here - wait for API call
+          setIsInitializing(false);
         }
       }
     );
@@ -62,38 +65,45 @@ export function AuthProvider({ children }) {
   useEffect(() => {
     async function fetchCurrentUser() {
       try {
-        console.log("Fetching current user from /auth/me...");
-        
         const response = await apiClient.get("/auth/me");
         
         if (response.data) {
-          console.log("User fetched successfully:", response.data);
-          setCurrentUser(User.fromApiResponse(response.data));
-          setIsAuthenticated(true);
+          try {
+            const user = User.fromApiResponse(response.data);
+            setCurrentUser(user);
+            setIsAuthenticated(true);
+          } catch (parseError) {
+            console.error("Error parsing user data:", parseError);
+            setCurrentUser(null);
+            setIsAuthenticated(false);
+          }
         } else {
           console.warn("No user data in response");
           setCurrentUser(null);
           setIsAuthenticated(false);
         }
       } catch (error) {
-        console.error("Error fetching current user:", error.response?.status, error.message);
+        console.error("Error fetching current user:", error.message);
         setCurrentUser(null);
         setIsAuthenticated(false);
       } finally {
-        // Set loading to false AFTER API call completes
         setIsLoading(false);
       }
+    }
+
+    if (isInitializing) {
+      setIsLoading(true);
+      return;
     }
 
     if (session) {
       fetchCurrentUser();
     } else {
-      // If no session, stop loading immediately
       setIsLoading(false);
       setIsAuthenticated(false);
       setCurrentUser(null);
     }
-  }, [session]); 
+  }, [session, isInitializing]); 
 
   const value = {
     session,
