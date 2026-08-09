@@ -21,6 +21,7 @@ function DashboardPage() {
   const fetchUserData = async () => {
     try {
       const data = await ApiClient.get("/auth/me");
+      console.log("Fetched user data:", data);
       setUserData(data);
     } catch (err) {
       setError(err.message);

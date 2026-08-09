@@ -29,10 +29,17 @@ export function AuthProvider({ children }) {
 
     loadInitialSession();
 
+    // Single subscription for all auth state changes
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange(
-      (_event, currentSession) => {
+      async (event, currentSession) => {
+        // Handle token refresh
+        if (event === "TOKEN_REFRESHED") {
+          console.log("Token refreshed automatically");
+        }
+
+        // Update session for ALL events
         if (isMounted) {
           setSession(currentSession);
           setIsLoading(false);
