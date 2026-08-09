@@ -15,7 +15,7 @@ export function AuthProvider({ children }) {
   const [isLoading, setIsLoading] = useState(true);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [currentUser, setCurrentUser] = useState(null);
-  const [isInitializing, setIsInitializing] = useState(true); // ← NEW: Track initial load
+  const [isInitializing, setIsInitializing] = useState(true); 
 
   useEffect(() => {
     let isMounted = true;

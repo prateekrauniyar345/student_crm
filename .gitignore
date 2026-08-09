@@ -30,6 +30,8 @@ clean.sh
 .env
 .env.*
 !.env.example
+# ignore  the alembic.ini file
+alembic.ini
 
 # ==========================
 # Python / FastAPI
