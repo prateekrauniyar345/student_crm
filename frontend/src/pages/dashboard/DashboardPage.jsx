@@ -7,7 +7,7 @@ import "./DashboardPage.css";
 
 function DashboardPage() {
   const navigate = useNavigate();
-  const { currentUser, isLoading } = useAuth();
+  const { user, isLoading } = useAuth();
   const [error, setError] = useState("");
 
   
@@ -41,24 +41,24 @@ function DashboardPage() {
         )}
 
         <div className="welcome-card">
-          <h2>Welcome, {currentUser?.email}!</h2>
+          <h2>Welcome, {user?.email}!</h2>
           <p>You are now logged in to the Student CRM system.</p>
         </div>
 
-        {currentUser && (
+        {user && (
           <div className="user-info-card">
             <h3>User Information</h3>
             <div className="info-field">
               <label>User ID:</label>
-              <span>{currentUser.id}</span>
+              <span>{user.id}</span>
             </div>
             <div className="info-field">
               <label>Email:</label>
-              <span>{currentUser.email}</span>
+              <span>{user.email}</span>
             </div>
             <div className="info-field">
-              <label>Provider:</label>
-              <span>{currentUser.provider || "N/A"}</span>
+              <label>Full Name:</label>
+              <span>{user.full_name || "N/A"}</span>
             </div>
           </div>
         )}
