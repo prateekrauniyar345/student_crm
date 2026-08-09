@@ -4,14 +4,17 @@ import {
   useEffect,
   useState,
 } from "react";
-
+import User from "../models/user";
 import { supabase } from "../lib/supabaseClient";
+import apiClient from "../lib/apiClient";
 
 const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
   const [session, setSession] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [currentUser, setCurrentUser] = useState(null);
 
   useEffect(() => {
     let isMounted = true;
@@ -23,7 +26,7 @@ export function AuthProvider({ children }) {
 
       if (isMounted) {
         setSession(currentSession);
-        setIsLoading(false);
+        // Don't set isLoading to false here - wait for API call
       }
     }
 
@@ -42,7 +45,7 @@ export function AuthProvider({ children }) {
         // Update session for ALL events
         if (isMounted) {
           setSession(currentSession);
-          setIsLoading(false);
+          // Don't set isLoading to false here - wait for API call
         }
       }
     );
@@ -53,10 +56,49 @@ export function AuthProvider({ children }) {
     };
   }, []);
 
+
+
+
+  useEffect(() => {
+    async function fetchCurrentUser() {
+      try {
+        console.log("Fetching current user from /auth/me...");
+        
+        const response = await apiClient.get("/auth/me");
+        
+        if (response.data) {
+          console.log("User fetched successfully:", response.data);
+          setCurrentUser(User.fromApiResponse(response.data));
+          setIsAuthenticated(true);
+        } else {
+          console.warn("No user data in response");
+          setCurrentUser(null);
+          setIsAuthenticated(false);
+        }
+      } catch (error) {
+        console.error("Error fetching current user:", error.response?.status, error.message);
+        setCurrentUser(null);
+        setIsAuthenticated(false);
+      } finally {
+        // Set loading to false AFTER API call completes
+        setIsLoading(false);
+      }
+    }
+
+    if (session) {
+      fetchCurrentUser();
+    } else {
+      // If no session, stop loading immediately
+      setIsLoading(false);
+      setIsAuthenticated(false);
+      setCurrentUser(null);
+    }
+  }, [session]); 
+
   const value = {
     session,
-    user: session?.user ?? null,
-    isAuthenticated: Boolean(session),
+    user: currentUser,
+    isAuthenticated: isAuthenticated,
     isLoading,
   };
 

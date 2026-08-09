@@ -3,32 +3,14 @@ import { useNavigate } from "react-router-dom";
 
 import { useAuth } from "../../context/AuthContext";
 import AuthService from "../../services/AuthService";
-import ApiClient from "../../api/ApiClient";
 import "./DashboardPage.css";
 
 function DashboardPage() {
   const navigate = useNavigate();
-  const { user, isLoading } = useAuth();
-  const [userData, setUserData] = useState(null);
+  const { currentUser, isLoading } = useAuth();
   const [error, setError] = useState("");
 
-  useEffect(() => {
-    if (!isLoading && user) {
-      fetchUserData();
-    }
-  }, [user, isLoading]);
-
-  const fetchUserData = async () => {
-    try {
-      const data = await ApiClient.get("/auth/me");
-      console.log("Fetched user data:", data);
-      setUserData(data);
-    } catch (err) {
-      setError(err.message);
-      console.error("Error fetching user data:", err);
-    }
-  };
-
+  
   const handleSignOut = async () => {
     try {
       await AuthService.signOut();
@@ -59,24 +41,24 @@ function DashboardPage() {
         )}
 
         <div className="welcome-card">
-          <h2>Welcome, {user?.email}!</h2>
+          <h2>Welcome, {currentUser?.email}!</h2>
           <p>You are now logged in to the Student CRM system.</p>
         </div>
 
-        {userData && (
+        {currentUser && (
           <div className="user-info-card">
             <h3>User Information</h3>
             <div className="info-field">
               <label>User ID:</label>
-              <span>{userData.id}</span>
+              <span>{currentUser.id}</span>
             </div>
             <div className="info-field">
               <label>Email:</label>
-              <span>{userData.email}</span>
+              <span>{currentUser.email}</span>
             </div>
             <div className="info-field">
               <label>Provider:</label>
-              <span>{userData.provider || "N/A"}</span>
+              <span>{currentUser.provider || "N/A"}</span>
             </div>
           </div>
         )}
