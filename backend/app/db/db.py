@@ -9,7 +9,7 @@ import os
 from app.db.base import Base
 
 # Important: import models so SQLAlchemy registers them
-from app.schema.users import User
+from app.schema.user import User
 
 
 load_dotenv()

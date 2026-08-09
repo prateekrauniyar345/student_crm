@@ -5,7 +5,7 @@ class AuthService {
     const { data, error } = await supabase.auth.signInWithOAuth({
       provider: "azure",
       options: {
-        scopes: "email",
+        scopes: "openid email profile",
         redirectTo: `${window.location.origin}/auth/callback`,
       },
     });

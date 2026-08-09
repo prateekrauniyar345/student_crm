@@ -75,8 +75,9 @@ app.add_middleware(
 
 # include all the router
 app.include_router(default_routes)
-app.include_router(user_routes)
 app.include_router(auth_routes)
+app.include_router(user_routes)
+
 
 
 
