@@ -11,6 +11,7 @@ from app.db.base import Base
 
 # import the User schema
 from app.schema.user import User
+from app.schema.institutions import Institution
 
 load_dotenv()
 

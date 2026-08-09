@@ -23,9 +23,15 @@ load_dotenv()
 # async context manager for lifespan events
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+
     # startup event
-    await init_db()
+    # since now we are using the alembic for migrations, 
+    # we don't need to create the tables here, but we can still 
+    # initialize the database connection
+    # await init_db()
+
     yield
+
     # shutdown event
     await close_db()
 
