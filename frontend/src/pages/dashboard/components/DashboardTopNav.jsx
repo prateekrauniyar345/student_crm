@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import {
   Search,
   Shield,
@@ -20,6 +20,24 @@ export default function DashboardTopNav({
   onToggleSidebar,
 }) {
   const [showDropdown, setShowDropdown] = useState(false);
+  const dropdownRef = useRef(null);
+
+
+
+  useEffect(() =>{
+    document.addEventListener("mousedown", handleClickOutside);
+    return () =>{
+      document.removeEventListener("mousedown", handleClickOutside);
+    }
+  }, [])
+
+
+  const handleClickOutside = (event) =>{
+    event.preventDefault();
+    if(dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+      setShowDropdown(false);
+    }
+  }
 
   const getTabLabel = (id) => {
     switch (id) {
@@ -77,10 +95,10 @@ export default function DashboardTopNav({
           <span className="breadcrumb-current">{getTabLabel(activeTab)}</span>
         </div>
 
-        <div className="institutional-header-tag">
+        {/* <div className="institutional-header-tag">
           <span className="status-dot">●</span>
           <span>PostgreSQL Active • Columbia GS Standard</span>
-        </div>
+        </div> */}
       </div>
 
       <div className="topnav-right">
@@ -125,7 +143,7 @@ export default function DashboardTopNav({
           </button>
 
           {showDropdown && (
-            <div className="user-dropdown-menu">
+            <div className="user-dropdown-menu" ref={dropdownRef}>
               <div className="dropdown-user-header">
                 <span className="dd-user-name">{user?.full_name || "Staff Member"}</span>
                 <span className="dd-user-email font-mono">{user?.email}</span>
