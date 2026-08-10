@@ -12,6 +12,15 @@ from app.db.base import Base
 # import the User schema
 from app.schema.user import User
 from app.schema.institutions import Institution
+from app.schema.institution_memberships import InstitutionMembership
+from app.schema.programs import Program
+from app.schema.academic_terms import AcademicTerm
+from app.schema.applications import Application
+from app.schema.interactions import Interaction
+from app.schema.people import People
+from app.schema.student_term_records import StudentTermRecord
+from app.schema.students_profile import StudentProfile
+
 
 load_dotenv()
 

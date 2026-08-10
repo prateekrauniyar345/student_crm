@@ -5,9 +5,19 @@ from sqlalchemy import (
     DateTime,
 )
 from sqlalchemy.dialects.postgresql import UUID
-
 from app.db.base import Base
 
+
+
+'''
+CREATE TABLE institutions (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    name VARCHAR(200) NOT NULL,
+    code VARCHAR(30) NOT NULL UNIQUE,
+    timezone VARCHAR(100) NOT NULL DEFAULT 'UTC',
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+'''
 
 class Institution(Base):
     __tablename__ = "institutions"
