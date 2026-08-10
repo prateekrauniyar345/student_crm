@@ -13,7 +13,7 @@ from app.db.base import Base
 CREATE TABLE users (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     full_name VARCHAR(100) NOT NULL,
-    email CITEXT NOT NULL UNIQUE,
+    email VARCHAR(100) NOT NULL UNIQUE,
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 '''

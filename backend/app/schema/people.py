@@ -26,7 +26,7 @@ CREATE TABLE people (
     last_name VARCHAR(100) NOT NULL,
     preferred_name VARCHAR(100),
 
-    email VARCHAR(100) UNIQUE,
+    email VARCHAR(100),
     phone VARCHAR(30),
     date_of_birth DATE,
 
@@ -61,6 +61,8 @@ ON people (institution_id, lifecycle_stage);
 
 CREATE INDEX people_email_idx
 ON people (email);
+
+UNIQUE (institution_id, email)
 '''
 
 class People(Base):
@@ -150,7 +152,6 @@ class People(Base):
     email = Column(
         String(100),
         nullable=True,
-        unique=True,
     )
 
     phone = Column(
