@@ -615,6 +615,43 @@ This project demonstrates expertise in **Higher Education Technology** by:
 
 ---
 
+## 📸 Dashboard Preview
+
+### Hero Section
+The landing page welcome screen showcasing key features and call-to-action.
+
+![Hero Section](assets/hero-section.png)
+
+---
+
+### Core System Architecture
+Overview of the system components and how they interconnect.
+
+![Core System](assets/core-system.png)
+
+---
+
+### Workflow Section
+Visualization of the student lifecycle workflow and process flow.
+
+![Workflow Section](assets/workflow-section.png)
+
+---
+
+### Live Roster Section
+The live student roster dashboard with real-time data and search capabilities.
+
+![Live Roster Section](assets/live-rooster-section.png)
+
+---
+
+### Footer Section
+Platform information and additional resources footer.
+
+![Footer Section](assets/footer-section.png)
+
+---
+
 **Built with ❤️ for Columbia University School of General Studies**
 
 *Last Updated: August 2026*
