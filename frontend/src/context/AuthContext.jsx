@@ -105,11 +105,36 @@ export function AuthProvider({ children }) {
     }
   }, [session, isInitializing]); 
 
+  const refreshUser = async () => {
+    try {
+      const response = await apiClient.get("/auth/me");
+      if (response.data) {
+        const user = User.fromApiResponse(response.data);
+        setCurrentUser(user);
+        setIsAuthenticated(true);
+        return user;
+      }
+    } catch (err) {
+      console.error("Error refreshing user:", err);
+    }
+    return null;
+  };
+
+  const updateUser = (updatedUserData) => {
+    if (updatedUserData instanceof User) {
+      setCurrentUser(updatedUserData);
+    } else if (updatedUserData) {
+      setCurrentUser(User.fromApiResponse(updatedUserData));
+    }
+  };
+
   const value = {
     session,
     user: currentUser,
     isAuthenticated: isAuthenticated,
     isLoading,
+    refreshUser,
+    updateUser,
   };
 
   return (

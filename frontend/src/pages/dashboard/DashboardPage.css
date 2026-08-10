@@ -1,132 +1,75 @@
-.dashboard-container {
+/* ==========================================================================
+   Dashboard Page Layout Styles - Student CRM Theme (Columbia GS)
+   ========================================================================== */
+
+.dashboard-layout {
+  display: flex;
   min-height: 100vh;
-  background: #f5f5f5;
+  background-color: var(--color-bg-primary);
+  width: 100%;
+  position: relative;
 }
 
-.dashboard-header {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
-  padding: 20px 40px;
+.dashboard-main-container {
+  flex: 1;
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  flex-direction: column;
+  min-width: 0;
+  height: 100vh;
+  overflow-y: auto;
 }
 
-.dashboard-header h1 {
-  margin: 0;
-  font-size: 28px;
+.dashboard-content-body {
+  flex: 1;
+  padding: 24px;
+  box-sizing: border-box;
 }
 
-.sign-out-button {
-  background: white;
-  color: #667eea;
-  border: none;
-  padding: 10px 20px;
-  border-radius: 5px;
-  cursor: pointer;
-  font-weight: 600;
-  transition: background 0.3s;
-}
-
-.sign-out-button:hover {
-  background: #f0f0f0;
-}
-
-.dashboard-content {
-  max-width: 1200px;
+.dashboard-content-wrapper {
+  max-width: 1400px;
   margin: 0 auto;
-  padding: 40px 20px;
+  width: 100%;
+  animation: fadeIn 0.2s ease-in-out;
 }
 
-.error-box {
-  background: #ffebee;
-  color: #d32f2f;
-  padding: 15px;
-  border-radius: 5px;
-  margin-bottom: 20px;
-  border-left: 4px solid #d32f2f;
+.sidebar-mobile-backdrop {
+  display: none;
 }
 
-.welcome-card {
-  background: white;
-  padding: 30px;
-  border-radius: 10px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  margin-bottom: 30px;
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
-.welcome-card h2 {
-  margin: 0 0 10px 0;
-  color: #1a1a1a;
-}
+@media (max-width: 900px) {
+  .dashboard-sidebar {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    z-index: var(--z-modal);
+    transform: translateX(-100%);
+  }
 
-.welcome-card p {
-  margin: 0;
-  color: #666;
-}
+  .dashboard-layout.mobile-open .dashboard-sidebar {
+    transform: translateX(0);
+  }
 
-.user-info-card {
-  background: white;
-  padding: 30px;
-  border-radius: 10px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  margin-bottom: 30px;
-}
+  .dashboard-layout.mobile-open .sidebar-mobile-backdrop {
+    display: block;
+    position: fixed;
+    inset: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: calc(var(--z-modal) - 1);
+  }
 
-.user-info-card h3 {
-  margin: 0 0 20px 0;
-  color: #1a1a1a;
-}
-
-.info-field {
-  display: flex;
-  justify-content: space-between;
-  padding: 10px 0;
-  border-bottom: 1px solid #eee;
-}
-
-.info-field:last-child {
-  border-bottom: none;
-}
-
-.info-field label {
-  font-weight: 600;
-  color: #666;
-}
-
-.info-field span {
-  color: #1a1a1a;
-  word-break: break-all;
-}
-
-.features-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 20px;
-}
-
-.feature-card {
-  background: white;
-  padding: 25px;
-  border-radius: 10px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  cursor: pointer;
-  transition: transform 0.3s, box-shadow 0.3s;
-}
-
-.feature-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
-}
-
-.feature-card h3 {
-  margin: 0 0 10px 0;
-  color: #667eea;
-}
-
-.feature-card p {
-  margin: 0;
-  color: #666;
-  font-size: 14px;
+  .dashboard-content-body {
+    padding: 16px;
+  }
 }

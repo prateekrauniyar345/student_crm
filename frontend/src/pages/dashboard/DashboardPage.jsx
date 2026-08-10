@@ -1,85 +1,109 @@
-import { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-
 import { useAuth } from "../../context/AuthContext";
 import AuthService from "../../services/AuthService";
+import DashboardSidebar from "./components/DashboardSidebar";
+import DashboardTopNav from "./components/DashboardTopNav";
+import OverviewView from "./views/OverviewView";
+import ProfileView from "./views/ProfileView";
+import AdminView from "./views/AdminView";
+import SettingsView from "./views/SettingsView";
+import ComingSoonView from "./views/ComingSoonView";
 import "./DashboardPage.css";
 
-function DashboardPage() {
+export default function DashboardPage() {
+  const { user } = useAuth();
   const navigate = useNavigate();
-  const { user, isLoading } = useAuth();
-  const [error, setError] = useState("");
 
-  
+  const [activeTab, setActiveTab] = useState("overview");
+  const [isCollapsed, setIsCollapsed] = useState(false);
+  const [isMobileOpen, setIsMobileOpen] = useState(false);
+
+  // Sync title with active view
+  useEffect(() => {
+    const tabTitles = {
+      overview: "Workspace Overview | GS Student CRM",
+      students: "Student Roster | GS Student CRM",
+      admissions: "Admissions & Yield | GS Student CRM",
+      advising: "Advising & Tasks | GS Student CRM",
+      "ai-copilot": "AI SQL Co-Pilot | GS Student CRM",
+      reports: "Reports & Audits | GS Student CRM",
+      admin: "Admin Management | GS Student CRM",
+      profile: "My Profile | GS Student CRM",
+      settings: "System Settings | GS Student CRM",
+    };
+    document.title = tabTitles[activeTab] || "Dashboard | GS Student CRM";
+  }, [activeTab]);
+
   const handleSignOut = async () => {
     try {
       await AuthService.signOut();
-      navigate("/login", { replace: true });
+      navigate("/login");
     } catch (err) {
-      setError(err.message);
+      console.error("Error signing out:", err);
+      navigate("/login");
     }
   };
 
-  if (isLoading) {
-    return <div className="dashboard-container">Loading...</div>;
-  }
+  const renderActiveView = () => {
+    switch (activeTab) {
+      case "overview":
+        return <OverviewView user={user} setActiveTab={setActiveTab} />;
+      case "profile":
+        return <ProfileView user={user} />;
+      case "admin":
+        return <AdminView currentUser={user} />;
+      case "settings":
+        return <SettingsView />;
+      case "students":
+      case "admissions":
+      case "advising":
+      case "ai-copilot":
+      case "reports":
+      default:
+        return <ComingSoonView tabId={activeTab} setActiveTab={setActiveTab} />;
+    }
+  };
 
   return (
-    <div className="dashboard-container">
-      <header className="dashboard-header">
-        <h1>Student CRM Dashboard</h1>
-        <button onClick={handleSignOut} className="sign-out-button">
-          Sign Out
-        </button>
-      </header>
+    <div className={`dashboard-layout ${isMobileOpen ? "mobile-open" : ""}`}>
+      {/* Collapsible Sidebar */}
+      <DashboardSidebar
+        activeTab={activeTab}
+        setActiveTab={(tab) => {
+          setActiveTab(tab);
+          setIsMobileOpen(false);
+        }}
+        isCollapsed={isCollapsed}
+        setIsCollapsed={setIsCollapsed}
+        user={user}
+        onSignOut={handleSignOut}
+      />
 
-      <main className="dashboard-content">
-        {error && (
-          <div className="error-box">
-            <p>{error}</p>
-          </div>
-        )}
+      {/* Mobile Backdrop */}
+      {isMobileOpen && (
+        <div
+          className="sidebar-mobile-backdrop"
+          onClick={() => setIsMobileOpen(false)}
+        />
+      )}
 
-        <div className="welcome-card">
-          <h2>Welcome, {user?.email}!</h2>
-          <p>You are now logged in to the Student CRM system.</p>
-        </div>
+      {/* Main Content Area */}
+      <div className="dashboard-main-container">
+        {/* Top Navbar */}
+        <DashboardTopNav
+          activeTab={activeTab}
+          setActiveTab={setActiveTab}
+          user={user}
+          onSignOut={handleSignOut}
+          onToggleSidebar={() => setIsMobileOpen(!isMobileOpen)}
+        />
 
-        {user && (
-          <div className="user-info-card">
-            <h3>User Information</h3>
-            <div className="info-field">
-              <label>User ID:</label>
-              <span>{user.id}</span>
-            </div>
-            <div className="info-field">
-              <label>Email:</label>
-              <span>{user.email}</span>
-            </div>
-            <div className="info-field">
-              <label>Full Name:</label>
-              <span>{user.full_name || "N/A"}</span>
-            </div>
-          </div>
-        )}
-
-        <div className="features-grid">
-          <div className="feature-card">
-            <h3>Students</h3>
-            <p>Manage student records and enrollment status</p>
-          </div>
-          <div className="feature-card">
-            <h3>Analytics</h3>
-            <p>View enrollment analytics and insights</p>
-          </div>
-          <div className="feature-card">
-            <h3>Reports</h3>
-            <p>Generate and view CRM reports</p>
-          </div>
-        </div>
-      </main>
+        {/* Dynamic Tab Body */}
+        <main className="dashboard-content-body">
+          <div className="dashboard-content-wrapper">{renderActiveView()}</div>
+        </main>
+      </div>
     </div>
   );
 }
-
-export default DashboardPage;
