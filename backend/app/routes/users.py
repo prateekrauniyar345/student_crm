@@ -5,8 +5,12 @@ from dotenv import load_dotenv
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 import os
-from app.db import get_session
+from app.db.db import get_session
 from app.models.user import UserResponse
+from app.auth import get_current_user
+from typing import Annotated
+from app.schema.user import User
+
 
 
 # load environment variables from .env file
@@ -16,7 +20,12 @@ user_routes = APIRouter(prefix=f"{os.getenv('API_PREFIX')}/users", tags=["users"
 
 
 @user_routes.get("/")
-async def get_users(session: AsyncSession = Depends(get_session)) -> list[dict]:
+async def get_users(
+        full_name: str | None = None, 
+        email: str | None = None,
+        # current_user: Annotated[UserResponse, Depends(get_current_user)],
+        session: AsyncSession = Depends(get_session)
+    ) -> list[UserResponse]:
     """
     Get all active users from the database.
     This is a public endpoint - returns only non-sensitive fields.
@@ -26,34 +35,20 @@ async def get_users(session: AsyncSession = Depends(get_session)) -> list[dict]:
         # For now, returning hardcoded data as a placeholder
         # When database is fully set up, this will query the actual table
         
-        users = [
-            {
-                "id": "550e8400-e29b-41d4-a716-446655440000",
-                "first_name": "John",
-                "last_name": "Doe",
-                "email": "johndoe@example.com",
-                "is_active": True,
-                "created_at": "2024-01-01T00:00:00Z"
-            }, 
-            {
-                "id": "550e8400-e29b-41d4-a716-446655440001",
-                "first_name": "Jane",
-                "last_name": "Doe",
-                "email": "janedoe@example.com",
-                "is_active": True,
-                "created_at": "2024-01-02T00:00:00Z"
-            }, 
-            {
-                "id": "550e8400-e29b-41d4-a716-446655440002",
-                "first_name": "Alice",
-                "last_name": "Smith",
-                "email": "alicesmith@example.com",
-                "is_active": True,
-                "created_at": "2024-01-03T00:00:00Z"
-            }
-        ]
+        users = []
+        statement = select(User)
+
+        #  if the full_name is provdided, filter by full_name
+        if full_name:
+            statement = statement.where(User.full_name.ilike(f"%{full_name}%"))
+        if email:
+            statement = statement.where(User.email.ilike(f"%{email}%"))
+            
+        result = await session.execute(statement)
+        users = result.scalars().all()
+
         
-        return users
+        return [UserResponse.model_validate(user) for user in users]
         
     except Exception as e:
         print(f"Error fetching users: {e}")
