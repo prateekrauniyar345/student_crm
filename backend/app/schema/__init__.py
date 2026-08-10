@@ -1,3 +1,6 @@
+# backend/app/schema/__init__.py
+
+
 from .user import User
 from .institutions import Institution
 from .institution_memberships import InstitutionMembership

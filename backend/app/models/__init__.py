@@ -1,3 +1,6 @@
+# backend/app/models/__init__.py
+
+
 # Pydantic v2 Response Models
 # These models are used for API request/response validation
 

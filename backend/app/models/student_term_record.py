@@ -1,3 +1,30 @@
+# backend/app/models/student_term_record.py
+
+
+"""
+STUDENT TERM RECORDS TABLE EXAMPLE
+----------------------------------
+
+id                                   | person_id                            | term_id                              | program_id                           | credits_attempted | credits_earned | term_gpa | cumulative_gpa | academic_standing | attributes                         | created_at
+-------------------------------------|--------------------------------------|--------------------------------------|--------------------------------------|-------------------|----------------|----------|----------------|-------------------|------------------------------------|--------------------------------
+30000000-0000-4000-8000-000000000001 | 10000000-0000-4000-8000-000000000002 | eeeeeeee-eeee-4eee-8eee-eeeeeeeeeeee | cccccccc-cccc-4ccc-8ccc-cccccccccccc | 15.00             | 15.00          | 3.75     | 3.68           | good              | {"holds":[],"cohort":"2026"}       | 2026-08-09 19:10:00.123456-07
+
+COLUMN MEANING
+--------------
+id: Unique term-record UUID.
+person_id: Student/person represented by this record.
+term_id: Academic term being reported.
+program_id: Program the student was associated with during the term.
+credits_attempted: Number of credits attempted.
+credits_earned: Number of credits successfully earned.
+term_gpa: GPA for this specific term. Must be between 0 and 4.
+cumulative_gpa: Overall GPA through this term. Must be between 0 and 4.
+academic_standing: Academic status. Values: good, warning, probation, suspension.
+attributes: Flexible additional JSON reporting information.
+created_at: Timestamp when the record was created.
+UNIQUE RULE: person_id + term_id must be unique.
+"""
+
 from datetime import datetime
 from decimal import Decimal
 from typing import Any, Literal
