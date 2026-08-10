@@ -26,7 +26,7 @@ export default function ProfileView({ user }) {
 
   const [formData, setFormData] = useState({
     fullName: user?.full_name || "",
-    preferredName: "",
+    preferredName: user?.preferred_first_name || "",
     title: "Senior Admissions & Advising Officer",
     department: "School of General Studies - Academic Affairs",
     phone: "+1 (212) 854-2772",
@@ -38,6 +38,7 @@ export default function ProfileView({ user }) {
 
   const [isSaving, setIsSaving] = useState(false);
   const [copiedId, setCopiedId] = useState(false);
+  const [copiedEmail, setCopiedEmail] = useState(false);
   const [successMessage, setSuccessMessage] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
 
@@ -49,6 +50,14 @@ export default function ProfileView({ user }) {
       }));
     }
   }, [user]);
+
+  const handleCopyEmail = () => {
+    if (user?.email) {
+      navigator.clipboard.writeText(user.email);
+      setCopiedEmail(true);
+      setTimeout(() => setCopiedEmail(false), 2000);
+    }
+  };
 
   const handleCopyId = () => {
     if (user?.id) {
@@ -184,8 +193,18 @@ export default function ProfileView({ user }) {
             </div>
 
             <div className="meta-field">
-              <span className="meta-label">Official University Email</span>
-              <div className="meta-val font-mono">{user?.email || "advising@columbia.edu"}</div>
+              <span className="meta-label">Email</span>
+              <div className="meta-val-copy">
+                <div className="meta-val font-mono">{user?.email || "advising@columbia.edu"}</div>
+                <button
+                  type="button"
+                  className="btn-copy-id"
+                  onClick={handleCopyEmail}
+                  title="Copy Email"
+                >
+                  {copiedEmail ? <Check size={14} className="text-success" /> : <Copy size={14} />}
+                </button>
+              </div>
             </div>
 
             <div className="meta-field">

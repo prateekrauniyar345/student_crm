@@ -32,6 +32,7 @@ from app.db.base import Base
 CREATE TABLE users (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     full_name VARCHAR(100) NOT NULL,
+    preferred_first_name VARCHAR(50),
     email VARCHAR(100) NOT NULL UNIQUE,
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
@@ -61,6 +62,11 @@ class User(Base):
     full_name = Column(
         String(100), 
         nullable=False
+    )
+
+    preferred_first_name = Column(
+        String(50),
+        nullable=True
     )
 
 

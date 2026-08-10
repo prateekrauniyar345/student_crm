@@ -27,6 +27,7 @@ from pydantic import BaseModel, ConfigDict, EmailStr
 class UserBase(BaseModel):
     email: EmailStr
     full_name: str
+    preferred_first_name: str | None = None
 
 
 class UserCreate(UserBase):
@@ -34,8 +35,8 @@ class UserCreate(UserBase):
 
 
 class UserUpdate(BaseModel):
-    email: EmailStr | None = None
     full_name: str | None = None
+    preferred_first_name: str | None = None
 
 
 class UserResponse(UserBase):
