@@ -33,7 +33,6 @@ export default function DashboardTopNav({
 
 
   const handleClickOutside = (event) =>{
-    event.preventDefault();
     if(dropdownRef.current && !dropdownRef.current.contains(event.target)) {
       setShowDropdown(false);
     }
@@ -124,7 +123,7 @@ export default function DashboardTopNav({
         </button>
 
         {/* User Dropdown */}
-        <div className="user-dropdown-wrapper">
+        <div className="user-dropdown-wrapper" ref={dropdownRef}>
           <button
             className="user-menu-trigger"
             onClick={() => setShowDropdown(!showDropdown)}
@@ -143,51 +142,54 @@ export default function DashboardTopNav({
           </button>
 
           {showDropdown && (
-            <div className="user-dropdown-menu" ref={dropdownRef}>
-              <div className="dropdown-user-header">
+            <div className="topnav-dropdown-menu">
+              <div className="topnav-user-header">
                 <span className="dd-user-name">{user?.full_name || "Staff Member"}</span>
                 <span className="dd-user-email font-mono">{user?.email}</span>
                 <span className="status-pill status-pill-success">
-                  <Shield size={10} />
+                  <Shield size={12} />
                   <span>Authenticated Operator</span>
                 </span>
               </div>
 
-              <div className="dropdown-divider"></div>
+              <div className="topnav-dropdown-divider"></div>
 
               <button
-                className="dropdown-item"
+                type="button"
+                className="topnav-dropdown-item"
                 onClick={() => {
                   setActiveTab("profile");
                   setShowDropdown(false);
                 }}
               >
-                <User size={15} />
-                <span>My Profile & Security</span>
+                <User size={16} className="dd-item-icon" />
+                <span className="dd-item-text">My Profile & Security</span>
               </button>
 
               <button
-                className="dropdown-item"
+                type="button"
+                className="topnav-dropdown-item"
                 onClick={() => {
                   setActiveTab("admin");
                   setShowDropdown(false);
                 }}
               >
-                <Database size={15} />
-                <span>Admin Management</span>
+                <Database size={16} className="dd-item-icon" />
+                <span className="dd-item-text">Admin Management</span>
               </button>
 
-              <div className="dropdown-divider"></div>
+              <div className="topnav-dropdown-divider"></div>
 
               <button
-                className="dropdown-item text-danger"
+                type="button"
+                className="topnav-dropdown-item text-danger"
                 onClick={() => {
                   setShowDropdown(false);
                   onSignOut();
                 }}
               >
-                <LogOut size={15} />
-                <span>Sign Out</span>
+                <LogOut size={16} className="dd-item-icon" />
+                <span className="dd-item-text">Sign Out</span>
               </button>
             </div>
           )}
