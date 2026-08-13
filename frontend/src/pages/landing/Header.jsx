@@ -17,7 +17,7 @@ export default function Header() {
           </div>
           <div className="logo-titles">
             <span className="logo-text">GS StudentCRM</span>
-            <span className="logo-subtext">Enrollment Analytics & AI</span>
+            <span className="logo-subtext">Enrollment Analytics With AI</span>
           </div>
         </div>
 

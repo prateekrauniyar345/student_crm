@@ -64,7 +64,7 @@ export default function FeaturesSection() {
           <div className="section-kicker">Core System Architecture</div>
           <h2>Purpose-Built for Higher Ed Enrollment Analytics</h2>
           <p>
-            Combining modern relational database design with secure AI co-pilots to serve non-traditional student management.
+            Combining modern relational database design with secure AI co-pilots for student management and enrollment analytics.
           </p>
         </div>
 

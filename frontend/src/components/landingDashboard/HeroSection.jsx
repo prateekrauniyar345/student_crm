@@ -15,7 +15,7 @@ export default function HeroSection() {
         <div className="hero-content">
           <div className="hero-badge">
             <ShieldCheck size={16} className="badge-shield" />
-            <span className="badge-text">Columbia GS Standard • PostgreSQL & AI Co-Pilot</span>
+            <span className="badge-text">Enrollment Management Platform • Powered by PostgreSQL & AI</span>
           </div>
 
           <h1 className="hero-title">
@@ -37,7 +37,7 @@ export default function HeroSection() {
             </div>
             <div className="key-point">
               <CheckCircle2 size={16} className="point-icon" />
-              <span>Supabase OAuth & Role-Based Authorization</span>
+              <span>Natural Language AI Companion</span>
             </div>
           </div>
 
