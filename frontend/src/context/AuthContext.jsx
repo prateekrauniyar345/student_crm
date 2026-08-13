@@ -130,7 +130,7 @@ export function AuthProvider({ children }) {
 
   const value = {
     session,
-    user: currentUser,
+    currentUser,
     isAuthenticated: isAuthenticated,
     isLoading,
     refreshUser,

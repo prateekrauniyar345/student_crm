@@ -12,7 +12,7 @@ import ComingSoonView from "./views/ComingSoonView";
 import "./DashboardPage.css";
 
 export default function DashboardPage() {
-  const { user } = useAuth();
+  const { currentUser } = useAuth();
   const navigate = useNavigate();
 
   const [activeTab, setActiveTab] = useState("overview");
@@ -48,11 +48,11 @@ export default function DashboardPage() {
   const renderActiveView = () => {
     switch (activeTab) {
       case "overview":
-        return <OverviewView user={user} setActiveTab={setActiveTab} />;
+        return <OverviewView user={currentUser} setActiveTab={setActiveTab} />;
       case "profile":
-        return <ProfileView user={user} />;
+        return <ProfileView user={currentUser} />;
       case "admin":
-        return <AdminView currentUser={user} />;
+        return <AdminView currentUser={currentUser} />;
       case "settings":
         return <SettingsView />;
       case "students":
@@ -76,7 +76,7 @@ export default function DashboardPage() {
         }}
         isCollapsed={isCollapsed}
         setIsCollapsed={setIsCollapsed}
-        user={user}
+        user={currentUser}
         onSignOut={handleSignOut}
       />
 
@@ -94,7 +94,7 @@ export default function DashboardPage() {
         <DashboardTopNav
           activeTab={activeTab}
           setActiveTab={setActiveTab}
-          user={user}
+          user={currentUser}
           onSignOut={handleSignOut}
           onToggleSidebar={() => setIsMobileOpen(!isMobileOpen)}
         />
