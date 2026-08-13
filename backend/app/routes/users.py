@@ -10,6 +10,7 @@ from app.models.user import UserResponse, UserUpdate
 from app.auth import get_current_user
 from typing import Annotated
 from app.schema.user import User
+from uuid import UUID
 
 
 
@@ -59,43 +60,40 @@ async def get_users(
 
 
 
-# =======================================================
-# The user can update only the full name and 
-# preferred first name of the user.
-# 
-# full update might can cuase the email to be changed.
-# 
-# So, we will avoid the full update for now.
-# =======================================================
-# complete replacedment
-# @user_routes.put("/")
-# async def update_user_full(
-#     user_update: UserUpdate,
-#     current_user: Annotated[UserResponse, Depends(get_current_user)],
-#     session: AsyncSession = Depends(get_session),
-# ) -> UserResponse:
-#     """
-#     Updates the current authenticated user's profile information.
-#     """
-#     statement = select(User).where(User.id == current_user.id)
-#     result = await session.execute(statement)
-#     db_user = result.scalars().first()
-#     if not db_user:
-#         raise HTTPException(status_code=404, detail="User not found")
+@user_routes.post("/test")
+async def create_user(
+    id : UUID,
+    full_name: str | None,
+    preferred_first_name: str | None,
+    email: str | None,
+    session: AsyncSession = Depends(get_session),
+    # current_user: Annotated[UserResponse, Depends(get_current_user)] = None
+) -> UserResponse:
+    """
+    Create a new user in the database.
+    """
+    try:
+        new_user = User(
+            id=id,
+            email=email, 
+            full_name=full_name,
+            preferred_first_name=preferred_first_name
+        )
 
-#     if user_update.full_name is not None:
-#         db_user.full_name = user_update.full_name
+        # Add the new user to the session and commit
+        session.add(new_user)
+        await session.commit()
+        await session.refresh(new_user)
 
-#     await session.commit()
-#     await session.refresh(db_user)
-#     return UserResponse.model_validate(db_user)
-
-
+        return UserResponse.model_validate(new_user)
+    except Exception as e:
+        print(f"Error creating user: {e}")
+        raise HTTPException(status_code=500, detail="Error creating user")
 
 
 
 # partial update
-@user_routes.patch("/")
+@user_routes.patch("/me")
 async def update_user_partial(
     user_update: UserUpdate,
     current_user: Annotated[UserResponse, Depends(get_current_user)],

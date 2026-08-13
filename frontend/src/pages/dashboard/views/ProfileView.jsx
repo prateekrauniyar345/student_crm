@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import {
-  User,
+  User as UserIcon,
   Mail,
   Shield,
   Calendar,
@@ -19,14 +19,19 @@ import {
 } from "lucide-react";
 import apiClient from "../../../lib/apiClient";
 import { useAuth } from "../../../context/AuthContext";
+import User from "../../../models/user";
 import "./ProfileView.css";
 
 export default function ProfileView({ user }) {
-  const { updateUser, refreshUser } = useAuth();
+  const { updateCurrentUser, refreshUser } = useAuth();
 
-  const [formData, setFormData] = useState({
+  const [userInfo, setUserInfo] = useState({
     fullName: user?.full_name || "",
     preferredName: user?.preferred_first_name || "",
+  });
+
+
+  const [formData, setFormData] = useState({
     title: "Senior Admissions & Advising Officer",
     department: "School of General Studies - Academic Affairs",
     phone: "+1 (212) 854-2772",
@@ -42,14 +47,6 @@ export default function ProfileView({ user }) {
   const [successMessage, setSuccessMessage] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
 
-  useEffect(() => {
-    if (user?.full_name) {
-      setFormData((prev) => ({
-        ...prev,
-        fullName: user.full_name,
-      }));
-    }
-  }, [user]);
 
   const handleCopyEmail = () => {
     if (user?.email) {
@@ -75,6 +72,16 @@ export default function ProfileView({ user }) {
     }));
   };
 
+
+  const handleUserInfoChange = (e) =>{
+    const { name, value} = e.target;
+    setUserInfo((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  }
+
+
   const handleSaveProfile = async (e) => {
     e.preventDefault();
     setIsSaving(true);
@@ -82,27 +89,15 @@ export default function ProfileView({ user }) {
     setErrorMessage("");
 
     try {
-      // Call backend PUT endpoint to update full_name in PostgreSQL
-      const response = await apiClient.put("/users/me", {
-        full_name: formData.fullName.trim(),
-      });
-
-      if (response.data) {
-        updateUser(response.data);
-        setSuccessMessage("Your staff profile information was successfully updated.");
-      } else {
-        // Fallback update in case API returned empty payload
-        await refreshUser();
-        setSuccessMessage("Profile preferences updated successfully.");
-      }
+      const updatePayload = {
+            full_name: userInfo.fullName.trim(),
+            preferred_first_name: userInfo.preferredName.trim(),
+        };
+        await updateCurrentUser(updatePayload);
+        setSuccessMessage("Profile preferences saved successfully.");
     } catch (error) {
+      setErrorMessage(error.message);
       console.warn("Could not save to remote backend API, updating local session:", error);
-      // Even if offline or mock, reflect local changes in context
-      if (user) {
-        user.full_name = formData.fullName.trim();
-        updateUser(user);
-      }
-      setSuccessMessage("Profile preferences saved to your active session.");
     } finally {
       setIsSaving(false);
       setTimeout(() => {
@@ -130,11 +125,11 @@ export default function ProfileView({ user }) {
       {/* Profile Header Card */}
       <div className="profile-hero-card">
         <div className="profile-avatar-large">
-          <User size={36} />
+          <UserIcon size={36} />
         </div>
         <div className="profile-hero-meta">
           <div className="hero-name-row">
-            <h2>{formData.fullName || user?.email?.split("@")[0] || "Staff Member"}</h2>
+            <h2>{userInfo.fullName || user?.email?.split("@")[0] || "Staff Member"}</h2>
             <span className="status-pill status-pill-success">
               <CheckCircle2 size={12} />
               <span>Verified SSO Operator</span>
@@ -241,7 +236,7 @@ export default function ProfileView({ user }) {
         {/* Right Column: Edit Profile Form */}
         <div className="profile-card">
           <div className="card-header-styled">
-            <User size={18} className="header-icon" />
+            <UserIcon size={18} className="header-icon" />
             <div>
               <h3>Edit Profile & Preferences</h3>
               <p>Update your public staff details and notification triggers</p>
@@ -256,8 +251,8 @@ export default function ProfileView({ user }) {
                 name="fullName"
                 type="text"
                 required
-                value={formData.fullName}
-                onChange={handleChange}
+                value={userInfo.fullName}
+                onChange={handleUserInfoChange}
                 placeholder="e.g. Alex Morgan"
                 className="form-input"
               />
@@ -270,8 +265,8 @@ export default function ProfileView({ user }) {
                   id="preferredName"
                   name="preferredName"
                   type="text"
-                  value={formData.preferredName}
-                  onChange={handleChange}
+                  value={userInfo.preferredName}
+                  onChange={handleUserInfoChange}
                   placeholder="e.g. Alex"
                   className="form-input"
                 />
@@ -283,8 +278,8 @@ export default function ProfileView({ user }) {
                   id="phone"
                   name="phone"
                   type="tel"
-                  value={formData.phone}
-                  onChange={handleChange}
+                  value={userInfo.phone ?? ''}
+                  onChange={handleUserInfoChange}
                   placeholder="+1 (212) 854-2772"
                   className="form-input"
                 />

@@ -25,9 +25,6 @@ export const getUsers = async({full_name, email, preferred_first_name}) =>{
 
 
 
-// function to post a new user
-
-
 
 
 // function to update an extsing user
@@ -42,7 +39,7 @@ export const updateUser = async({full_name, preferred_first_name}) =>{
             payload.preferred_first_name = preferred_first_name;
         }
 
-        const response = await apiClient.patch("/users", payload);
+        const response = await apiClient.patch("/users/me", payload);
         return response.data;
     } catch (err){
         console.error(err);
@@ -51,8 +48,3 @@ export const updateUser = async({full_name, preferred_first_name}) =>{
 }
 
 
-
-
-
-
-// function delete an existing user

@@ -7,6 +7,7 @@ import {
 import User from "../models/user";
 import { supabase } from "../lib/supabaseClient";
 import apiClient from "../lib/apiClient";
+import { updateUser } from "../api/users"; 
 
 const AuthContext = createContext(null);
 
@@ -120,13 +121,22 @@ export function AuthProvider({ children }) {
     return null;
   };
 
-  const updateUser = (updatedUserData) => {
-    if (updatedUserData instanceof User) {
-      setCurrentUser(updatedUserData);
-    } else if (updatedUserData) {
-      setCurrentUser(User.fromApiResponse(updatedUserData));
-    }
+
+  const updateCurrentUser = async (payload) => {
+      try {
+          const updatedUser = await updateUser(payload);
+          // Refresh from backend to keep frontend consistent
+          await refreshUser();
+          return updatedUser;
+      } catch (error) {
+          console.error(
+              "Error updating current user:",
+              error
+          );
+          throw error;
+      }
   };
+
 
   const value = {
     session,
@@ -134,7 +144,7 @@ export function AuthProvider({ children }) {
     isAuthenticated: isAuthenticated,
     isLoading,
     refreshUser,
-    updateUser,
+    updateCurrentUser,
   };
 
   return (

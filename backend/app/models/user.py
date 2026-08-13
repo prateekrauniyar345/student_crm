@@ -31,7 +31,7 @@ class UserBase(BaseModel):
 
 
 class UserCreate(UserBase):
-    pass
+    id: UUID
 
 
 class UserUpdate(BaseModel):
