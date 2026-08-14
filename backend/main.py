@@ -5,6 +5,7 @@ from app.routes import (
     default_routes,
     user_routes,
     auth_routes,
+    institution_routes,
 )
 from fastapi.middleware.cors import CORSMiddleware
 import os
@@ -83,6 +84,7 @@ app.add_middleware(
 app.include_router(default_routes)
 app.include_router(auth_routes)
 app.include_router(user_routes)
+app.include_router(institution_routes)
 
 
 
