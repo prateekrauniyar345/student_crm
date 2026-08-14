@@ -55,14 +55,14 @@ export default function ProfileView({ user }) {
   const [isSaving, setIsSaving] = useState(false);
   const [copiedId, setCopiedId] = useState(false);
   const [copiedEmail, setCopiedEmail] = useState(false);
-  const [successMessage, setSuccessMessage] = useState("");
-  const [errorMessage, setErrorMessage] = useState("");
+
 
 
   const handleCopyEmail = () => {
     if (user?.email) {
       navigator.clipboard.writeText(user.email);
       setCopiedEmail(true);
+      info("Email copied to clipboard!");
       setTimeout(() => setCopiedEmail(false), 2000);
     }
   };
@@ -71,6 +71,7 @@ export default function ProfileView({ user }) {
     if (user?.id) {
       navigator.clipboard.writeText(user.id);
       setCopiedId(true);
+      info("User UUID copied to clipboard!");
       setTimeout(() => setCopiedId(false), 2000);
     }
   };
@@ -96,8 +97,6 @@ export default function ProfileView({ user }) {
   const handleSaveProfile = async (e) => {
     e.preventDefault();
     setIsSaving(true);
-    setSuccessMessage("");
-    setErrorMessage("");
 
     try {
       const updatePayload = {
@@ -106,7 +105,6 @@ export default function ProfileView({ user }) {
             phone_number: userInfo.phone_number.trim(),
         };
         await updateCurrentUser(updatePayload);
-        setSuccessMessage("Profile preferences saved successfully.");
         success("Profile preferences saved successfully.");
     } catch (error) {
         setErrorMessage(error.message);
@@ -114,9 +112,6 @@ export default function ProfileView({ user }) {
         error("Could not save changes : ", error);
     } finally {
         setIsSaving(false);
-        setTimeout(() => {
-          setSuccessMessage("");
-        }, 5000);
     }
   };
 
@@ -158,20 +153,6 @@ export default function ProfileView({ user }) {
         </div>
       </div>
 
-      {/* Notifications / Alerts */}
-      {successMessage && (
-        <div className="profile-alert success">
-          <CheckCircle2 size={18} />
-          <span>{successMessage}</span>
-        </div>
-      )}
-
-      {errorMessage && (
-        <div className="profile-alert danger">
-          <AlertCircle size={18} />
-          <span>{errorMessage}</span>
-        </div>
-      )}
 
       {/* Grid Layout */}
       <div className="profile-grid">
