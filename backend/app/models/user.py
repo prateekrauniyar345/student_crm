@@ -29,7 +29,7 @@ from pydantic import BaseModel, ConfigDict, EmailStr
 
 class UserBase(BaseModel):
     email: EmailStr
-    full_name: str
+    full_name: str | None = None
     preferred_first_name: str | None = None
     phone_number: str | None = None
 
