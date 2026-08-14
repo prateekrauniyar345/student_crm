@@ -21,24 +21,36 @@ created_at: Timestamp when the institution was created.
 
 from datetime import datetime
 from uuid import UUID
-
+from typing import Literal
 from pydantic import BaseModel, ConfigDict
+
+
+
+Timezone_options = Literal[
+    'America/New_York',
+    'America/Chicago',
+    'America/Denver',
+    'America/Los_Angeles',
+    'America/Anchorage',
+    'America/Phoenix',
+    'Pacific/Honolulu'
+]
 
 
 class InstitutionBase(BaseModel):
     name: str
     code: str
-    timezone: str = "UTC"
+    timezone: Timezone_options | None = None
 
 
 class InstitutionCreate(InstitutionBase):
     pass
 
 
-class InstitutionUpdate(BaseModel):
+class InstitutionUpdate(InstitutionBase):
     name: str | None = None
     code: str | None = None
-    timezone: str | None = None
+    timezone: Timezone_options | None = None
 
 
 class InstitutionResponse(InstitutionBase):

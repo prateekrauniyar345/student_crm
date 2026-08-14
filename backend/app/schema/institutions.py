@@ -24,9 +24,11 @@ from sqlalchemy import (
     text,
     String,
     DateTime,
+    CheckConstraint
 )
 from sqlalchemy.dialects.postgresql import UUID
 from app.db.base import Base
+
 
 
 '''
@@ -34,14 +36,30 @@ CREATE TABLE institutions (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     name VARCHAR(200) NOT NULL,
     code VARCHAR(30) NOT NULL UNIQUE,
-    timezone VARCHAR(100) NOT NULL DEFAULT 'UTC',
+    timezone VARCHAR(100),
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 '''
 
 class Institution(Base):
     __tablename__ = "institutions"
-    __table_args__ = {"schema": "public"}
+    __table_args__ = (
+        CheckConstraint(
+            """
+            timezone IN (
+                    'America/New_York',
+                    'America/Chicago',
+                    'America/Denver',
+                    'America/Los_Angeles',
+                    'America/Anchorage',
+                    'America/Phoenix',
+                    'Pacific/Honolulu'
+            )
+            """,
+            name="institutions_timezone_check"
+        ), 
+        {"schema": "public"}
+    )
 
     id = Column(
         UUID(as_uuid=True),
@@ -62,8 +80,7 @@ class Institution(Base):
 
     timezone = Column(
         String(100),
-        nullable=False,
-        server_default=text("'UTC'")
+        nullable=True,
     )
 
     created_at = Column(

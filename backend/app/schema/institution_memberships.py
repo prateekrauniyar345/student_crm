@@ -46,13 +46,13 @@ CREATE TABLE institution_memberships (
 
     role VARCHAR(30) NOT NULL CHECK (
         role IN (
-            'admin',
-            'analyst',
-            'advisor',
-            'faculty',
-            'viewer'
+            'Admin',
+            'Analyst',
+            'Advisor',
+            'Faculty',
+            'Viewer'
         )
-    ),
+    ) default 'Viewer',
 
     department VARCHAR(100),
 
@@ -71,7 +71,7 @@ CREATE TABLE institution_memberships (
 #         name="institution_memberships_pkey"
 #     ),
 #     CheckConstraint(
-#         "role IN ('Admin', 'Analyst', 'Staff', 'Faculty')",
+#         "role IN ('Admin', 'Analyst', 'Advisor', 'Faculty', 'Viewer')",
 #         name="institution_memberships_role_check"
 #     ),
 #     {"schema": "public"},
@@ -81,7 +81,7 @@ class InstitutionMembership(Base):
     __tablename__ = "institution_memberships"
     __table_args__ = (
         CheckConstraint(
-            "role IN ('Admin', 'Analyst', 'Staff', 'Faculty')",
+            "role IN ('Admin', 'Analyst', 'Advisor', 'Faculty', 'Viewer')",
             name="institution_memberships_role_check"
         ), 
         {"schema": "public"},
@@ -111,7 +111,7 @@ class InstitutionMembership(Base):
     role = Column(
         String, 
         nullable=False,
-        server_default=text("'Analyst'")
+        server_default=text("'Viewer'")
     )
 
     department = Column(

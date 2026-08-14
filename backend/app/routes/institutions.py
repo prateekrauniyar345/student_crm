@@ -1,5 +1,5 @@
 from app.auth.auth import get_current_user
-from app.models.institution import  InstitutionCreate, InstitutionUpdate, InstitutionResponse
+from app.models.institution import  InstitutionCreate, InstitutionUpdate, InstitutionResponse, Timezone_options
 from app.schema.institutions import Institution
 from uuid import UUID
 import os
@@ -28,7 +28,7 @@ async def get_institutions(
     id: UUID | None = None, 
     name: str | None = None,
     code : str | None = None,
-    timezone: str | None = None,
+    timezone: Timezone_options | None = None,
     session: AsyncSession = Depends(get_session),  
 ) -> list[InstitutionResponse]:
     """
@@ -50,7 +50,7 @@ async def get_institutions(
         if code:
             statement = statement.where(Institution.code.ilike(f"%{code}%"))
         if timezone:
-            statement = statement.where(Institution.timezone.ilike(f"%{timezone}%"))
+            statement = statement.where(Institution.timezone == timezone)
             
         result = await session.execute(statement)
         institutions = result.scalars().all()

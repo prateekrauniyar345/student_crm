@@ -39,7 +39,7 @@ InstitutionRole = Literal[
 class InstitutionMembershipBase(BaseModel):
     institution_id: UUID
     user_id: UUID
-    role: InstitutionRole = "Analyst"
+    role: InstitutionRole  = "Viewer"
     department: str | None = None
 
 
