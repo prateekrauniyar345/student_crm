@@ -21,6 +21,7 @@ import apiClient from "../../../lib/apiClient";
 import { useAuth } from "../../../context/AuthContext";
 import User from "../../../models/user";
 import "./ProfileView.css";
+import { useToast } from "../../../context/ToastContext";
 
 export default function ProfileView({ user }) {
   const { updateCurrentUser, refreshUser } = useAuth();
@@ -30,6 +31,14 @@ export default function ProfileView({ user }) {
     preferredName: user?.preferred_first_name || "",
     phone_number: user?.phone_number || "",
   });
+
+  // get the toast variable from the toast context
+  const {
+        success,
+        warning,
+        error,
+        info
+    } = useToast();
 
   console.log("user in the ProfileView:", user);
 
@@ -98,14 +107,16 @@ export default function ProfileView({ user }) {
         };
         await updateCurrentUser(updatePayload);
         setSuccessMessage("Profile preferences saved successfully.");
+        success("Profile preferences saved successfully.");
     } catch (error) {
-      setErrorMessage(error.message);
-      console.warn("Could not save to remote backend API, updating local session:", error);
+        setErrorMessage(error.message);
+        console.warn("Could not save to remote backend API, updating local session:", error);
+        error("Could not save changes : ", error);
     } finally {
-      setIsSaving(false);
-      setTimeout(() => {
-        setSuccessMessage("");
-      }, 5000);
+        setIsSaving(false);
+        setTimeout(() => {
+          setSuccessMessage("");
+        }, 5000);
     }
   };
 
