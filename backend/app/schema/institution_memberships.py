@@ -15,7 +15,7 @@ COLUMN MEANING
 --------------
 institution_id: Institution the user belongs to (UUID, NOT NULL, FOREIGN KEY).
 user_id: Application user belonging to the institution (UUID, NOT NULL, FOREIGN KEY).
-role: User's role within this institution (VARCHAR 30, NOT NULL). Allowed: Admin, Analyst, Advisor, Faculty, Viewer. Default: Analyst.
+role: User's role within this institution (VARCHAR 30, NOT NULL). Allowed: Admin, Analyst, Advisor, Faculty, Viewer. Default: Viewer.
 department: User's department/unit within the institution (VARCHAR 100, nullable).
 created_at: Timestamp when membership was created (TIMESTAMPTZ, NOT NULL, DEFAULT NOW()).
 PRIMARY KEY: institution_id + user_id is the composite primary key.
@@ -61,21 +61,6 @@ CREATE TABLE institution_memberships (
     PRIMARY KEY (institution_id, user_id)
 );
 '''
-
-
-# can also declare the primary key constraint in the __table_args__ like this:
-# __table_args__ = (
-#     PrimaryKeyConstraint(
-#         "institution_id",
-#         "user_id",
-#         name="institution_memberships_pkey"
-#     ),
-#     CheckConstraint(
-#         "role IN ('Admin', 'Analyst', 'Advisor', 'Faculty', 'Viewer')",
-#         name="institution_memberships_role_check"
-#     ),
-#     {"schema": "public"},
-# )
 
 class InstitutionMembership(Base):
     __tablename__ = "institution_memberships"
