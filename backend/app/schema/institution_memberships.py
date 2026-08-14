@@ -18,6 +18,7 @@ user_id: Application user belonging to the institution (UUID, NOT NULL, FOREIGN 
 role: User's role within this institution (VARCHAR 30, NOT NULL). Allowed: Admin, Analyst, Advisor, Faculty, Viewer. Default: Viewer.
 department: User's department/unit within the institution (VARCHAR 100, nullable).
 created_at: Timestamp when membership was created (TIMESTAMPTZ, NOT NULL, DEFAULT NOW()).
+
 PRIMARY KEY: institution_id + user_id is the composite primary key.
 """
 

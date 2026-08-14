@@ -12,40 +12,50 @@ import LoginPage from "./pages/auth/LoginPage";
 import AuthCallbackPage from "./pages/auth/AuthCallbackPage";
 import DashboardPage from "./pages/dashboard/DashboardPage";
 
+// import the toast context provider
+import { ToastProvider } from "./context/ToastContext";
+
+
 function App() {
   return (
-    <BrowserRouter>
-      <AuthProvider>
-        <Routes>
-          {/* Public Landing Page - Default Route */}
-          <Route
-            path="/"
-            element={<LandingPage />}
-          />
+    <ToastProvider>
 
-          {/* Public routes */}
-          <Route path="/login" element={<LoginPage />} />
-          <Route
-            path="/auth/callback"
-            element={<AuthCallbackPage />}
-          />
 
-          {/* Protected routes */}
-          <Route element={<ProtectedRoute />}>
+        <BrowserRouter>
+          <AuthProvider>
+          <Routes>
+            {/* Public Landing Page - Default Route */}
             <Route
-              path="/dashboard"
-              element={<DashboardPage />}
+              path="/"
+              element={<LandingPage />}
             />
-          </Route>
 
-          {/* Catch all - redirect to dashboard */}
-          <Route
-            path="*"
-            element={<Navigate to="/dashboard" replace />}
-          />
-        </Routes>
-      </AuthProvider>
-    </BrowserRouter>
+            {/* Public routes */}
+            <Route path="/login" element={<LoginPage />} />
+            <Route
+              path="/auth/callback"
+              element={<AuthCallbackPage />}
+            />
+
+            {/* Protected routes */}
+            <Route element={<ProtectedRoute />}>
+              <Route
+                path="/dashboard"
+                element={<DashboardPage />}
+              />
+            </Route>
+
+            {/* Catch all - redirect to dashboard */}
+            <Route
+              path="*"
+              element={<Navigate to="/dashboard" replace />}
+            />
+          </Routes>
+        </AuthProvider>
+      </BrowserRouter>
+
+      
+    </ToastProvider>
   );
 }
 

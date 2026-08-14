@@ -10,6 +10,10 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 
 
+// css style for the react-toastify notifications
+import 'react-toastify/dist/ReactToastify.css';
+
+
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
