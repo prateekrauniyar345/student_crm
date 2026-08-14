@@ -28,7 +28,7 @@ export const getUsers = async({full_name, email, preferred_first_name}) =>{
 
 
 // function to update an extsing user
-export const updateUser = async({full_name, preferred_first_name}) =>{
+export const updateUser = async({full_name, preferred_first_name, phone_number}) =>{
     try{
         const payload = {}; 
         
@@ -38,7 +38,9 @@ export const updateUser = async({full_name, preferred_first_name}) =>{
         if (preferred_first_name && preferred_first_name.trim() !== "" && preferred_first_name !== undefined) {
             payload.preferred_first_name = preferred_first_name;
         }
-
+        if (phone_number && phone_number.trim() !== "" && phone_number !== undefined) {
+            payload.phone_number = phone_number;
+        }
         const response = await apiClient.patch("/users/me", payload);
         return response.data;
     } catch (err){

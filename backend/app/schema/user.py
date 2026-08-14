@@ -34,6 +34,7 @@ CREATE TABLE users (
     full_name VARCHAR(100) NOT NULL,
     preferred_first_name VARCHAR(50),
     email VARCHAR(100) NOT NULL UNIQUE,
+    phone_number VARCHAR(20),
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 '''
@@ -52,13 +53,6 @@ class User(Base):
         nullable=False
     )
 
-    email = Column(
-        String(100),
-        unique=True,
-        index=True,
-        nullable=False
-    )
-
     full_name = Column(
         String(100), 
         nullable=False
@@ -69,6 +63,18 @@ class User(Base):
         nullable=True
     )
 
+    email = Column(
+        String(100),
+        unique=True,
+        index=True,
+        nullable=False
+    )
+
+    phone_number = Column(
+        String(20),
+        nullable=True
+    )
+    
 
     created_at = Column(
         DateTime(timezone=True),

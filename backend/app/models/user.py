@@ -28,6 +28,7 @@ class UserBase(BaseModel):
     email: EmailStr
     full_name: str
     preferred_first_name: str | None = None
+    phone_number: str | None = None
 
 
 class UserCreate(UserBase):
@@ -37,7 +38,7 @@ class UserCreate(UserBase):
 class UserUpdate(BaseModel):
     full_name: str | None = None
     preferred_first_name: str | None = None
-
+    phone_number: str | None = None
 
 class UserResponse(UserBase):
     id: UUID

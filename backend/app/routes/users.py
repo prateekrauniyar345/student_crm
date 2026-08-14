@@ -25,6 +25,7 @@ async def get_users(
         full_name: str | None = None, 
         preferred_first_name: str | None = None,
         email: str | None = None,
+        phone_number: str | None = None,
         # current_user: Annotated[UserResponse, Depends(get_current_user)],
         session: AsyncSession = Depends(get_session)
     ) -> list[UserResponse]:
@@ -47,6 +48,8 @@ async def get_users(
             statement = statement.where(User.email.ilike(f"%{email}%"))
         if preferred_first_name:
             statement = statement.where(User.preferred_first_name.ilike(f"%{preferred_first_name}%"))
+        if phone_number:
+            statement = statement.where(User.phone_number.ilike(f"%{phone_number}%"))
             
         result = await session.execute(statement)
         users = result.scalars().all()
@@ -112,6 +115,8 @@ async def update_user_partial(
         db_user.full_name = user_update.full_name
     if user_update.preferred_first_name is not None:
         db_user.preferred_first_name = user_update.preferred_first_name
+    if user_update.phone_number is not None:
+        db_user.phone_number = user_update.phone_number
 
     await session.commit()
     await session.refresh(db_user)

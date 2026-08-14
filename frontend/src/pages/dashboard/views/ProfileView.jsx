@@ -28,13 +28,15 @@ export default function ProfileView({ user }) {
   const [userInfo, setUserInfo] = useState({
     fullName: user?.full_name || "",
     preferredName: user?.preferred_first_name || "",
+    phone_number: user?.phone_number || "",
   });
+
+  console.log("user in the ProfileView:", user);
 
 
   const [formData, setFormData] = useState({
     title: "Senior Admissions & Advising Officer",
     department: "School of General Studies - Academic Affairs",
-    phone: "+1 (212) 854-2772",
     timezone: "America/New_York",
     emailNotifications: true,
     taskAlerts: true,
@@ -92,6 +94,7 @@ export default function ProfileView({ user }) {
       const updatePayload = {
             full_name: userInfo.fullName.trim(),
             preferred_first_name: userInfo.preferredName.trim(),
+            phone_number: userInfo.phone_number.trim(),
         };
         await updateCurrentUser(updatePayload);
         setSuccessMessage("Profile preferences saved successfully.");
@@ -273,12 +276,12 @@ export default function ProfileView({ user }) {
               </div>
 
               <div className="form-group">
-                <label htmlFor="phone">Contact Phone</label>
+                <label htmlFor="phone_number">Contact Phone</label>
                 <input
-                  id="phone"
-                  name="phone"
+                  id="phone_number"
+                  name="phone_number"
                   type="tel"
-                  value={userInfo.phone ?? ''}
+                  value={userInfo.phone_number ?? ''}
                   onChange={handleUserInfoChange}
                   placeholder="+1 (212) 854-2772"
                   className="form-input"
