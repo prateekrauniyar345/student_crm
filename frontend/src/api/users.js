@@ -44,11 +44,11 @@ export const createUser = async(createUserPayload) =>{
 
 
 // function to update an extsing user
-export const updateUser = async(userUpdatePayload) =>{
+export const updateUser = async(userID, userUpdatePayload) =>{
     if(!userUpdatePayload || typeof userUpdatePayload !== 'object') {
         throw new Error("Invalid payload provided for updating user");
     }
-    if(!userUpdatePayload.id) {
+    if(!userID) {
         throw new Error("Missing required user id field");
     }
 
@@ -63,13 +63,13 @@ export const updateUser = async(userUpdatePayload) =>{
         payload.phone_number = userUpdatePayload.phone_number;
     }
     try{
-        const response = await apiClient.patch("/users/me", payload);
+        const response = await apiClient.patch(`/users/${userID}`, payload);
         return response.data;
     } catch (err){
         console.error(err);
         throw err;
     }
-}
+};
 
 
 

@@ -22,23 +22,24 @@ import { useAuth } from "../../../context/AuthContext";
 import User from "../../../models/user";
 import "./ProfileView.css";
 import { useToast } from "../../../context/ToastContext";
+import { useUpdateUser } from "../../../hooks/useCurrentUser";
 
 export default function ProfileView({ currentUser }) {
 
-  // get the refreshUser function from the AuthContext
-  const { refreshUser } = useAuth();
-
+  // get update mutation from the useUpdateUser hook
+  const updateUserMutation = useUpdateUser();
 
   // user info state to hold the editable fields
   const [userInfo, setUserInfo] = useState({
     id: currentUser?.id || "",
     email: currentUser?.email || "",
-    fullName: currentUser?.full_name || "",
-    preferredName: currentUser?.preferred_first_name || "",
+    full_name: currentUser?.full_name || "",
+    preferred_first_name: currentUser?.preferred_first_name || "",
     phone_number: currentUser?.phone_number || "",
   });
 
 
+  console.log("userInfo in ProfileView:", userInfo);
 
   const [institutionInfo, setInstitutionInfo] = useState({
     institutionId: "",
@@ -75,8 +76,8 @@ export default function ProfileView({ currentUser }) {
 
   // copy of the email
   const handleCopyEmail = () => {
-    if (user?.email) {
-      navigator.clipboard.writeText(user.email);
+    if (currentUser?.email) {
+      navigator.clipboard.writeText(currentUser.email);
       setCopiedEmail(true);
       info("Email copied to clipboard!");
       setTimeout(() => setCopiedEmail(false), 2000);
@@ -85,8 +86,8 @@ export default function ProfileView({ currentUser }) {
 
   // copy of the user id
   const handleCopyId = () => {
-    if (user?.id) {
-      navigator.clipboard.writeText(user.id);
+    if (currentUser?.id) {
+      navigator.clipboard.writeText(currentUser.id);
       setCopiedId(true);
       info("User UUID copied to clipboard!");
       setTimeout(() => setCopiedId(false), 2000);
@@ -112,26 +113,24 @@ export default function ProfileView({ currentUser }) {
   }
 
 
-  const handleSaveProfile = async (e) => {
-    e.preventDefault();
-    setIsSaving(true);
+    const handleSaveProfile = async (e) => {
+      e.preventDefault();
 
-    try {
+      // Only send fields that changed and exist in UserUpdate schema
       const updatePayload = {
-            full_name: userInfo.fullName.trim(),
-            preferred_first_name: userInfo.preferredName.trim(),
-            phone_number: userInfo.phone_number.trim(),
-        };
-        await updateCurrentUser(updatePayload);
-        success("Profile preferences saved successfully.");
-    } catch (error) {
-        setErrorMessage(error.message);
-        console.warn("Could not save to remote backend API, updating local session:", error);
-        error("Could not save changes : ", error);
-    } finally {
-        setIsSaving(false);
-    }
-  };
+        full_name: userInfo.full_name.trim() || undefined,
+        preferred_first_name: userInfo.preferred_first_name.trim() || undefined,
+        phone_number: userInfo.phone_number.trim() || undefined,
+      };
+
+      // Call mutation - it handles API call + cache invalidation
+      await updateUserMutation.mutateAsync({ userId: userInfo.id, updatePayload: updatePayload });
+      // After mutation succeeds:
+      // 1. Toast shown automatically
+      // 2. queryKeys.me() invalidated
+      // 3. useCurrentUser() refetches 
+      // 4. Component re-renders with fresh data
+    };
 
   const formatDate = (dateString) => {
     if (!dateString) return "Active Session";
@@ -156,7 +155,7 @@ export default function ProfileView({ currentUser }) {
         </div>
         <div className="profile-hero-meta">
           <div className="hero-name-row">
-            <h2>{userInfo.fullName || currentUser?.email?.split("@")[0] || "Staff Member"}</h2>
+            <h2>{userInfo.full_name || currentUser?.email?.split("@")[0] || "Staff Member"}</h2>
             <span className="status-pill status-pill-success">
               <CheckCircle2 size={12} />
               <span>Verified SSO Operator</span>
@@ -264,7 +263,7 @@ export default function ProfileView({ currentUser }) {
                 name="fullName"
                 type="text"
                 required
-                value={userInfo.fullName}
+                value={userInfo.full_name}
                 onChange={handleUserInfoChange}
                 placeholder="e.g. Alex Morgan"
                 className="form-input"
@@ -273,12 +272,12 @@ export default function ProfileView({ currentUser }) {
 
             <div className="form-row">
               <div className="form-group">
-                <label htmlFor="preferredName">Preferred First Name</label>
+                <label htmlFor="preferred_first_name">Preferred First Name</label>
                 <input
-                  id="preferredName"
-                  name="preferredName"
+                  id="preferred_first_name"
+                  name="preferred_first_name"
                   type="text"
-                  value={userInfo.preferredName}
+                  value={userInfo.preferred_first_name}
                   onChange={handleUserInfoChange}
                   placeholder="e.g. Alex"
                   className="form-input"
