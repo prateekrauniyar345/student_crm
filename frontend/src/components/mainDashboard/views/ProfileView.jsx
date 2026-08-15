@@ -26,6 +26,10 @@ import { useUpdateUser } from "../../../hooks/useCurrentUser";
 
 export default function ProfileView({ currentUser }) {
 
+  const [isSaving, setIsSaving] = useState(false);
+  const [copiedId, setCopiedId] = useState(false);
+  const [copiedEmail, setCopiedEmail] = useState(false);
+
   // get update mutation from the useUpdateUser hook
   const updateUserMutation = useUpdateUser();
 
@@ -40,6 +44,8 @@ export default function ProfileView({ currentUser }) {
 
 
   console.log("userInfo in ProfileView:", userInfo);
+
+
 
   const [institutionInfo, setInstitutionInfo] = useState({
     institutionId: "",
@@ -57,7 +63,6 @@ export default function ProfileView({ currentUser }) {
         info
     } = useToast();
 
-  console.log("user in the ProfileView:", currentUser);
 
 
   const [formData, setFormData] = useState({
@@ -69,9 +74,7 @@ export default function ProfileView({ currentUser }) {
     weeklyReport: true,
   });
 
-  const [isSaving, setIsSaving] = useState(false);
-  const [copiedId, setCopiedId] = useState(false);
-  const [copiedEmail, setCopiedEmail] = useState(false);
+
 
 
   // copy of the email
@@ -113,23 +116,23 @@ export default function ProfileView({ currentUser }) {
   }
 
 
-    const handleSaveProfile = async (e) => {
+  const handleSaveProfile = async (e) => {
       e.preventDefault();
 
       // Only send fields that changed and exist in UserUpdate schema
       const updatePayload = {
-        full_name: userInfo.full_name.trim() || undefined,
-        preferred_first_name: userInfo.preferred_first_name.trim() || undefined,
-        phone_number: userInfo.phone_number.trim() || undefined,
+        full_name: userInfo.full_name,
+        preferred_first_name: userInfo.preferred_first_name || "",
+        phone_number: userInfo.phone_number || "",
       };
 
       // Call mutation - it handles API call + cache invalidation
-      await updateUserMutation.mutateAsync({ userId: userInfo.id, updatePayload: updatePayload });
-      // After mutation succeeds:
-      // 1. Toast shown automatically
-      // 2. queryKeys.me() invalidated
-      // 3. useCurrentUser() refetches 
-      // 4. Component re-renders with fresh data
+      setIsSaving(true);
+      try {
+        await updateUserMutation.mutateAsync({ userId: userInfo.id, updatePayload: updatePayload });
+      } finally {
+        setIsSaving(false);
+      }
     };
 
   const formatDate = (dateString) => {
@@ -259,8 +262,8 @@ export default function ProfileView({ currentUser }) {
             <div className="form-group">
               <label htmlFor="fullName">Full Legal / Display Name *</label>
               <input
-                id="fullName"
-                name="fullName"
+                id="full_name"
+                name="full_name"
                 type="text"
                 required
                 value={userInfo.full_name}

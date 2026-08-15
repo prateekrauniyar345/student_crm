@@ -138,7 +138,7 @@ async def update_user_partial(
 # delete user by id or email
 @user_routes.delete("/")
 async def delete_user(
-    # current_user: Annotated[UserResponse, Depends(get_current_user)],
+    current_user: Annotated[UserResponse, Depends(get_current_user)],
     session: AsyncSession = Depends(get_session),
     user_id: UUID | None = None,
     email: str | None = None,

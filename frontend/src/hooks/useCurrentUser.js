@@ -29,16 +29,16 @@ export function useUpdateUser() {
     // Accept an object containing both userId and the update data
     mutationFn: ({ userId, updatePayload }) => updateUser(userId, updatePayload),
     onSuccess: (updatedUser) => {
-      // Invalidate query to refetch fresh user data everywhere
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.me(),
-      });
-      success("Profile updated successfully");
-      return updatedUser;
+        success("Profile updated successfully");
+        // Invalidate query to refetch fresh user data everywhere
+        queryClient.invalidateQueries({
+            queryKey: queryKeys.me(),
+        });
+        return updatedUser;
     },
     onError: (err) => {
-      const message = err.response?.data?.detail || err.message || "Failed to update profile";
-      showError(message);
+        const message = err.response?.data?.detail || err.message || "Failed to update profile";
+        showError(message);
     },
   });
 }

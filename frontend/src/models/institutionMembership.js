@@ -1,3 +1,4 @@
+// src/models/institutionMembership.js
 class InstitutionMembership {
     constructor(
         institutionId, 
@@ -31,5 +32,15 @@ class InstitutionMembership {
             department: this.department,
             created_at: this.createdAt
         };
-    }       
+    }  
+    
+    createInstitutionMembershipPayload() {
+        return {
+            institution_id: this.institutionId,
+            user_id: this.userId,
+            role: this.role,
+            department: this.department
+        };
+    }
+
 }

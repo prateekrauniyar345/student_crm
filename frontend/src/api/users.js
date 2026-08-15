@@ -43,32 +43,38 @@ export const createUser = async(createUserPayload) =>{
 };
 
 
-// function to update an extsing user
-export const updateUser = async(userID, userUpdatePayload) =>{
-    if(!userUpdatePayload || typeof userUpdatePayload !== 'object') {
-        throw new Error("Invalid payload provided for updating user");
-    }
-    if(!userID) {
-        throw new Error("Missing required user id field");
-    }
+// function to update an existing user
+export const updateUser = async (userID, userUpdatePayload) => {
+  if (!userUpdatePayload || typeof userUpdatePayload !== "object") {
+    throw new Error("Invalid payload provided for updating user");
+  }
+  if (!userID) {
+    throw new Error("Missing required user id field");
+  }
 
-    const payload  = {}; 
-    if (userUpdatePayload.full_name && userUpdatePayload.full_name.trim() !== "" && userUpdatePayload.full_name !== undefined) {
-            payload.full_name = userUpdatePayload.full_name;
-    }
-    if (userUpdatePayload.preferred_first_name && userUpdatePayload.preferred_first_name.trim() !== "" && userUpdatePayload.preferred_first_name !== undefined) {
-        payload.preferred_first_name = userUpdatePayload.preferred_first_name;
-    }
-    if (userUpdatePayload.phone_number && userUpdatePayload.phone_number.trim() !== "" && userUpdatePayload.phone_number !== undefined) {
-        payload.phone_number = userUpdatePayload.phone_number;
-    }
-    try{
-        const response = await apiClient.patch(`/users/${userID}`, payload);
-        return response.data;
-    } catch (err){
-        console.error(err);
-        throw err;
-    }
+  if (userUpdatePayload.full_name.trim() == ""){
+    throw new Error("Full name cannot be empty");
+  }
+
+  const payload = {};
+
+  if (userUpdatePayload.full_name !== undefined && userUpdatePayload.full_name.trim() !== "") {
+    payload.full_name = userUpdatePayload.full_name.trim();
+  }
+  if (userUpdatePayload.preferred_first_name !== undefined) {
+    payload.preferred_first_name = userUpdatePayload.preferred_first_name;
+  }
+  if (userUpdatePayload.phone_number !== undefined) {
+    payload.phone_number = userUpdatePayload.phone_number;
+  }
+
+  try {
+    const response = await apiClient.patch(`/users/${userID}`, payload);
+    return response.data;
+  } catch (err) {
+    console.error("Failed to update user:", err);
+    throw err;
+  }
 };
 
 
