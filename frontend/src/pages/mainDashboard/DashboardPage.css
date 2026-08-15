@@ -88,3 +88,12 @@
   background-color: #ffffff;
   position: relative;
 }
+
+
+.initial-loading-container .spinner-border {
+  width: 40px;            /* Spinner width = 40 pixels */
+  height: 40px;           /* Spinner height = 40 pixels */
+  border-width: 6px;      /* Border thickness = 8px */
+  color: #6366f1;         /* Spinner color = indigo/purple */
+  margin-bottom: 20px;    /* Space below spinner = 20px */
+}
