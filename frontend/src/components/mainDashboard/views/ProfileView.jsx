@@ -15,7 +15,7 @@ import {
   Phone,
   Clock,
   Bell,
-  RefreshCw,
+  Ellipsis
 } from "lucide-react";
 import apiClient from "../../../lib/apiClient";
 import { useAuth } from "../../../context/AuthContext";
@@ -23,14 +23,30 @@ import User from "../../../models/user";
 import "./ProfileView.css";
 import { useToast } from "../../../context/ToastContext";
 
-export default function ProfileView({ user }) {
-  const { updateCurrentUser, refreshUser } = useAuth();
+export default function ProfileView() {
 
+  // get the refreshUser function from the AuthContext
+  const { refreshUser } = useAuth();
+
+
+  // user info state to hold the editable fields
   const [userInfo, setUserInfo] = useState({
+    id: user?.id || "",
+    email: user?.email || "",
     fullName: user?.full_name || "",
     preferredName: user?.preferred_first_name || "",
     phone_number: user?.phone_number || "",
   });
+
+
+
+  const [institutionInfo, setInstitutionInfo] = useState({
+    institutionId: "",
+    role: "",
+    department: "",
+  });
+
+  const [institutionMemberships, setInstitutionMemberships] = useState([]);
 
   // get the toast variable from the toast context
   const {
@@ -57,7 +73,7 @@ export default function ProfileView({ user }) {
   const [copiedEmail, setCopiedEmail] = useState(false);
 
 
-
+  // copy of the email
   const handleCopyEmail = () => {
     if (user?.email) {
       navigator.clipboard.writeText(user.email);
@@ -67,6 +83,7 @@ export default function ProfileView({ user }) {
     }
   };
 
+  // copy of the user id
   const handleCopyId = () => {
     if (user?.id) {
       navigator.clipboard.writeText(user.id);
@@ -75,6 +92,7 @@ export default function ProfileView({ user }) {
       setTimeout(() => setCopiedId(false), 2000);
     }
   };
+
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -362,7 +380,7 @@ export default function ProfileView({ user }) {
               >
                 {isSaving ? (
                   <>
-                    <RefreshCw size={16} className="spinner" />
+                    <Ellipsis size={16} className="save-action" />
                     <span>Saving Changes...</span>
                   </>
                 ) : (

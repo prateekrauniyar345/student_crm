@@ -322,9 +322,13 @@
   font-weight: var(--font-weight-semibold);
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 8px;
   cursor: pointer;
   transition: background-color var(--transition-fast);
+
+    min-width: 180px;
+    min-height: 40px;
 }
 
 .btn-save-profile:hover:not(:disabled) {
@@ -334,6 +338,12 @@
 .btn-save-profile:disabled {
   opacity: 0.7;
   cursor: not-allowed;
+}
+
+.save-action {
+  /* animation: spin 1s linear infinite; */
+  display: inline-flex;  /* ← ADD */
+  line-height: 1;        /* ← ADD */
 }
 
 .spinner {

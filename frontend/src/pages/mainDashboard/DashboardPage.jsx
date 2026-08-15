@@ -2,13 +2,13 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import AuthService from "../../services/AuthService";
-import DashboardSidebar from "./components/DashboardSidebar";
-import DashboardTopNav from "./components/DashboardTopNav";
-import OverviewView from "./views/OverviewView";
-import ProfileView from "./views/ProfileView";
-import AdminView from "./views/AdminView";
-import SettingsView from "./views/SettingsView";
-import ComingSoonView from "./views/ComingSoonView";
+import DashboardSidebar from "../../components/mainDashboard/components/DashboardSidebar";
+import DashboardTopNav from "../../components/mainDashboard/components/DashboardTopNav";
+import OverviewView from "../../components/mainDashboard/views/OverviewView";
+import ProfileView from "../../components/mainDashboard/views/ProfileView";
+import AdminView from "../../components/mainDashboard/views/AdminView";
+import SettingsView from "../../components/mainDashboard/views/SettingsView";
+import ComingSoonView from "../../components/mainDashboard/views/ComingSoonView";
 import "./DashboardPage.css";
 
 export default function DashboardPage() {

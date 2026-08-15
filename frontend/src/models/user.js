@@ -38,6 +38,17 @@ class User{
         };
     }
 
+
+    createUserPayload(){
+        return {
+            id: this.id,
+            full_name: this.full_name,
+            preferred_first_name: this.preferred_first_name,
+            email: this.email,
+            phone_number: this.phone_number
+        }; 
+    }
+
 }
 
 export default User;

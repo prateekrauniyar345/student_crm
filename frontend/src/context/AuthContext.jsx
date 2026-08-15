@@ -122,29 +122,12 @@ export function AuthProvider({ children }) {
   };
 
 
-  const updateCurrentUser = async (payload) => {
-      try {
-          const updatedUser = await updateUser(payload);
-          // Refresh from backend to keep frontend consistent
-          await refreshUser();
-          return updatedUser;
-      } catch (error) {
-          console.error(
-              "Error updating current user:",
-              error
-          );
-          throw error;
-      }
-  };
-
-
   const value = {
     session,
+    isAuthenticated,
     currentUser,
-    isAuthenticated: isAuthenticated,
     isLoading,
     refreshUser,
-    updateCurrentUser,
   };
 
   return (
