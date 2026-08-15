@@ -23,7 +23,7 @@ import User from "../../../models/user";
 import "./ProfileView.css";
 import { useToast } from "../../../context/ToastContext";
 
-export default function ProfileView() {
+export default function ProfileView({ currentUser }) {
 
   // get the refreshUser function from the AuthContext
   const { refreshUser } = useAuth();
@@ -31,11 +31,11 @@ export default function ProfileView() {
 
   // user info state to hold the editable fields
   const [userInfo, setUserInfo] = useState({
-    id: user?.id || "",
-    email: user?.email || "",
-    fullName: user?.full_name || "",
-    preferredName: user?.preferred_first_name || "",
-    phone_number: user?.phone_number || "",
+    id: currentUser?.id || "",
+    email: currentUser?.email || "",
+    fullName: currentUser?.full_name || "",
+    preferredName: currentUser?.preferred_first_name || "",
+    phone_number: currentUser?.phone_number || "",
   });
 
 
@@ -56,7 +56,7 @@ export default function ProfileView() {
         info
     } = useToast();
 
-  console.log("user in the ProfileView:", user);
+  console.log("user in the ProfileView:", currentUser);
 
 
   const [formData, setFormData] = useState({
@@ -156,13 +156,13 @@ export default function ProfileView() {
         </div>
         <div className="profile-hero-meta">
           <div className="hero-name-row">
-            <h2>{userInfo.fullName || user?.email?.split("@")[0] || "Staff Member"}</h2>
+            <h2>{userInfo.fullName || currentUser?.email?.split("@")[0] || "Staff Member"}</h2>
             <span className="status-pill status-pill-success">
               <CheckCircle2 size={12} />
               <span>Verified SSO Operator</span>
             </span>
           </div>
-          <span className="hero-email font-mono">{user?.email || "advising@columbia.edu"}</span>
+          <span className="hero-email font-mono">{currentUser?.email || "advising@columbia.edu"}</span>
           <div className="hero-tags">
             <span className="profile-tag">Columbia GS (CU)</span>
             <span className="profile-tag">Advising & Admissions Staff</span>
@@ -188,7 +188,7 @@ export default function ProfileView() {
             <div className="meta-field">
               <span className="meta-label">Unique User ID (UUID)</span>
               <div className="meta-val-copy">
-                <span className="font-mono user-id-text">{user?.id || "Generating UUID..."}</span>
+                <span className="font-mono user-id-text">{currentUser?.id || "Generating UUID..."}</span>
                 <button
                   type="button"
                   className="btn-copy-id"
@@ -203,7 +203,7 @@ export default function ProfileView() {
             <div className="meta-field">
               <span className="meta-label">Email</span>
               <div className="meta-val-copy">
-                <div className="meta-val font-mono">{user?.email || "advising@columbia.edu"}</div>
+                <div className="meta-val font-mono">{currentUser?.email || "advising@columbia.edu"}</div>
                 <button
                   type="button"
                   className="btn-copy-id"
@@ -229,7 +229,7 @@ export default function ProfileView() {
 
             <div className="meta-field">
               <span className="meta-label">Account Provisioned Date</span>
-              <div className="meta-val font-mono">{formatDate(user?.created_at)}</div>
+              <div className="meta-val font-mono">{formatDate(currentUser?.created_at)}</div>
             </div>
 
             <div className="meta-field">

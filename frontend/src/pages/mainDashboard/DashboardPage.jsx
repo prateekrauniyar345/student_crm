@@ -48,9 +48,9 @@ export default function DashboardPage() {
   const renderActiveView = () => {
     switch (activeTab) {
       case "overview":
-        return <OverviewView user={currentUser} setActiveTab={setActiveTab} />;
+        return <OverviewView currentUser={currentUser} setActiveTab={setActiveTab} />;
       case "profile":
-        return <ProfileView user={currentUser} />;
+        return <ProfileView currentUser={currentUser} />;
       case "admin":
         return <AdminView currentUser={currentUser} />;
       case "settings":
