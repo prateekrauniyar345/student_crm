@@ -1,5 +1,7 @@
+// src/api/institutionMemberships.js
 import apiClient from "../lib/apiClient";
 import InstitutionMembership from "../models/institutionMembership";
+
 
 
 export const getInstitutionMemberships = async (filters = {}) => {
@@ -23,7 +25,13 @@ export const getInstitutionMemberships = async (filters = {}) => {
     const url = queryString ? `/institution-memberships?${queryString}` : "/institution-memberships";
 
     const { data } = await apiClient.get(url);
-    return data;
+
+    // Map each API response item to an InstitutionMembership model instance
+    if (Array.isArray(data)) {
+      return data.map((item) => InstitutionMembership.fromApiResponse(item));
+    }
+
+    return [];
   } catch (err) {
     console.error("Failed to fetch institution memberships:", err);
     throw err;
@@ -32,29 +40,34 @@ export const getInstitutionMemberships = async (filters = {}) => {
 
 
 
-
 export const createInstitutionMembership = async (payload) => {
   if (!payload || typeof payload !== "object") {
     throw new Error("Invalid payload provided for creating institution membership");
   }
 
-  const institutionId = payload.institution_id || payload.institutionId;
-  const userId = payload.user_id || payload.userId;
+  // If passed an InstitutionMembership model instance, use its helper method
+  let body;
+  if (payload instanceof InstitutionMembership) {
+    body = payload.createInstitutionMembershipPayload();
+  } else {
+    const institutionId = payload.institution_id || payload.institutionId;
+    const userId = payload.user_id || payload.userId;
 
-  if (!institutionId || !userId) {
-    throw new Error("Missing required fields: institution_id and user_id are required");
+    if (!institutionId || !userId) {
+      throw new Error("Missing required fields: institution_id and user_id are required");
+    }
+
+    body = {
+      institution_id: institutionId,
+      user_id: userId,
+      role: payload.role || "Viewer",
+      department: payload.department ?? null,
+    };
   }
 
-  const body = {
-    institution_id: institutionId,
-    user_id: userId,
-    role: payload.role || "Viewer",
-    department: payload.department ?? null,
-  };
-
   try {
-    const response = await apiClient.post("/institution-memberships", body);
-    return InstitutionMembership.fromApiResponse(response.data);
+    const { data } = await apiClient.post("/institution-memberships", body);
+    return InstitutionMembership.fromApiResponse(data);
   } catch (err) {
     console.error("Failed to create institution membership:", err);
     throw err;
@@ -63,10 +76,9 @@ export const createInstitutionMembership = async (payload) => {
 
 
 
-
 export const updateInstitutionMembership = async ({ institutionId, userId, data }) => {
-  const targetInstitutionId = institutionId || data?.institution_id;
-  const targetUserId = userId || data?.user_id;
+  const targetInstitutionId = institutionId || data?.institution_id || data?.institutionId;
+  const targetUserId = userId || data?.user_id || data?.userId;
 
   if (!targetInstitutionId || !targetUserId) {
     throw new Error("Missing required composite key: institutionId and userId are required");
@@ -89,16 +101,18 @@ export const updateInstitutionMembership = async ({ institutionId, userId, data 
 };
 
 
+
+
 export const deleteInstitutionMembership = async ({ institutionId, userId }) => {
   if (!institutionId || !userId) {
     throw new Error("Missing required composite key: institutionId and userId are required to delete");
   }
 
   try {
-    const response = await apiClient.delete(
+    const { data } = await apiClient.delete(
       `/institution-memberships?institution_id=${institutionId}&user_id=${userId}`
     );
-    return response.data;
+    return data;
   } catch (err) {
     console.error("Failed to delete institution membership:", err);
     throw err;

@@ -1,4 +1,4 @@
-class Institutions {
+class Institution {
 
     constructor(
         id, 
@@ -16,7 +16,7 @@ class Institutions {
 
 
     static fromApiResponse(data) {
-        return new Institutions(
+        return new Institution(
             data.id,
             data.name,
             data.code,
@@ -46,3 +46,6 @@ class Institutions {
 
 
 }
+
+
+export default Institution;

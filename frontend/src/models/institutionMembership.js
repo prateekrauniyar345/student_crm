@@ -44,3 +44,4 @@ class InstitutionMembership {
     }
 
 }
+export default InstitutionMembership;

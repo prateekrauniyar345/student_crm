@@ -17,123 +17,124 @@ import {
   Bell,
   Ellipsis
 } from "lucide-react";
-import apiClient from "../../../lib/apiClient";
-import { useAuth } from "../../../context/AuthContext";
-import User from "../../../models/user";
 import "./ProfileView.css";
 import { useToast } from "../../../context/ToastContext";
 import { useUpdateUser } from "../../../hooks/useCurrentUser";
+import { useMyMemberships, useInstitutionById } from "../../../hooks/useInstitution";
+
 
 export default function ProfileView({ currentUser }) {
-
   const [isSaving, setIsSaving] = useState(false);
-  const [copiedId, setCopiedId] = useState(false);
-  const [copiedEmail, setCopiedEmail] = useState(false);
+  const [copiedStates, setCopiedStates] = useState({ email: false, id: false });
 
-  // get update mutation from the useUpdateUser hook
   const updateUserMutation = useUpdateUser();
 
-  // user info state to hold the editable fields
-  const [userInfo, setUserInfo] = useState({
+  // Single unified state for all form data
+  const [formState, setFormState] = useState({
+    // currentUser fields 
     id: currentUser?.id || "",
     email: currentUser?.email || "",
     full_name: currentUser?.full_name || "",
     preferred_first_name: currentUser?.preferred_first_name || "",
     phone_number: currentUser?.phone_number || "",
-  });
+    // institution fields
+    name: "",
+    code: "", 
+    timezone: "America/New_York",
 
-
-  console.log("userInfo in ProfileView:", userInfo);
-
-
-
-  const [institutionInfo, setInstitutionInfo] = useState({
-    institutionId: "",
+    // institution membership fields
     role: "",
     department: "",
-  });
 
-  const [institutionMemberships, setInstitutionMemberships] = useState([]);
-
-  // get the toast variable from the toast context
-  const {
-        success,
-        warning,
-        error,
-        info
-    } = useToast();
-
-
-
-  const [formData, setFormData] = useState({
-    title: "Senior Admissions & Advising Officer",
-    department: "School of General Studies - Academic Affairs",
-    timezone: "America/New_York",
+    // other preferences
     emailNotifications: true,
     taskAlerts: true,
     weeklyReport: true,
   });
 
+  // Get memberships and institution
+  const { data: memberships, isLoading: membershipsLoading } = useMyMemberships(currentUser?.id);
+  const primaryMembership = memberships?.[0];
+  const { data: institutionData, isLoading: institutionLoading } = useInstitutionById(
+    primaryMembership?.institutionId
+  );
+
+  const { success, warning, error, info } = useToast();
+
+  // Sync institution data to formState
+  useEffect(() => {
+    if (institutionData?.timezone) {
+      setFormState(prev => ({
+         ...prev, 
+         name: institutionData.name,
+         code: institutionData.code,
+         timezone: institutionData.timezone 
+        }));
+    }
+  }, [institutionData]);
+
+  // Sync membership data to formState
+  useEffect(() => {
+    if (primaryMembership?.department) {
+      setFormState(prev => ({ 
+          ...prev, 
+          role: primaryMembership.role,
+          department: primaryMembership.department 
+        }));
+    }
+  }, [primaryMembership]);
 
 
+  console.log("institutionData User:", institutionData);
+  console.log("primaryMembership User:", primaryMembership);
 
-  // copy of the email
-  const handleCopyEmail = () => {
-    if (currentUser?.email) {
-      navigator.clipboard.writeText(currentUser.email);
-      setCopiedEmail(true);
-      info("Email copied to clipboard!");
-      setTimeout(() => setCopiedEmail(false), 2000);
+
+  // SINGLE UNIFIED COPY HANDLER
+  const handleCopy = async (textToCopy, key, message) => {
+    if (!textToCopy) return;
+
+    try {
+      await navigator.clipboard.writeText(textToCopy);
+      setCopiedStates(prev => ({ ...prev, [key]: true }));
+      info(message);
+      setTimeout(() => {
+        setCopiedStates(prev => ({ ...prev, [key]: false }));
+      }, 2000);
+    } catch (err) {
+      error("Failed to copy to clipboard");
     }
   };
 
-  // copy of the user id
-  const handleCopyId = () => {
-    if (currentUser?.id) {
-      navigator.clipboard.writeText(currentUser.id);
-      setCopiedId(true);
-      info("User UUID copied to clipboard!");
-      setTimeout(() => setCopiedId(false), 2000);
-    }
-  };
 
 
-  const handleChange = (e) => {
+  // SINGLE UNIFIED INPUT HANDLER
+  const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
-    setFormData((prev) => ({
+    setFormState(prev => ({
       ...prev,
-      [name]: type === "checkbox" ? checked : value,
+      [name]: type === 'checkbox' ? checked : value,
     }));
   };
-
-
-  const handleUserInfoChange = (e) =>{
-    const { name, value} = e.target;
-    setUserInfo((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  }
 
 
   const handleSaveProfile = async (e) => {
-      e.preventDefault();
+    e.preventDefault();
 
-      // Only send fields that changed and exist in UserUpdate schema
-      const updatePayload = {
-        full_name: userInfo.full_name,
-        preferred_first_name: userInfo.preferred_first_name || "",
-        phone_number: userInfo.phone_number || "",
-      };
-
-      // Call mutation - it handles API call + cache invalidation
-      setIsSaving(true);
-      try {
-        await updateUserMutation.mutateAsync({ userId: userInfo.id, updatePayload: updatePayload });
-      } finally {
-        setIsSaving(false);
-      }
+    // Only send fields that changed and exist in UserUpdate schema
+    const updatePayload = {
+      full_name: formState.full_name,
+      preferred_first_name: formState.preferred_first_name || "",
+      phone_number: formState.phone_number || "",
     };
+
+    // Call mutation - it handles API call + cache invalidation
+    setIsSaving(true);
+    try {
+      await updateUserMutation.mutateAsync({ userId: formState.id, updatePayload });
+    } finally {
+      setIsSaving(false);
+    }
+  };
 
   const formatDate = (dateString) => {
     if (!dateString) return "Active Session";
@@ -158,13 +159,13 @@ export default function ProfileView({ currentUser }) {
         </div>
         <div className="profile-hero-meta">
           <div className="hero-name-row">
-            <h2>{userInfo.full_name || currentUser?.email?.split("@")[0] || "Staff Member"}</h2>
+            <h2>{formState.full_name || currentUser?.email?.split("@")[0] || "Staff Member"}</h2>
             <span className="status-pill status-pill-success">
               <CheckCircle2 size={12} />
               <span>Verified SSO Operator</span>
             </span>
           </div>
-          <span className="hero-email font-mono">{currentUser?.email || "advising@columbia.edu"}</span>
+          <span className="hero-email font-mono">{currentUser?.email}</span>
           <div className="hero-tags">
             <span className="profile-tag">Columbia GS (CU)</span>
             <span className="profile-tag">Advising & Admissions Staff</span>
@@ -190,14 +191,14 @@ export default function ProfileView({ currentUser }) {
             <div className="meta-field">
               <span className="meta-label">Unique User ID (UUID)</span>
               <div className="meta-val-copy">
-                <span className="font-mono user-id-text">{currentUser?.id || "Generating UUID..."}</span>
+                <span className="font-mono user-id-text">{currentUser?.id}</span>
                 <button
                   type="button"
                   className="btn-copy-id"
-                  onClick={handleCopyId}
+                  onClick={() => handleCopy(currentUser?.id, 'id', 'User UUID copied!')}
                   title="Copy User UUID"
                 >
-                  {copiedId ? <Check size={14} className="text-success" /> : <Copy size={14} />}
+                  {copiedStates.id ? <Check size={14} className="text-success" /> : <Copy size={14} />}
                 </button>
               </div>
             </div>
@@ -205,27 +206,31 @@ export default function ProfileView({ currentUser }) {
             <div className="meta-field">
               <span className="meta-label">Email</span>
               <div className="meta-val-copy">
-                <div className="meta-val font-mono">{currentUser?.email || "advising@columbia.edu"}</div>
+                <div className="meta-val font-mono">{currentUser?.email}</div>
                 <button
                   type="button"
                   className="btn-copy-id"
-                  onClick={handleCopyEmail}
+                  onClick={() => handleCopy(currentUser?.email, 'email', 'Email copied!')}
                   title="Copy Email"
                 >
-                  {copiedEmail ? <Check size={14} className="text-success" /> : <Copy size={14} />}
+                  {copiedStates.email ? <Check size={14} className="text-success" /> : <Copy size={14} />}
                 </button>
               </div>
             </div>
 
             <div className="meta-field">
               <span className="meta-label">Home Institution</span>
-              <div className="meta-val">Columbia University - School of General Studies (CU)</div>
+              <div className="meta-val">
+                {institutionLoading ? "Loading..." : `${formState.name} (${formState.code})`}
+              </div>
             </div>
 
             <div className="meta-field">
               <span className="meta-label">Assigned CRM Role</span>
               <div className="meta-val">
-                <span className="status-pill status-pill-info">Analyst & Advising Staff</span>
+                <span className="status-pill status-pill-info">
+                  {formState.role || "Loading..."}
+                </span>
               </div>
             </div>
 
@@ -260,14 +265,14 @@ export default function ProfileView({ currentUser }) {
 
           <form onSubmit={handleSaveProfile} className="profile-form">
             <div className="form-group">
-              <label htmlFor="fullName">Full Legal / Display Name *</label>
+              <label htmlFor="full_name">Full Legal / Display Name *</label>
               <input
                 id="full_name"
                 name="full_name"
                 type="text"
                 required
-                value={userInfo.full_name}
-                onChange={handleUserInfoChange}
+                value={formState.full_name}
+                onChange={handleInputChange}
                 placeholder="e.g. Alex Morgan"
                 className="form-input"
               />
@@ -280,8 +285,8 @@ export default function ProfileView({ currentUser }) {
                   id="preferred_first_name"
                   name="preferred_first_name"
                   type="text"
-                  value={userInfo.preferred_first_name}
-                  onChange={handleUserInfoChange}
+                  value={formState.preferred_first_name}
+                  onChange={handleInputChange}
                   placeholder="e.g. Alex"
                   className="form-input"
                 />
@@ -293,8 +298,8 @@ export default function ProfileView({ currentUser }) {
                   id="phone_number"
                   name="phone_number"
                   type="tel"
-                  value={userInfo.phone_number ?? ''}
-                  onChange={handleUserInfoChange}
+                  value={formState.phone_number ?? ''}
+                  onChange={handleInputChange}
                   placeholder="+1 (212) 854-2772"
                   className="form-input"
                 />
@@ -307,8 +312,8 @@ export default function ProfileView({ currentUser }) {
                 id="department"
                 name="department"
                 type="text"
-                value={formData.department}
-                onChange={handleChange}
+                value={formState.department || ""}
+                onChange={handleInputChange}
                 placeholder="e.g. Office of the Dean of Students"
                 className="form-input"
               />
@@ -319,11 +324,11 @@ export default function ProfileView({ currentUser }) {
               <select
                 id="timezone"
                 name="timezone"
-                value={formData.timezone}
-                onChange={handleChange}
+                value={formState.timezone}
+                onChange={handleInputChange}
                 className="form-select"
               >
-                <option value="America/New_York">America/New_York (Eastern Time - Columbia Default)</option>
+                <option value="America/New_York">America/New_York (Eastern Time)</option>
                 <option value="America/Chicago">America/Chicago (Central Time)</option>
                 <option value="America/Boise">America/Boise (Mountain Time)</option>
                 <option value="America/Los_Angeles">America/Los_Angeles (Pacific Time)</option>
@@ -338,8 +343,8 @@ export default function ProfileView({ currentUser }) {
                 <input
                   type="checkbox"
                   name="emailNotifications"
-                  checked={formData.emailNotifications}
-                  onChange={handleChange}
+                  checked={formState.emailNotifications}
+                  onChange={handleInputChange}
                 />
                 <div className="checkbox-text">
                   <strong>Admissions Funnel Updates</strong>
@@ -351,12 +356,12 @@ export default function ProfileView({ currentUser }) {
                 <input
                   type="checkbox"
                   name="taskAlerts"
-                  checked={formData.taskAlerts}
-                  onChange={handleChange}
+                  checked={formState.taskAlerts}
+                  onChange={handleInputChange}
                 />
                 <div className="checkbox-text">
                   <strong>Assigned Advising Tasks</strong>
-                  <span>Alert me immediately when a student follow-up is assigned to my queue</span>
+                  <span>Alert me immediately when a student follow-up is assigned</span>
                 </div>
               </label>
 
@@ -364,12 +369,12 @@ export default function ProfileView({ currentUser }) {
                 <input
                   type="checkbox"
                   name="weeklyReport"
-                  checked={formData.weeklyReport}
-                  onChange={handleChange}
+                  checked={formState.weeklyReport}
+                  onChange={handleInputChange}
                 />
                 <div className="checkbox-text">
                   <strong>Weekly AI Analytics Digest</strong>
-                  <span>Receive weekly summary of natural language queries and yield metrics</span>
+                  <span>Receive weekly summary of natural language queries</span>
                 </div>
               </label>
             </div>

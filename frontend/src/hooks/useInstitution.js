@@ -36,7 +36,10 @@ export function useInstitutionById(institutionId) {
 
   return useQuery({
     queryKey: queryKeys.institutions.detail(institutionId),
-    queryFn: () => getInstitutions({ id: institutionId }),
+    queryFn: async () => {
+      const institutions = await getInstitutions({ id: institutionId });
+      return institutions[0]; // Return single object, not array
+    },
     // Only run if auth exists AND a valid institutionId is provided
     enabled: !!isAuthenticated && !!session && !!institutionId,
     staleTime: 1000 * 60 * 10,
