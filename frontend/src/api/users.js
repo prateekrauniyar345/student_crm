@@ -14,7 +14,6 @@ export const getUsers = async({full_name, email, preferred_first_name}) =>{
         if (preferred_first_name) {
             urlParam.append("preferred_first_name", preferred_first_name);
         }
-
         const response = await apiClient.get(`/users?${urlParam.toString()}`);
         return response.data;
     } catch (err) {

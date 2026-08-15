@@ -10,9 +10,13 @@ import AdminView from "../../components/mainDashboard/views/AdminView";
 import SettingsView from "../../components/mainDashboard/views/SettingsView";
 import ComingSoonView from "../../components/mainDashboard/views/ComingSoonView";
 import "./DashboardPage.css";
+import { useCurrentUser } from "../../hooks/useCurrentUser";
+import { Spinner } from "react-bootstrap";
 
 export default function DashboardPage() {
-  const { currentUser } = useAuth();
+
+  const { data: currentUser, isLoading, isPending, isError, error } = useCurrentUser();
+  
   const navigate = useNavigate();
 
   const [activeTab, setActiveTab] = useState("overview");
@@ -64,6 +68,15 @@ export default function DashboardPage() {
         return <ComingSoonView tabId={activeTab} setActiveTab={setActiveTab} />;
     }
   };
+
+  if (isLoading || isPending) {
+    return (
+      <div className="initial-loading-container">
+        <Spinner animation="border" variant="primary" />
+        <p>Preparing Dashboard...</p>
+      </div>
+    );
+  }
 
   return (
     <div className={`dashboard-layout ${isMobileOpen ? "mobile-open" : ""}`}>

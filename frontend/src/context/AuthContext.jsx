@@ -1,55 +1,36 @@
-import {
-  createContext,
-  useContext,
-  useEffect,
-  useState,
-} from "react";
-import User from "../models/user";
+// src/context/AuthContext.jsx
+import { createContext, useContext, useEffect, useState } from "react";
 import { supabase } from "../lib/supabaseClient";
-import apiClient from "../lib/apiClient";
-import { updateUser } from "../api/users"; 
 
 const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
   const [session, setSession] = useState(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [currentUser, setCurrentUser] = useState(null);
-  const [isInitializing, setIsInitializing] = useState(true); 
+  const [isAuthInitializing, setIsAuthInitializing] = useState(true);
 
   useEffect(() => {
     let isMounted = true;
 
+    // Initial Session Load
     async function loadInitialSession() {
       try {
-        const {
-          data: { session: currentSession },
-        } = await supabase.auth.getSession();
-
-        if (isMounted) {
-          setSession(currentSession);
-        }
+        const { data: { session: currentSession } } = await supabase.auth.getSession();
+        if (isMounted) setSession(currentSession);
       } catch (error) {
-        console.error("Error loading initial session:", error);
+        console.error("Error loading session:", error);
       } finally {
-        if (isMounted) {
-          setIsInitializing(false);
-        }
+        if (isMounted) setIsAuthInitializing(false);
       }
     }
 
     loadInitialSession();
 
-    // Single subscription for all auth state changes
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange(
-      async (event, currentSession) => {
-        // Update session for ALL events
+    // Listen to Supabase Auth State Changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      (_event, currentSession) => {
         if (isMounted) {
           setSession(currentSession);
-          setIsInitializing(false);
+          setIsAuthInitializing(false);
         }
       }
     );
@@ -60,91 +41,21 @@ export function AuthProvider({ children }) {
     };
   }, []);
 
-
-
-
-  useEffect(() => {
-    async function fetchCurrentUser() {
-      try {
-        const response = await apiClient.get("/auth/me");
-        
-        if (response.data) {
-          try {
-            const user = User.fromApiResponse(response.data);
-            setCurrentUser(user);
-            setIsAuthenticated(true);
-          } catch (parseError) {
-            console.error("Error parsing user data:", parseError);
-            setCurrentUser(null);
-            setIsAuthenticated(false);
-          }
-        } else {
-          console.warn("No user data in response");
-          setCurrentUser(null);
-          setIsAuthenticated(false);
-        }
-      } catch (error) {
-        console.error("Error fetching current user:", error.message);
-        setCurrentUser(null);
-        setIsAuthenticated(false);
-      } finally {
-        setIsLoading(false);
-      }
-    }
-
-    if (isInitializing) {
-      setIsLoading(true);
-      return;
-    }
-
-    if (session) {
-      fetchCurrentUser();
-    } else {
-      setIsLoading(false);
-      setIsAuthenticated(false);
-      setCurrentUser(null);
-    }
-  }, [session, isInitializing]); 
-
-  const refreshUser = async () => {
-    try {
-      const response = await apiClient.get("/auth/me");
-      if (response.data) {
-        const user = User.fromApiResponse(response.data);
-        setCurrentUser(user);
-        setIsAuthenticated(true);
-        return user;
-      }
-    } catch (err) {
-      console.error("Error refreshing user:", err);
-    }
-    return null;
-  };
-
-
+  // seperating the auth context(session, isAuthenticated, isAuthInitializing) 
+  // from teh user context (user, isUserLoading, userError) 
   const value = {
     session,
-    isAuthenticated,
-    currentUser,
-    isLoading,
-    refreshUser,
+    isAuthenticated: !!session,
+    isAuthInitializing,
   };
 
-  return (
-    <AuthContext.Provider value={value}>
-      {children}
-    </AuthContext.Provider>
-  );
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
 
 export function useAuth() {
   const context = useContext(AuthContext);
-
   if (!context) {
-    throw new Error(
-      "useAuth must be used inside AuthProvider."
-    );
+    throw new Error("useAuth must be used inside AuthProvider.");
   }
-
   return context;
 }

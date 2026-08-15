@@ -73,3 +73,18 @@
     padding: 16px;
   }
 }
+
+
+/* DashboardPage.css - Add to your existing file */
+/* DashboardPage.css - Replace the initial-loading-container styles */
+
+.initial-loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  width: 100%;
+  background-color: #ffffff;
+  position: relative;
+}

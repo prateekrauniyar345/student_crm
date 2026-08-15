@@ -1,20 +1,23 @@
+// src/pages/AuthCallbackPage.jsx
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-
 import { useAuth } from "../../context/AuthContext";
 import "./AuthCallbackPage.css";
 
 function AuthCallbackPage() {
   const navigate = useNavigate();
-  const { session, isLoading } = useAuth();
+  // Use isAuthInitializing to determine if the authentication process 
+  // is still ongoing
+  const { session, isAuthInitializing } = useAuth();
 
   useEffect(() => {
-    if (!isLoading && session) {
+    if (!isAuthInitializing && session) {
       navigate("/dashboard", { replace: true });
     }
-  }, [session, isLoading, navigate]);
+  }, [session, isAuthInitializing, navigate]);
 
-  if (isLoading) {
+  // Show spinner while Supabase processes the token from the URL
+  if (isAuthInitializing) {
     return (
       <div className="callback-container">
         <div className="callback-content">
@@ -25,6 +28,7 @@ function AuthCallbackPage() {
     );
   }
 
+  // Only show failure if initialization finished and no session exists
   if (!session) {
     return (
       <div className="callback-container">

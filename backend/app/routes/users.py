@@ -22,11 +22,11 @@ user_routes = APIRouter(prefix=f"{os.getenv('API_PREFIX')}/users", tags=["users"
 
 @user_routes.get("/")
 async def get_users(
+        current_user: Annotated[UserResponse, Depends(get_current_user)],
         full_name: str | None = None, 
         preferred_first_name: str | None = None,
         email: str | None = None,
         phone_number: str | None = None,
-        # current_user: Annotated[UserResponse, Depends(get_current_user)],
         session: AsyncSession = Depends(get_session)
     ) -> list[UserResponse]:
     """
@@ -65,9 +65,9 @@ async def get_users(
 
 @user_routes.post("/")
 async def create_user(
+    current_user: Annotated[UserResponse, Depends(get_current_user)],
     user_data: UserCreate,
     session: AsyncSession = Depends(get_session),
-    # current_user: Annotated[UserResponse, Depends(get_current_user)] = None
 ) -> UserResponse:
     """
     Create a new user in the database.
@@ -94,7 +94,7 @@ async def create_user(
 
 
 # partial update
-@user_routes.patch("/me")
+@user_routes.patch("/")
 async def update_user_partial(
     user_update: UserUpdate,
     current_user: Annotated[UserResponse, Depends(get_current_user)],
