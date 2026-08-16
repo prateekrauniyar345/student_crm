@@ -1,0 +1,76 @@
+/* ==========================================================================
+   UI Spinner Component Styles - Student CRM Theme
+   ========================================================================== */
+
+.ui-spinner-wrap {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.ui-spinner-centered {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 32px 16px;
+  width: 100%;
+}
+
+.ui-spinner {
+  display: inline-block;
+  border-radius: 50%;
+  animation: ui-spin 0.75s linear infinite;
+}
+
+/* Sizes */
+.ui-spinner-xs {
+  width: 14px;
+  height: 14px;
+  border: 2px solid var(--color-border, #E0E0E0);
+}
+
+.ui-spinner-sm {
+  width: 18px;
+  height: 18px;
+  border: 2px solid var(--color-border, #E0E0E0);
+}
+
+.ui-spinner-md {
+  width: 26px;
+  height: 26px;
+  border: 3px solid var(--color-border, #E0E0E0);
+}
+
+.ui-spinner-lg {
+  width: 36px;
+  height: 36px;
+  border: 3px solid var(--color-border, #E0E0E0);
+}
+
+/* Variants */
+.ui-spinner-primary {
+  border-top-color: var(--color-primary, #007BFF);
+}
+
+.ui-spinner-secondary {
+  border-top-color: var(--color-secondary, #6C757D);
+}
+
+.ui-spinner-white {
+  border-color: rgba(255, 255, 255, 0.3);
+  border-top-color: #FFFFFF;
+}
+
+.ui-spinner-message {
+  font-size: var(--font-size-xs, 0.75rem);
+  font-weight: var(--font-weight-medium, 500);
+  color: var(--color-text-secondary, #757575);
+}
+
+@keyframes ui-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

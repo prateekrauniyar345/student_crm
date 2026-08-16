@@ -1,0 +1,207 @@
+/* ==========================================================================
+   UI Input & SearchInput Component Styles - Student CRM Theme
+   ========================================================================== */
+
+.ui-input-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs, 4px);
+}
+
+.ui-input-full {
+  width: 100%;
+}
+
+.ui-input-label {
+  font-size: var(--font-size-xs, 0.75rem);
+  font-weight: var(--font-weight-semibold, 600);
+  color: var(--color-text-secondary, #757575);
+  display: block;
+}
+
+.ui-input-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  background-color: var(--color-bg-primary, #F8F9FA);
+  border: 1px solid var(--color-border, #E0E0E0);
+  border-radius: var(--radius-md, 6px);
+  transition: all var(--transition-fast, 0.15s ease);
+}
+
+.ui-input-container:hover:not(.ui-input-disabled) {
+  border-color: var(--color-border-dark, #CCCCCC);
+  background-color: var(--color-bg-hover, #F1F3F5);
+}
+
+.ui-input-container:focus-within:not(.ui-input-disabled) {
+  border-color: var(--color-primary, #007BFF);
+  background-color: var(--color-bg-secondary, #FFFFFF);
+  box-shadow: 0 0 0 2px var(--color-primary-light, #E7F1FF);
+}
+
+.ui-input-has-error {
+  border-color: var(--color-danger, #DC3545) !important;
+  background-color: var(--color-danger-light, #FFEBEE);
+}
+
+.ui-input-disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  background-color: var(--color-bg-hover, #F1F3F5);
+}
+
+/* Sizes */
+.ui-input-sm .ui-input-field {
+  padding: 6px 12px;
+  font-size: var(--font-size-xs, 0.75rem);
+  height: 32px;
+}
+
+.ui-input-sm .ui-input-with-left-icon {
+  padding-left: 32px;
+}
+
+.ui-input-sm .ui-input-with-right-icon {
+  padding-right: 32px;
+}
+
+.ui-input-md .ui-input-field {
+  padding: 8px 14px;
+  font-size: var(--font-size-sm, 0.875rem);
+  height: 38px;
+}
+
+.ui-input-md .ui-input-with-left-icon {
+  padding-left: 36px;
+}
+
+.ui-input-md .ui-input-with-right-icon {
+  padding-right: 36px;
+}
+
+/* Input field */
+.ui-input-field {
+  width: 100%;
+  border: none;
+  background: transparent;
+  color: var(--color-text-primary, #212121);
+  font-family: var(--font-family-base);
+  font-weight: var(--font-weight-regular, 400);
+  outline: none;
+}
+
+.ui-input-field::placeholder {
+  color: var(--color-text-tertiary, #9E9E9E);
+}
+
+.ui-input-field:disabled {
+  cursor: not-allowed;
+}
+
+/* Icons */
+.ui-input-icon {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  color: var(--color-text-secondary, #757575);
+  pointer-events: none;
+}
+
+.ui-input-icon-left {
+  left: 10px;
+}
+
+.ui-input-icon-right {
+  right: 10px;
+}
+
+/* Helper & Error texts */
+.ui-input-error-text {
+  font-size: 0.7rem;
+  color: var(--color-danger, #DC3545);
+  margin-top: 2px;
+}
+
+.ui-input-helper-text {
+  font-size: 0.7rem;
+  color: var(--color-text-tertiary, #9E9E9E);
+  margin-top: 2px;
+}
+
+/* ==========================================================================
+   Search Input Component
+   ========================================================================== */
+
+.ui-search-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  background-color: var(--color-bg-primary, #F8F9FA);
+  border: 1px solid var(--color-border, #E0E0E0);
+  border-radius: var(--radius-md, 6px);
+  transition: all var(--transition-fast, 0.15s ease);
+}
+
+.ui-search-input-wrapper:hover:not(.ui-input-disabled) {
+  border-color: var(--color-border-dark, #CCCCCC);
+  background-color: var(--color-bg-hover, #F1F3F5);
+}
+
+.ui-search-input-wrapper:focus-within:not(.ui-input-disabled) {
+  border-color: var(--color-primary, #007BFF);
+  background-color: var(--color-bg-secondary, #FFFFFF);
+  box-shadow: 0 0 0 2px var(--color-primary-light, #E7F1FF);
+}
+
+.ui-search-left-icon {
+  position: absolute;
+  left: 10px;
+  color: var(--color-text-secondary, #757575);
+  pointer-events: none;
+}
+
+.ui-search-field {
+  width: 100%;
+  border: none;
+  background: transparent;
+  color: var(--color-text-primary, #212121);
+  font-family: var(--font-family-base);
+  font-size: var(--font-size-xs, 0.75rem);
+  outline: none;
+  padding: 6px 28px 6px 32px;
+  height: 32px;
+}
+
+.ui-search-input-wrapper.ui-input-md .ui-search-field {
+  padding: 8px 32px 8px 36px;
+  font-size: var(--font-size-sm, 0.875rem);
+  height: 38px;
+}
+
+.ui-search-field::placeholder {
+  color: var(--color-text-tertiary, #9E9E9E);
+}
+
+.ui-search-clear-btn {
+  position: absolute;
+  right: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-bg-active, #E9ECEF);
+  border: none;
+  border-radius: 50%;
+  width: 16px;
+  height: 16px;
+  color: var(--color-text-secondary, #757575);
+  cursor: pointer;
+  padding: 0;
+  transition: all var(--transition-fast, 0.15s ease);
+}
+
+.ui-search-clear-btn:hover {
+  background-color: var(--color-secondary, #6C757D);
+  color: #FFFFFF;
+}

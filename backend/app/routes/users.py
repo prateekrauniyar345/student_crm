@@ -22,7 +22,8 @@ user_routes = APIRouter(prefix=f"{os.getenv('API_PREFIX')}/users", tags=["users"
 
 @user_routes.get("/")
 async def get_users(
-        current_user: Annotated[UserResponse, Depends(get_current_user)],
+        # current_user: Annotated[UserResponse, Depends(get_current_user)],
+        id: UUID | None = None,
         full_name: str | None = None, 
         preferred_first_name: str | None = None,
         email: str | None = None,
@@ -42,6 +43,8 @@ async def get_users(
         statement = select(User)
 
         #  if the full_name is provdided, filter by full_name
+        if id:
+            statement = statement.where(User.id == id)
         if full_name:
             statement = statement.where(User.full_name.ilike(f"%{full_name}%"))
         if email:

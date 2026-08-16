@@ -1,0 +1,143 @@
+/* ==========================================================================
+   UI Modal Component Styles - Student CRM Theme
+   ========================================================================== */
+
+.ui-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(15, 23, 42, 0.45);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: var(--z-modal, 1050);
+  padding: 16px;
+  animation: ui-modal-fade-in 0.15s ease-out;
+}
+
+.ui-modal-card {
+  background-color: var(--color-bg-secondary, #FFFFFF);
+  border: 1px solid var(--color-border, #E0E0E0);
+  border-radius: var(--radius-xl, 12px);
+  box-shadow: var(--shadow-xl, 0 10px 24px rgba(0, 0, 0, 0.10));
+  width: 100%;
+  max-height: calc(100vh - 48px);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  animation: ui-modal-scale-in 0.15s ease-out;
+}
+
+/* Sizes */
+.ui-modal-sm {
+  max-width: 400px;
+}
+
+.ui-modal-md {
+  max-width: 520px;
+}
+
+.ui-modal-lg {
+  max-width: 720px;
+}
+
+.ui-modal-xl {
+  max-width: 960px;
+}
+
+.ui-modal-header {
+  padding: 18px 24px;
+  border-bottom: 1px solid var(--color-border, #E0E0E0);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  background-color: var(--color-bg-secondary, #FFFFFF);
+}
+
+.ui-modal-header-main {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.ui-modal-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-md, 6px);
+  background-color: var(--color-primary-light, #E7F1FF);
+  color: var(--color-primary, #007BFF);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.ui-modal-title {
+  font-size: var(--font-size-lg, 1.125rem);
+  font-weight: var(--font-weight-semibold, 600);
+  color: var(--color-text-primary, #212121);
+  margin: 0;
+  line-height: 1.3;
+}
+
+.ui-modal-subtitle {
+  font-size: var(--font-size-xs, 0.75rem);
+  color: var(--color-text-secondary, #757575);
+  margin: 2px 0 0 0;
+  line-height: 1.3;
+}
+
+.ui-modal-close-btn {
+  background: transparent;
+  border: none;
+  color: var(--color-text-tertiary, #9E9E9E);
+  cursor: pointer;
+  padding: 6px;
+  border-radius: var(--radius-sm, 4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--transition-fast, 0.15s ease);
+}
+
+.ui-modal-close-btn:hover {
+  background-color: var(--color-bg-hover, #F1F3F5);
+  color: var(--color-text-primary, #212121);
+}
+
+.ui-modal-body {
+  padding: 24px;
+  overflow-y: auto;
+  flex: 1;
+}
+
+.ui-modal-footer {
+  padding: 16px 24px;
+  border-top: 1px solid var(--color-border-light, #F0F0F0);
+  background-color: var(--color-bg-primary, #F8F9FA);
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+@keyframes ui-modal-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes ui-modal-scale-in {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}

@@ -1,0 +1,127 @@
+/* ==========================================================================
+   UI Select / Dropdown Component Styles - Student CRM Theme
+   ========================================================================== */
+
+.ui-select-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs, 4px);
+}
+
+.ui-select-full {
+  width: 100%;
+}
+
+.ui-select-label {
+  font-size: var(--font-size-xs, 0.75rem);
+  font-weight: var(--font-weight-semibold, 600);
+  color: var(--color-text-secondary, #757575);
+  display: block;
+}
+
+.ui-select-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  background-color: var(--color-bg-primary, #F8F9FA);
+  border: 1px solid var(--color-border, #E0E0E0);
+  border-radius: var(--radius-md, 6px);
+  transition: all var(--transition-fast, 0.15s ease);
+}
+
+.ui-select-container:hover:not(.ui-select-disabled) {
+  border-color: var(--color-border-dark, #CCCCCC);
+  background-color: var(--color-bg-hover, #F1F3F5);
+}
+
+.ui-select-container:focus-within:not(.ui-select-disabled) {
+  border-color: var(--color-primary, #007BFF);
+  background-color: var(--color-bg-secondary, #FFFFFF);
+  box-shadow: 0 0 0 2px var(--color-primary-light, #E7F1FF);
+}
+
+.ui-select-has-error {
+  border-color: var(--color-danger, #DC3545) !important;
+  background-color: var(--color-danger-light, #FFEBEE);
+}
+
+.ui-select-disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  background-color: var(--color-bg-hover, #F1F3F5);
+}
+
+/* Sizes */
+.ui-select-sm .ui-select-input {
+  padding: 6px 28px 6px 12px;
+  font-size: var(--font-size-xs, 0.75rem);
+  height: 32px;
+}
+
+.ui-select-sm .ui-select-with-icon {
+  padding-left: 30px;
+}
+
+.ui-select-md .ui-select-input {
+  padding: 8px 32px 8px 14px;
+  font-size: var(--font-size-sm, 0.875rem);
+  height: 38px;
+}
+
+.ui-select-md .ui-select-with-icon {
+  padding-left: 34px;
+}
+
+/* Input element inside */
+.ui-select-input {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  width: 100%;
+  border: none;
+  background: transparent;
+  color: var(--color-text-primary, #212121);
+  font-family: var(--font-family-base);
+  font-weight: var(--font-weight-medium, 500);
+  cursor: pointer;
+  outline: none;
+}
+
+.ui-select-input:disabled {
+  cursor: not-allowed;
+}
+
+/* Left Icon */
+.ui-select-left-icon {
+  position: absolute;
+  left: 10px;
+  display: flex;
+  align-items: center;
+  color: var(--color-text-secondary, #757575);
+  pointer-events: none;
+}
+
+/* Custom Chevron */
+.ui-select-chevron {
+  position: absolute;
+  right: 10px;
+  display: flex;
+  align-items: center;
+  color: var(--color-text-secondary, #757575);
+  pointer-events: none;
+  transition: transform var(--transition-fast, 0.15s ease);
+}
+
+/* Helper & Error texts */
+.ui-select-error-text {
+  font-size: 0.7rem;
+  color: var(--color-danger, #DC3545);
+  margin-top: 2px;
+}
+
+.ui-select-helper-text {
+  font-size: 0.7rem;
+  color: var(--color-text-tertiary, #9E9E9E);
+  margin-top: 2px;
+}

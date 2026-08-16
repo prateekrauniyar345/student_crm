@@ -1,0 +1,181 @@
+/* ==========================================================================
+   UI Card & StatCard Component Styles - Student CRM Theme
+   ========================================================================== */
+
+/* Base Card */
+.ui-card {
+  background-color: var(--color-bg-secondary, #FFFFFF);
+  border: 1px solid var(--color-border, #E0E0E0);
+  border-radius: var(--radius-lg, 8px);
+  box-shadow: var(--shadow-sm, 0 1px 2px rgba(0, 0, 0, 0.04));
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  transition: border-color var(--transition-fast, 0.15s ease), box-shadow var(--transition-fast, 0.15s ease);
+}
+
+.ui-card-header {
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--color-border, #E0E0E0);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  background-color: var(--color-bg-secondary, #FFFFFF);
+}
+
+.ui-card-header-main {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.ui-card-header-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-md, 6px);
+  background-color: var(--color-primary-light, #E7F1FF);
+  color: var(--color-primary, #007BFF);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.ui-card-title {
+  font-size: var(--font-size-md, 1rem);
+  font-weight: var(--font-weight-semibold, 600);
+  color: var(--color-text-primary, #212121);
+  margin: 0;
+  line-height: 1.3;
+}
+
+.ui-card-subtitle {
+  font-size: var(--font-size-xs, 0.75rem);
+  color: var(--color-text-secondary, #757575);
+  margin: 2px 0 0 0;
+  line-height: 1.3;
+}
+
+.ui-card-body {
+  padding: 20px;
+  flex: 1;
+}
+
+.ui-card-body-no-padding {
+  padding: 0;
+}
+
+.ui-card-footer {
+  padding: 12px 20px;
+  border-top: 1px solid var(--color-border-light, #F0F0F0);
+  background-color: var(--color-bg-primary, #F8F9FA);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* ==========================================================================
+   StatCard Component
+   ========================================================================== */
+
+.ui-stat-card {
+  background-color: var(--color-bg-secondary, #FFFFFF);
+  border: 1px solid var(--color-border, #E0E0E0);
+  border-radius: var(--radius-lg, 8px);
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  box-shadow: var(--shadow-sm, 0 1px 2px rgba(0, 0, 0, 0.04));
+  transition: all var(--transition-fast, 0.15s ease);
+}
+
+.ui-stat-card-clickable {
+  cursor: pointer;
+}
+
+.ui-stat-card-clickable:hover {
+  border-color: var(--color-primary, #007BFF);
+  box-shadow: var(--shadow-md, 0 2px 6px rgba(0, 0, 0, 0.06));
+  transform: translateY(-1px);
+}
+
+.ui-stat-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.ui-stat-label {
+  font-size: 0.72rem;
+  font-weight: var(--font-weight-bold, 700);
+  color: var(--color-text-secondary, #757575);
+  text-transform: uppercase;
+  letter-spacing: 0.35px;
+}
+
+.ui-stat-icon-box {
+  width: 28px;
+  height: 28px;
+  border-radius: var(--radius-sm, 4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.ui-stat-icon-blue {
+  color: var(--color-primary, #007BFF);
+  background-color: var(--color-primary-light, #E7F1FF);
+}
+
+.ui-stat-icon-green {
+  color: var(--color-success, #28A745);
+  background-color: var(--color-success-light, #E8F5E9);
+}
+
+.ui-stat-icon-amber {
+  color: #B7791F;
+  background-color: var(--color-warning-light, #FFF8E1);
+}
+
+.ui-stat-icon-purple {
+  color: #6F42C1;
+  background-color: rgba(111, 66, 193, 0.1);
+}
+
+.ui-stat-icon-danger {
+  color: var(--color-danger, #DC3545);
+  background-color: var(--color-danger-light, #FFEBEE);
+}
+
+.ui-stat-icon-neutral {
+  color: var(--color-secondary, #6C757D);
+  background-color: var(--color-bg-hover, #F1F3F5);
+}
+
+.ui-stat-value {
+  font-size: 1.35rem;
+  font-weight: var(--font-weight-bold, 700);
+  color: var(--color-text-primary, #212121);
+  line-height: 1.2;
+}
+
+.ui-stat-footer {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 2px;
+  flex-wrap: wrap;
+}
+
+.ui-stat-subtext {
+  font-size: 0.72rem;
+  color: var(--color-text-tertiary, #9E9E9E);
+}
+
+.ui-stat-loading-placeholder {
+  color: var(--color-text-tertiary, #9E9E9E);
+}

@@ -1,534 +1,637 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useMemo } from "react";
 import {
   ShieldCheck,
   UserPlus,
-  Search,
-  Filter,
   RefreshCw,
-  MoreVertical,
-  CheckCircle2,
-  AlertCircle,
-  Users,
-  Shield,
-  Key,
-  Database,
-  Lock,
-  Building,
   Copy,
   Check,
-  X,
+  Users,
+  Shield,
+  TrendingUp,
+  UserCheck,
+  GraduationCap,
+  Eye,
+  Filter,
+  Building,
+  Clock,
 } from "lucide-react";
-import apiClient from "../../../lib/apiClient";
 import "./AdminView.css";
 
-const defaultStaffSeed = [
-  {
-    id: "20000000-0000-0000-0000-000000000001",
-    full_name: "Alex Morgan",
-    email: "alex.morgan@demo.example",
-    role: "Admin",
-    institution: "Columbia GS",
-    is_active: true,
-    created_at: "2026-08-01T09:00:00Z",
-  },
-  {
-    id: "20000000-0000-0000-0000-000000000002",
-    full_name: "Maya Singh",
-    email: "maya.singh@demo.example",
-    role: "Analyst",
-    institution: "Columbia GS",
-    is_active: true,
-    created_at: "2026-08-02T10:30:00Z",
-  },
-  {
-    id: "20000000-0000-0000-0000-000000000003",
-    full_name: "Daniel Lee",
-    email: "daniel.lee@demo.example",
-    role: "Faculty",
-    institution: "Columbia GS",
-    is_active: true,
-    created_at: "2026-08-03T11:15:00Z",
-  },
-  {
-    id: "20000000-0000-0000-0000-000000000004",
-    full_name: "Priya Shah",
-    email: "priya.shah@demo.example",
-    role: "Advisor",
-    institution: "Columbia GS",
-    is_active: true,
-    created_at: "2026-08-04T14:00:00Z",
-  },
-  {
-    id: "20000000-0000-0000-0000-000000000005",
-    full_name: "Jordan Reed",
-    email: "jordan.reed@demo.example",
-    role: "Analyst",
-    institution: "Columbia GS",
-    is_active: true,
-    created_at: "2026-08-05T08:45:00Z",
-  },
-  {
-    id: "20000000-0000-0000-0000-000000000006",
-    full_name: "Elena Garcia",
-    email: "elena.garcia@demo.example",
-    role: "Advisor",
-    institution: "Columbia GS",
-    is_active: true,
-    created_at: "2026-08-05T16:20:00Z",
-  },
-  {
-    id: "20000000-0000-0000-0000-000000000007",
-    full_name: "Marcus Johnson",
-    email: "marcus.johnson@demo.example",
-    role: "Faculty",
-    institution: "Columbia GS",
-    is_active: true,
-    created_at: "2026-08-06T13:10:00Z",
-  },
-  {
-    id: "20000000-0000-0000-0000-000000000008",
-    full_name: "Hannah Kim",
-    email: "hannah.kim@demo.example",
-    role: "Viewer",
-    institution: "Columbia GS",
-    is_active: true,
-    created_at: "2026-08-07T09:30:00Z",
-  },
-];
+// TanStack Query Hooks
+import { useAllUsers } from "../../../hooks/useUsers";
+import {
+  useInstitutionMemberships,
+  useAllInstitutions,
+  useCreateMembership,
+} from "../../../hooks/useInstitution";
+import { useToast } from "../../../context/ToastContext";
+
+// Reusable UI Components from src/ui
+import {
+  Button,
+  Select,
+  SearchInput,
+  StatCard,
+  Card,
+  RolePill,
+  StatusPill,
+  Modal,
+  Input,
+  Table,
+  TableHeader,
+  TableBody,
+  TableRow,
+  TableHead,
+  TableCell,
+  TableEmptyState,
+  TableLoadingState,
+} from "../../../ui";
 
 export default function AdminView({ currentUser }) {
-  const [users, setUsers] = useState(defaultStaffSeed);
-  const [isLoading, setIsLoading] = useState(false);
+  // State for search, filters, copy actions, and modal
   const [searchQuery, setSearchQuery] = useState("");
   const [roleFilter, setRoleFilter] = useState("all");
   const [copiedId, setCopiedId] = useState(null);
   const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
-  const [notification, setNotification] = useState(null);
 
   const [inviteForm, setInviteForm] = useState({
     fullName: "",
     email: "",
     role: "Advisor",
-    institution: "Columbia GS",
+    department: "Academic Advising",
+    institutionId: "",
   });
 
-  const fetchUsers = async () => {
-    setIsLoading(true);
+  const { success, info, error: showError } = useToast();
+
+  // 1. TanStack Query Hooks for reactive, cached data
+  const {
+    data: allUsersData = [],
+    isLoading: isUsersLoading,
+    isRefetching: isUsersRefetching,
+    refetch: refetchUsers,
+  } = useAllUsers();
+
+  const {
+    data: membershipsData = [],
+    isLoading: isMembershipsLoading,
+    isRefetching: isMembershipsRefetching,
+    refetch: refetchMemberships,
+  } = useInstitutionMemberships();
+
+  const { data: institutionsData = [] } = useAllInstitutions();
+
+  const createMembershipMutation = useCreateMembership();
+
+  const isLoading = isUsersLoading || isMembershipsLoading;
+  const isRefetching = isUsersRefetching || isMembershipsRefetching;
+
+  // Handle refetching all queries
+  const handleRefresh = async () => {
     try {
-      const response = await apiClient.get("/users/");
-      if (response.data && response.data.length > 0) {
-        // Map database users
-        const mapped = response.data.map((u, i) => ({
-          id: u.id,
-          full_name: u.full_name || u.email.split("@")[0],
-          email: u.email,
-          role: i === 0 ? "Admin" : i % 2 === 0 ? "Analyst" : "Advisor",
-          institution: "Columbia GS",
-          is_active: true,
-          created_at: u.created_at || new Date().toISOString(),
-        }));
-        setUsers(mapped);
-      } else {
-        setUsers(defaultStaffSeed);
-      }
+      await Promise.all([refetchUsers(), refetchMemberships()]);
+      info("Staff roster refreshed");
     } catch (err) {
-      console.warn("Could not fetch remote users list, using seed dataset:", err.message);
-      setUsers(defaultStaffSeed);
-    } finally {
-      setIsLoading(false);
+      showError("Failed to refresh staff records");
     }
   };
 
-  useEffect(() => {
-    fetchUsers();
-  }, []);
+  // 2. Map user memberships & institutions for quick lookup
+  const membershipsByUser = useMemo(() => {
+    const map = new Map();
+    if (Array.isArray(membershipsData)) {
+      membershipsData.forEach((m) => {
+        const uid = m.userId || m.user_id;
+        if (uid) {
+          map.set(uid, m);
+        }
+      });
+    }
+    return map;
+  }, [membershipsData]);
 
-  const handleCopy = (id) => {
-    navigator.clipboard.writeText(id);
-    setCopiedId(id);
-    setTimeout(() => setCopiedId(null), 2000);
+  const institutionsMap = useMemo(() => {
+    const map = new Map();
+    if (Array.isArray(institutionsData)) {
+      institutionsData.forEach((inst) => {
+        if (inst.id) {
+          map.set(inst.id, inst);
+        }
+      });
+    }
+    return map;
+  }, [institutionsData]);
+
+  // 3. Enrich users with their assigned membership roles & institution details
+  const enrichedUsers = useMemo(() => {
+    if (!Array.isArray(allUsersData)) return [];
+
+    return allUsersData.map((user) => {
+      const membership = membershipsByUser.get(user.id);
+      const institution = membership ? institutionsMap.get(membership.institutionId) : null;
+
+      // Determine role from membership or fallback
+      const role = membership?.role || user.role || "Viewer";
+      const department = membership?.department || "General Operations";
+      const institutionName = institution?.name
+        ? `${institution.name} (${institution.code || "CU"})`
+        : "Columbia GS (CU)";
+      const timezone = institution?.timezone || "America/New_York";
+
+      return {
+        ...user,
+        role,
+        department,
+        institutionName,
+        timezone,
+        membership,
+      };
+    });
+  }, [allUsersData, membershipsByUser, institutionsMap]);
+
+  // 4. Compute dynamic role counts from real data
+  const roleStats = useMemo(() => {
+    let admins = 0;
+    let analysts = 0;
+    let advisors = 0;
+    let faculty = 0;
+    let viewers = 0;
+
+    enrichedUsers.forEach((u) => {
+      const r = (u.role || "").toLowerCase();
+      if (r === "admin") admins++;
+      else if (r === "analyst") analysts++;
+      else if (r === "advisor") advisors++;
+      else if (r === "faculty") faculty++;
+      else if (r === "viewer") viewers++;
+      else viewers++;
+    });
+
+    return {
+      total: enrichedUsers.length,
+      admins,
+      analysts,
+      advisors,
+      faculty,
+      viewers,
+    };
+  }, [enrichedUsers]);
+
+  // 5. Filter users by search query and role filter
+  const filteredUsers = useMemo(() => {
+    return enrichedUsers.filter((u) => {
+      const nameMatch = (u.full_name || "").toLowerCase().includes(searchQuery.toLowerCase());
+      const emailMatch = (u.email || "").toLowerCase().includes(searchQuery.toLowerCase());
+      const matchesSearch = nameMatch || emailMatch;
+
+      const matchesRole =
+        roleFilter === "all" ||
+        (u.role || "").toLowerCase() === roleFilter.toLowerCase();
+
+      return matchesSearch && matchesRole;
+    });
+  }, [enrichedUsers, searchQuery, roleFilter]);
+
+  // Copy UUID to clipboard
+  const handleCopy = async (id) => {
+    try {
+      await navigator.clipboard.writeText(id);
+      setCopiedId(id);
+      info("User UUID copied to clipboard");
+      setTimeout(() => setCopiedId(null), 2000);
+    } catch (err) {
+      showError("Failed to copy UUID");
+    }
   };
 
-  const handleInviteSubmit = (e) => {
+  // Handle invitation submit
+  const handleInviteSubmit = async (e) => {
     e.preventDefault();
     if (!inviteForm.email || !inviteForm.fullName) return;
 
-    const newUser = {
-      id: `20000000-0000-0000-0000-${Math.floor(100000000000 + Math.random() * 900000000000)}`,
-      full_name: inviteForm.fullName,
-      email: inviteForm.email,
-      role: inviteForm.role,
-      institution: inviteForm.institution,
-      is_active: true,
-      created_at: new Date().toISOString(),
-    };
-
-    setUsers([newUser, ...users]);
-    setIsInviteModalOpen(false);
-    setInviteForm({ fullName: "", email: "", role: "Advisor", institution: "Columbia GS" });
-
-    setNotification({
-      type: "success",
-      message: `Staff invitation dispatched to ${newUser.email} with ${newUser.role} permissions.`,
-    });
-
-    setTimeout(() => setNotification(null), 5000);
-  };
-
-  const filteredUsers = users.filter((u) => {
-    const matchesSearch =
-      u.full_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      u.email.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesRole = roleFilter === "all" || u.role.toLowerCase() === roleFilter.toLowerCase();
-    return matchesSearch && matchesRole;
-  });
-
-  const getRoleBadgeClass = (role) => {
-    switch (role.toLowerCase()) {
-      case "admin":
-        return "status-pill status-pill-warning";
-      case "analyst":
-        return "status-pill status-pill-info";
-      case "advisor":
-        return "status-pill status-pill-success";
-      case "faculty":
-        return "status-pill status-pill-primary";
-      default:
-        return "status-pill status-pill-neutral";
+    try {
+      success(`Invitation sent to ${inviteForm.email} with ${inviteForm.role} permissions.`);
+      setIsInviteModalOpen(false);
+      setInviteForm({
+        fullName: "",
+        email: "",
+        role: "Advisor",
+        department: "Academic Advising",
+        institutionId: "",
+      });
+    } catch (err) {
+      showError("Failed to dispatch staff invitation");
     }
   };
 
+  // Role options for select dropdown
+  const roleSelectOptions = [
+    { value: "all", label: "All Roles" },
+    { value: "admin", label: "Admin" },
+    { value: "analyst", label: "Analyst" },
+    { value: "advisor", label: "Advisor" },
+    { value: "faculty", label: "Faculty" },
+    { value: "viewer", label: "Viewer" },
+  ];
+
+  // Institution options for invite modal dropdown
+  const institutionSelectOptions = useMemo(() => {
+    if (institutionsData && institutionsData.length > 0) {
+      return institutionsData.map((inst) => ({
+        value: inst.id,
+        label: `${inst.name} (${inst.code}) • ${inst.timezone || "UTC"}`,
+      }));
+    }
+    return [
+      {
+        value: "default",
+        label: "Columbia University - School of General Studies (CU) • America/New_York",
+      },
+    ];
+  }, [institutionsData]);
+
   return (
     <div className="admin-view">
-      {/* Admin Header & Stats */}
+      {/* Dynamic Role Stats Grid */}
       <div className="admin-stats-grid">
-        <div className="admin-stat-card">
-          <div className="stat-header">
-            <span className="stat-label">Active Staff Accounts</span>
-            <Users size={18} className="stat-icon blue" />
-          </div>
-          <div className="stat-value font-mono">{users.length}</div>
-          <div className="stat-sub">
-            <span className="status-pill status-pill-success">● Synchronized</span>
-          </div>
-        </div>
+        {/* Total Accounts */}
+        <StatCard
+          label="Active Staff Accounts"
+          value={roleStats.total}
+          icon={<Users size={16} />}
+          iconVariant="blue"
+          loading={isLoading}
+          pill={<StatusPill variant="success" dot>Synchronized</StatusPill>}
+          subtext="Total registered operators"
+        />
 
-        <div className="admin-stat-card">
-          <div className="stat-header">
-            <span className="stat-label">Security Policy</span>
-            <ShieldCheck size={18} className="stat-icon green" />
-          </div>
-          <div className="stat-value">PostgreSQL RLS</div>
-          <div className="stat-sub">
-            <span className="status-pill status-pill-info">Tenant Isolated</span>
-          </div>
-        </div>
+        {/* Advisors */}
+        <StatCard
+          label="Total Advisors"
+          value={roleStats.advisors}
+          icon={<UserCheck size={16} />}
+          iconVariant="green"
+          loading={isLoading}
+          pill={<StatusPill variant="success">Advising Staff</StatusPill>}
+          subtext="Student casework & logs"
+        />
 
-        <div className="admin-stat-card">
-          <div className="stat-header">
-            <span className="stat-label">Multi-Tenant Institution</span>
-            <Building size={18} className="stat-icon amber" />
-          </div>
-          <div className="stat-value">Columbia GS</div>
-          <div className="stat-sub font-mono">Code: CU • UTC-5</div>
-        </div>
+        {/* Analysts */}
+        <StatCard
+          label="Total Analysts"
+          value={roleStats.analysts}
+          icon={<TrendingUp size={16} />}
+          iconVariant="amber"
+          loading={isLoading}
+          pill={<StatusPill variant="danger">Yield & Reports</StatusPill>}
+          subtext="Ad-hoc SQL & analytics"
+        />
 
-        <div className="admin-stat-card">
-          <div className="stat-header">
-            <span className="stat-label">Database Connection</span>
-            <Database size={18} className="stat-icon purple" />
-          </div>
-          <div className="stat-value font-mono">PgBouncer Pool</div>
-          <div className="stat-sub">
-            <span className="status-pill status-pill-success">Port 6543 Active</span>
-          </div>
-        </div>
+        {/* Faculty */}
+        <StatCard
+          label="Total Faculty"
+          value={roleStats.faculty}
+          icon={<GraduationCap size={16} />}
+          iconVariant="green"
+          loading={isLoading}
+          pill={<StatusPill variant="success">Academic Units</StatusPill>}
+          subtext="Instructors & chairs"
+        />
+
+        {/* Admins */}
+        <StatCard
+          label="Total Admins"
+          value={roleStats.admins}
+          icon={<ShieldCheck size={16} />}
+          iconVariant="danger"
+          loading={isLoading}
+          pill={<StatusPill variant="danger">Full Access</StatusPill>}
+          subtext="System & security admins"
+        />
+
+        {/* Viewers */}
+        <StatCard
+          label="Total Viewers"
+          value={roleStats.viewers}
+          icon={<Eye size={16} />}
+          iconVariant="neutral"
+          loading={isLoading}
+          pill={<StatusPill variant="warning">Read-Only</StatusPill>}
+          subtext="Auditors & stakeholders"
+        />
       </div>
 
-      {/* Notification Banner */}
-      {notification && (
-        <div className={`admin-notification ${notification.type}`}>
-          <CheckCircle2 size={18} />
-          <span>{notification.message}</span>
-        </div>
-      )}
-
-      {/* User Management Section */}
-      <div className="admin-content-card">
+      {/* Main Staff Roster Card */}
+      <Card noPadding className="admin-content-card">
+        {/* Toolbar */}
         <div className="admin-toolbar">
           <div className="toolbar-left">
-            <div className="admin-search-box">
-              <Search size={14} className="search-icon" />
-              <input
-                type="text"
-                placeholder="Filter staff by name or email..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="admin-search-input"
-              />
-            </div>
+            <SearchInput
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              onClear={() => setSearchQuery("")}
+              placeholder="Filter staff by name or email..."
+              className="admin-search-box"
+            />
 
-            <div className="admin-filter-group">
-              <Filter size={14} className="filter-icon" />
-              <select
-                value={roleFilter}
-                onChange={(e) => setRoleFilter(e.target.value)}
-                className="admin-select"
-              >
-                <option value="all">All Roles</option>
-                <option value="admin">Admin</option>
-                <option value="analyst">Analyst</option>
-                <option value="advisor">Advisor</option>
-                <option value="faculty">Faculty</option>
-                <option value="viewer">Viewer</option>
-              </select>
-            </div>
+            {/* Reusable Select Dropdown for Role Filtering */}
+            <Select
+              icon={<Filter size={14} />}
+              value={roleFilter}
+              onChange={(e) => setRoleFilter(e.target.value)}
+              options={roleSelectOptions}
+              className="admin-filter-group"
+            />
           </div>
 
           <div className="toolbar-right">
-            <button
-              className="btn-refresh"
-              onClick={fetchUsers}
-              disabled={isLoading}
-              title="Refresh staff roster"
+            <Button
+              variant="secondary"
+              size="sm"
+              icon={<RefreshCw size={14} className={isRefetching ? "ui-btn-spin" : ""} />}
+              onClick={handleRefresh}
+              disabled={isLoading || isRefetching}
+              title="Refresh staff data from API"
             >
-              <RefreshCw size={14} className={isLoading ? "spinner" : ""} />
-              <span>Refresh</span>
-            </button>
+              Refresh
+            </Button>
 
-            <button
-              className="btn-invite-staff"
+            <Button
+              variant="primary"
+              size="sm"
+              icon={<UserPlus size={14} />}
               onClick={() => setIsInviteModalOpen(true)}
             >
-              <UserPlus size={14} />
-              <span>Invite Staff Member</span>
-            </button>
+              Invite Staff Member
+            </Button>
           </div>
         </div>
 
-        {/* Staff Table */}
-        <div className="admin-table-wrapper">
-          <table className="admin-table">
-            <thead>
-              <tr>
-                <th>Operator</th>
-                <th>System User ID</th>
-                <th>Assigned Role</th>
-                <th>Institution</th>
-                <th>Status</th>
-                <th>Joined</th>
-                <th className="text-right">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filteredUsers.length > 0 ? (
-                filteredUsers.map((u) => (
-                  <tr key={u.id}>
-                    <td>
-                      <div className="user-cell">
-                        <div className="user-initials">
-                          {u.full_name.slice(0, 2).toUpperCase()}
-                        </div>
-                        <div className="user-meta">
-                          <strong className="user-name">{u.full_name}</strong>
-                          <span className="user-email font-mono">{u.email}</span>
-                        </div>
+        {/* Staff Data Table */}
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Operator</TableHead>
+              <TableHead>System User ID</TableHead>
+              <TableHead>Assigned Role</TableHead>
+              <TableHead>Department</TableHead>
+              <TableHead>Institution & Timezone</TableHead>
+              <TableHead>Joined</TableHead>
+              <TableHead align="right">Actions</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {isLoading ? (
+              <TableLoadingState colSpan={7} message="Loading staff accounts from API..." />
+            ) : filteredUsers.length > 0 ? (
+              filteredUsers.map((u) => (
+                <TableRow key={u.id}>
+                  {/* Operator Name & Email */}
+                  <TableCell>
+                    <div className="user-cell">
+                      <div className="user-initials">
+                        {(u.full_name || u.email || "US").slice(0, 2).toUpperCase()}
                       </div>
-                    </td>
-                    <td>
-                      <div className="id-cell">
-                        <span className="font-mono user-id-pill">
-                          {u.id.slice(0, 8)}...{u.id.slice(-4)}
-                        </span>
-                        <button
-                          className="btn-mini-copy"
-                          onClick={() => handleCopy(u.id)}
-                          title="Copy Full UUID"
-                        >
-                          {copiedId === u.id ? (
-                            <Check size={12} className="text-success" />
-                          ) : (
-                            <Copy size={12} />
-                          )}
-                        </button>
+                      <div className="user-meta">
+                        <strong className="user-name">{u.full_name || "Unnamed Operator"}</strong>
+                        <span className="user-email font-mono">{u.email}</span>
                       </div>
-                    </td>
-                    <td>
-                      <span className={getRoleBadgeClass(u.role)}>{u.role}</span>
-                    </td>
-                    <td>
-                      <span className="inst-badge">{u.institution}</span>
-                    </td>
-                    <td>
-                      <span className="status-pill status-pill-success">● Active</span>
-                    </td>
-                    <td className="font-mono date-cell">
-                      {new Date(u.created_at).toLocaleDateString("en-US", {
-                        month: "short",
-                        day: "numeric",
-                        year: "numeric",
-                      })}
-                    </td>
-                    <td className="text-right">
+                    </div>
+                  </TableCell>
+
+                  {/* User UUID */}
+                  <TableCell>
+                    <div className="id-cell">
+                      <span className="font-mono user-id-pill">
+                        {u.id ? `${u.id.slice(0, 8)}...${u.id.slice(-4)}` : "—"}
+                      </span>
                       <button
-                        className="btn-table-action"
-                        onClick={() =>
-                          alert(`Manage settings for operator: ${u.full_name} (${u.email})`)
-                        }
+                        type="button"
+                        className="btn-mini-copy"
+                        onClick={() => handleCopy(u.id)}
+                        title="Copy Full UUID"
+                        aria-label="Copy Full UUID"
                       >
-                        Manage
+                        {copiedId === u.id ? (
+                          <Check size={12} className="text-success" />
+                        ) : (
+                          <Copy size={12} />
+                        )}
                       </button>
-                    </td>
-                  </tr>
-                ))
-              ) : (
-                <tr>
-                  <td colSpan={7} className="empty-state-cell">
-                    No staff records match the current filter criteria.
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
-      </div>
+                    </div>
+                  </TableCell>
+
+                  {/* Role Pill */}
+                  <TableCell>
+                    <RolePill role={u.role} />
+                  </TableCell>
+
+                  {/* Department */}
+                  <TableCell>
+                    <span className="dept-text">{u.department}</span>
+                  </TableCell>
+
+                  {/* Institution & Timezone */}
+                  <TableCell>
+                    <div className="inst-meta-cell">
+                      <span className="inst-badge">{u.institutionName}</span>
+                      {u.timezone && (
+                        <span className="inst-timezone-tag font-mono">
+                          <Clock size={11} />
+                          {u.timezone.split("/")[1] || u.timezone}
+                        </span>
+                      )}
+                    </div>
+                  </TableCell>
+
+                  {/* Joined Date */}
+                  <TableCell isMono className="date-cell">
+                    {u.created_at
+                      ? new Date(u.created_at).toLocaleDateString("en-US", {
+                          month: "short",
+                          day: "numeric",
+                          year: "numeric",
+                        })
+                      : "Active"}
+                  </TableCell>
+
+                  {/* Actions */}
+                  <TableCell align="right">
+                    <Button
+                      variant="outline"
+                      size="xs"
+                      onClick={() =>
+                        info(`Viewing access scopes for ${u.full_name || u.email}`)
+                      }
+                    >
+                      Manage
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              ))
+            ) : (
+              <TableEmptyState
+                colSpan={7}
+                message="No staff records match the current filter criteria."
+              />
+            )}
+          </TableBody>
+        </Table>
+      </Card>
 
       {/* Role Permission Matrix Reference Card */}
-      <div className="admin-roles-card">
-        <div className="card-header-styled">
-          <Shield size={18} className="header-icon" />
-          <div>
-            <h3>Institution Role & Permission Matrix (RBAC)</h3>
-            <p>Granular operational scopes defined in database schema</p>
-          </div>
-        </div>
-
+      <Card
+        title="Institution Role & Permission Matrix (RBAC)"
+        subtitle="Granular operational scopes defined in database schema"
+        icon={<Shield size={18} />}
+        className="admin-roles-card"
+      >
         <div className="roles-matrix-grid">
           <div className="role-spec-box">
             <div className="role-header">
-              <span className="status-pill status-pill-warning">Admin</span>
+              <RolePill role="Admin" />
               <strong>Full Management</strong>
             </div>
-            <p>Manage users, configure institution timezone/code, manage tags, and oversee student records.</p>
+            <p>
+              Manage users, configure institution timezone/code, manage tags, and oversee student
+              records across all units.
+            </p>
           </div>
 
           <div className="role-spec-box">
             <div className="role-header">
-              <span className="status-pill status-pill-info">Analyst</span>
+              <RolePill role="Analyst" />
               <strong>Yield & SQL Reporting</strong>
             </div>
-            <p>Execute read-only SQL queries, build cohort funnels, run `v_student_reporting` and yield models.</p>
+            <p>
+              Execute read-only SQL queries, build cohort funnels, run{" "}
+              <code>v_student_reporting</code>, and compute yield models.
+            </p>
           </div>
 
           <div className="role-spec-box">
             <div className="role-header">
-              <span className="status-pill status-pill-success">Advisor</span>
+              <RolePill role="Advisor" />
               <strong>Advising & Interactions</strong>
             </div>
-            <p>Log student communications, review transcripts, manage follow-up tasks, and track standing.</p>
+            <p>
+              Log student communications, review transcripts, manage follow-up tasks, and track
+              academic standing.
+            </p>
           </div>
 
           <div className="role-spec-box">
             <div className="role-header">
-              <span className="status-pill status-pill-neutral">Viewer</span>
+              <RolePill role="Faculty" />
+              <strong>Academic Review</strong>
+            </div>
+            <p>
+              Access assigned student cohorts, review term records, submit grade assessments, and
+              view departmental statistics.
+            </p>
+          </div>
+
+          <div className="role-spec-box">
+            <div className="role-header">
+              <RolePill role="Viewer" />
               <strong>Audit & Read-Only</strong>
             </div>
-            <p>View pre-computed dashboards, student profiles, and compliance audits with zero mutation access.</p>
+            <p>
+              View pre-computed dashboards, student profiles, and compliance audits with zero data
+              mutation permissions.
+            </p>
           </div>
         </div>
-      </div>
+      </Card>
 
-      {/* Invite Staff Modal */}
-      {isInviteModalOpen && (
-        <div className="modal-backdrop" onClick={() => setIsInviteModalOpen(false)}>
-          <div className="modal-card" onClick={(e) => e.stopPropagation()}>
-            <div className="modal-header">
-              <div className="modal-title-group">
-                <h3>Invite Staff Member</h3>
-                <p>Grant access to the Columbia GS Student CRM Workspace</p>
-              </div>
-              <button
-                className="btn-modal-close"
-                onClick={() => setIsInviteModalOpen(false)}
-              >
-                <X size={18} />
-              </button>
-            </div>
+      {/* Reusable Invite Staff Modal */}
+      <Modal
+        isOpen={isInviteModalOpen}
+        onClose={() => setIsInviteModalOpen(false)}
+        title="Invite Staff Member"
+        subtitle="Grant operational access to the Columbia GS Student CRM Workspace"
+        icon={<UserPlus size={18} />}
+        size="md"
+      >
+        <form onSubmit={handleInviteSubmit} className="modal-form">
+          <Input
+            label="Full Name *"
+            required
+            placeholder="e.g. Jordan Reed"
+            value={inviteForm.fullName}
+            onChange={(e) =>
+              setInviteForm({ ...inviteForm, fullName: e.target.value })
+            }
+            fullWidth
+          />
 
-            <form onSubmit={handleInviteSubmit} className="modal-form">
-              <div className="form-group">
-                <label>Full Name *</label>
-                <input
-                  type="text"
-                  required
-                  placeholder="e.g. Jordan Reed"
-                  value={inviteForm.fullName}
-                  onChange={(e) =>
-                    setInviteForm({ ...inviteForm, fullName: e.target.value })
-                  }
-                  className="form-input"
-                />
-              </div>
+          <Input
+            label="University Email *"
+            type="email"
+            required
+            placeholder="e.g. jordan.reed@columbia.edu"
+            value={inviteForm.email}
+            onChange={(e) =>
+              setInviteForm({ ...inviteForm, email: e.target.value })
+            }
+            fullWidth
+          />
 
-              <div className="form-group">
-                <label>University Email *</label>
-                <input
-                  type="email"
-                  required
-                  placeholder="e.g. jordan.reed@columbia.edu"
-                  value={inviteForm.email}
-                  onChange={(e) =>
-                    setInviteForm({ ...inviteForm, email: e.target.value })
-                  }
-                  className="form-input"
-                />
-              </div>
+          <div className="form-row">
+            {/* Reusable Select Dropdown for Role Assignment */}
+            <Select
+              label="Assigned Role *"
+              value={inviteForm.role}
+              onChange={(e) =>
+                setInviteForm({ ...inviteForm, role: e.target.value })
+              }
+              options={[
+                { value: "Admin", label: "Admin - Full Management" },
+                { value: "Analyst", label: "Analyst - Yield & SQL Reporting" },
+                { value: "Advisor", label: "Advisor - Advising & Interactions" },
+                { value: "Faculty", label: "Faculty - Academic Review" },
+                { value: "Viewer", label: "Viewer - Audit & Read-Only" },
+              ]}
+              fullWidth
+            />
 
-              <div className="form-row">
-                <div className="form-group">
-                  <label>Assigned Role *</label>
-                  <select
-                    value={inviteForm.role}
-                    onChange={(e) =>
-                      setInviteForm({ ...inviteForm, role: e.target.value })
-                    }
-                    className="form-select"
-                  >
-                    <option value="Admin">Admin</option>
-                    <option value="Analyst">Analyst</option>
-                    <option value="Advisor">Advisor</option>
-                    <option value="Faculty">Faculty</option>
-                    <option value="Viewer">Viewer</option>
-                  </select>
-                </div>
-
-                <div className="form-group">
-                  <label>Institution</label>
-                  <input
-                    type="text"
-                    disabled
-                    value="Columbia University (CU)"
-                    className="form-input"
-                  />
-                </div>
-              </div>
-
-              <div className="modal-footer">
-                <button
-                  type="button"
-                  className="btn-modal-cancel"
-                  onClick={() => setIsInviteModalOpen(false)}
-                >
-                  Cancel
-                </button>
-                <button type="submit" className="btn-modal-submit">
-                  Send Invitation
-                </button>
-              </div>
-            </form>
+            <Input
+              label="Department"
+              placeholder="e.g. Admissions"
+              value={inviteForm.department}
+              onChange={(e) =>
+                setInviteForm({ ...inviteForm, department: e.target.value })
+              }
+              fullWidth
+            />
           </div>
-        </div>
-      )}
+
+          {/* Reusable Select Dropdown for Institution & Timezone Assignment */}
+          <Select
+            label="Home Institution & Timezone"
+            value={inviteForm.institutionId || (institutionsData?.[0]?.id ?? "")}
+            onChange={(e) =>
+              setInviteForm({ ...inviteForm, institutionId: e.target.value })
+            }
+            options={institutionSelectOptions}
+            icon={<Building size={14} />}
+            fullWidth
+          />
+
+          <div className="modal-form-actions">
+            <Button
+              variant="secondary"
+              size="sm"
+              onClick={() => setIsInviteModalOpen(false)}
+            >
+              Cancel
+            </Button>
+            <Button type="submit" variant="primary" size="sm">
+              Send Invitation
+            </Button>
+          </div>
+        </form>
+      </Modal>
     </div>
   );
 }

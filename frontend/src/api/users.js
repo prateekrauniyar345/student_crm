@@ -1,5 +1,5 @@
 import apiClient from "../lib/apiClient";
-
+import User  from "../models/user";
 
 // function to get users with optional query parameters
 export const getUsers = async({full_name, email, preferred_first_name}) =>{
@@ -14,8 +14,11 @@ export const getUsers = async({full_name, email, preferred_first_name}) =>{
         if (preferred_first_name) {
             urlParam.append("preferred_first_name", preferred_first_name);
         }
-        const response = await apiClient.get(`/users?${urlParam.toString()}`);
-        return response.data;
+        const { data } = await apiClient.get(`/users?${urlParam.toString()}`);
+        if (data && Array.isArray(data)) {
+            return data.map((item) => User.fromApiResponse(item));
+        }
+        return [];
     } catch (err) {
         console.error(err);
         throw err;
@@ -23,6 +26,37 @@ export const getUsers = async({full_name, email, preferred_first_name}) =>{
 };
 
 
+// get user by ID
+export const getUserById = async(userID) =>{
+    if (!userID) {
+        throw new Error("User ID is required to fetch user details");
+    }
+    try{
+        const { data } = await apiClient.get(`/users?id=${userID}`);
+        if (data && Array.isArray(data) && data.length > 0) {
+            return User.fromApiResponse(data[0]);
+        }
+        throw new Error("User not found"); 
+    } catch (err) {
+        console.error(err);
+        throw err;
+    }
+};
+
+
+//get all users
+export const getAllUsers = async() =>{
+    try{
+        const { data } = await apiClient.get(`/users`);
+        if (data && Array.isArray(data)) {
+            return data.map((item) => User.fromApiResponse(item));
+        }
+        return [];
+    } catch (err) {
+        console.error(err);
+        throw err;
+    }
+};
 
 
 // create user function
@@ -34,8 +68,8 @@ export const createUser = async(createUserPayload) =>{
         throw new Error("Missing required user fields");
     }
     try {
-        const response = await apiClient.post("/users", createUserPayload);
-        return response.data;
+        const { data } = await apiClient.post("/users", createUserPayload);
+        return User.fromApiResponse(data);
     } catch (err) {
         console.error("Failed to create user:", err);
         throw err;
@@ -71,8 +105,8 @@ export const updateUser = async (userID, userUpdatePayload) => {
   }
 
   try {
-    const response = await apiClient.patch(`/users/${userID}`, payload);
-    return response.data;
+    const { data } = await apiClient.patch(`/users/${userID}`, payload);
+    return User.fromApiResponse(data);
   } catch (err) {
     console.error("Failed to update user:", err);
     throw err;

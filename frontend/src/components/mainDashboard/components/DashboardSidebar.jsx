@@ -16,6 +16,7 @@ import {
   ExternalLink,
 } from "lucide-react";
 import "./DashboardSidebar.css";
+import { rolePillsStatusStyle } from "../../../utils/styleGuide";
 
 export const navigationItems = [
   {
@@ -167,7 +168,7 @@ export default function DashboardSidebar({
                         <span
                           className={`nav-badge ${
                             item.badge === "Admin"
-                              ? "badge-admin"
+                              ? `status-pill ${rolePillsStatusStyle["Admin"]}`
                               : item.badge === "AI Agent"
                               ? "badge-ai"
                               : "badge-tag"

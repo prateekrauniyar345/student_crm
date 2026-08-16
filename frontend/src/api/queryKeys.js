@@ -6,6 +6,14 @@ export const queryKeys = {
   me: () => ["auth", "me"],
 
 
+  // User data
+  users : {
+    all : () => ["users"],
+    detail : (id) => ["users", "detail", id],
+    list : (filters = {}) => ["users", "list", filters],
+  },
+
+
   // Institution data
   institutions : {
     all : () => ["institutions"],
@@ -13,6 +21,7 @@ export const queryKeys = {
   }, 
 
 
+  // Users and Institutions Memberships
   memberships: {
     all: () => ["memberships"],
     list: (filters = {}) => ["memberships", "list", filters],
