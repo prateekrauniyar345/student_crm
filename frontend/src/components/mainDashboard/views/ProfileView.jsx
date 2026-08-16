@@ -103,10 +103,6 @@ export default function ProfileView({ currentUser }) {
   }, [primaryMembership]);
 
 
-  console.log("institutionData User:", institutionData);
-  // console.log("primaryMembership User:", primaryMembership);
-
-
   // SINGLE UNIFIED COPY HANDLER
   const handleCopy = async (textToCopy, key, message) => {
     if (!textToCopy) return;

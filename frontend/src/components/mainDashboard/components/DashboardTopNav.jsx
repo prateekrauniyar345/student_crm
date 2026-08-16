@@ -11,6 +11,7 @@ import {
   Menu,
 } from "lucide-react";
 import "./DashboardTopNav.css";
+import { useInstitutionById, useMyMemberships } from "../../../hooks/useInstitution";
 
 export default function DashboardTopNav({
   activeTab,
@@ -21,6 +22,15 @@ export default function DashboardTopNav({
 }) {
   const [showDropdown, setShowDropdown] = useState(false);
   const dropdownRef = useRef(null);
+
+
+  const { data: institutionMembershipData } = useMyMemberships(user?.id);
+  const primaryMembership = institutionMembershipData?.[0];
+
+  console.log("Primary Membership in dashboard top nav:", primaryMembership);
+
+  const { data: institutionData } = useInstitutionById(primaryMembership?.institutionId);
+  console.log("Institution Data in dashboard top nav:", institutionData);
 
 
 
@@ -94,10 +104,6 @@ export default function DashboardTopNav({
           <span className="breadcrumb-current">{getTabLabel(activeTab)}</span>
         </div>
 
-        {/* <div className="institutional-header-tag">
-          <span className="status-dot">●</span>
-          <span>PostgreSQL Active • Columbia GS Standard</span>
-        </div> */}
       </div>
 
       <div className="topnav-right">
@@ -136,7 +142,7 @@ export default function DashboardTopNav({
               <span className="trigger-user-name">
                 {user?.full_name || user?.email?.split("@")[0] || "User"}
               </span>
-              <span className="trigger-user-role">Advising Staff</span>
+              <span className="trigger-user-role">{primaryMembership?.role || "Viewer"}</span>
             </div>
             <ChevronDown size={14} className="dropdown-arrow" />
           </button>

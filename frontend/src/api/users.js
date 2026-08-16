@@ -45,6 +45,8 @@ export const createUser = async(createUserPayload) =>{
 
 // function to update an existing user
 export const updateUser = async (userID, userUpdatePayload) => {
+
+  console.log("Updating user with ID:", userID, "with payload:", userUpdatePayload);
   if (!userUpdatePayload || typeof userUpdatePayload !== "object") {
     throw new Error("Invalid payload provided for updating user");
   }
@@ -52,7 +54,7 @@ export const updateUser = async (userID, userUpdatePayload) => {
     throw new Error("Missing required user id field");
   }
 
-  if (userUpdatePayload.full_name.trim() == ""){
+  if (userUpdatePayload.full_name && userUpdatePayload.full_name.trim() == ""){
     throw new Error("Full name cannot be empty");
   }
 
