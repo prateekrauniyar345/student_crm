@@ -23,6 +23,16 @@ import { useUpdateUser } from "../../../hooks/useCurrentUser";
 import { useMyMemberships, useInstitutionById } from "../../../hooks/useInstitution";
 
 
+const rolePillsStatusStyle = {
+  "Admin": "status-pill status-pill-danger",
+  "Analyst": "status-pill status-pill-danger",
+  "Advisor": "status-pill status-pill-success",
+  "Faculty": "status-pill status-pill-success",
+  "Viewer": "status-pill status-pill-warning",
+}
+
+
+
 export default function ProfileView({ currentUser }) {
   const [isSaving, setIsSaving] = useState(false);
   const [copiedStates, setCopiedStates] = useState({ email: false, id: false });
@@ -160,9 +170,9 @@ export default function ProfileView({ currentUser }) {
         <div className="profile-hero-meta">
           <div className="hero-name-row">
             <h2>{formState.full_name || currentUser?.email?.split("@")[0] || "Staff Member"}</h2>
-            <span className="status-pill status-pill-success">
+            <span className={`status-pill ${rolePillsStatusStyle[formState.role] || ""}`}>
               <CheckCircle2 size={12} />
-              <span>Verified SSO Operator</span>
+              <span>{formState.role}</span>
             </span>
           </div>
           <span className="hero-email font-mono">{currentUser?.email}</span>
@@ -228,7 +238,7 @@ export default function ProfileView({ currentUser }) {
             <div className="meta-field">
               <span className="meta-label">Assigned CRM Role</span>
               <div className="meta-val">
-                <span className="status-pill status-pill-info">
+                <span className={`status-pill ${rolePillsStatusStyle[formState.role] || ""}`}>
                   {formState.role || "Loading..."}
                 </span>
               </div>
