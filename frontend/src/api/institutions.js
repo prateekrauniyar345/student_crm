@@ -44,6 +44,7 @@ export const createInstitution = async (institutionData) => {
 
 // UPDATE an existing institution (Returns updated Institutions instance)
 export const updateInstitution = async (id, updates) => {
+  console.log("Updating institution with ID:", id, "with updates:", updates);
   try {
     const { data } = await apiClient.patch(`/institutions/${id}`, updates);
     return Institution.fromApiResponse(data);

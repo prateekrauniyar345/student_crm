@@ -20,7 +20,7 @@ import {
 import "./ProfileView.css";
 import { useToast } from "../../../context/ToastContext";
 import { useUpdateUser } from "../../../hooks/useCurrentUser";
-import { useMyMemberships, useInstitutionById } from "../../../hooks/useInstitution";
+import { useMyMemberships, useInstitutionById, useUpdateInstitution } from "../../../hooks/useInstitution";
 
 
 const rolePillsStatusStyle = {
@@ -38,6 +38,7 @@ export default function ProfileView({ currentUser }) {
   const [copiedStates, setCopiedStates] = useState({ email: false, id: false });
 
   const updateUserMutation = useUpdateUser();
+  const updateInstitutionMutation = useUpdateInstitution();
 
   // Single unified state for all form data
   const [formState, setFormState] = useState({
@@ -60,6 +61,13 @@ export default function ProfileView({ currentUser }) {
     emailNotifications: true,
     taskAlerts: true,
     weeklyReport: true,
+  });
+
+  // Track original user values for change detection
+  const [originalValues] = useState({
+    full_name: currentUser?.full_name || "",
+    preferred_first_name: currentUser?.preferred_first_name || "",
+    phone_number: currentUser?.phone_number || "",
   });
 
   // Get memberships and institution
@@ -96,7 +104,7 @@ export default function ProfileView({ currentUser }) {
 
 
   console.log("institutionData User:", institutionData);
-  console.log("primaryMembership User:", primaryMembership);
+  // console.log("primaryMembership User:", primaryMembership);
 
 
   // SINGLE UNIFIED COPY HANDLER
@@ -120,6 +128,7 @@ export default function ProfileView({ currentUser }) {
   // SINGLE UNIFIED INPUT HANDLER
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
+    console.log("name:", name, "value:", value, "type:", type, "checked:", checked);
     setFormState(prev => ({
       ...prev,
       [name]: type === 'checkbox' ? checked : value,
@@ -130,17 +139,50 @@ export default function ProfileView({ currentUser }) {
   const handleSaveProfile = async (e) => {
     e.preventDefault();
 
-    // Only send fields that changed and exist in UserUpdate schema
-    const updatePayload = {
-      full_name: formState.full_name,
-      preferred_first_name: formState.preferred_first_name || "",
-      phone_number: formState.phone_number || "",
-    };
+    // Build payload with ONLY changed fields
+    const updateUserPayload = {};
+    const updateInstitutionPayload = {};
+    let hasUserChanges = false;
+    let hasTimezoneChanges = false;
 
-    // Call mutation - it handles API call + cache invalidation
+    // Check full_name
+    if (formState.full_name !== originalValues.full_name) {
+      updateUserPayload.full_name = formState.full_name;
+      hasUserChanges = true;
+    }
+
+    // Check preferred_first_name
+    if (formState.preferred_first_name !== originalValues.preferred_first_name) {
+      updateUserPayload.preferred_first_name = formState.preferred_first_name || "";
+      hasUserChanges = true;
+    }
+
+    // Check phone_number
+    if (formState.phone_number !== originalValues.phone_number) {
+      updateUserPayload.phone_number = formState.phone_number || "";
+      hasUserChanges = true;
+    }
+
+    if (formState.timezone !== institutionData?.timezone) {
+      updateInstitutionPayload.timezone = formState.timezone;
+      hasTimezoneChanges = true;
+    }
+
+    // If nothing changed, show info and return
+    if (!hasUserChanges && !hasTimezoneChanges) {
+      info("No changes to save");
+      return;
+    }
+
+    // Call mutations only for changed entities
     setIsSaving(true);
     try {
-      await updateUserMutation.mutateAsync({ userId: formState.id, updatePayload });
+      if (hasUserChanges) {
+        await updateUserMutation.mutateAsync({ userId: formState.id, updatePayload: updateUserPayload });
+      }
+      if (hasTimezoneChanges) {
+        await updateInstitutionMutation.mutateAsync({ institutionId: institutionData.id, updates: updateInstitutionPayload });
+      }
     } finally {
       setIsSaving(false);
     }
@@ -245,6 +287,13 @@ export default function ProfileView({ currentUser }) {
             </div>
 
             <div className="meta-field">
+              <span className="meta-label">Department & Title</span>
+              <div className="meta-val">
+                {formState.department || "Loading..."}
+              </div>
+            </div>
+
+            <div className="meta-field">
               <span className="meta-label">Account Provisioned Date</span>
               <div className="meta-val font-mono">{formatDate(currentUser?.created_at)}</div>
             </div>
@@ -314,19 +363,6 @@ export default function ProfileView({ currentUser }) {
                   className="form-input"
                 />
               </div>
-            </div>
-
-            <div className="form-group">
-              <label htmlFor="department">Department & Title</label>
-              <input
-                id="department"
-                name="department"
-                type="text"
-                value={formState.department || ""}
-                onChange={handleInputChange}
-                placeholder="e.g. Office of the Dean of Students"
-                className="form-input"
-              />
             </div>
 
             <div className="form-group">
