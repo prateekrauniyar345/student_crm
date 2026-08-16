@@ -9,9 +9,11 @@ import {
   Sparkles,
   Database,
   Menu,
+  ShieldCheck
 } from "lucide-react";
 import "./DashboardTopNav.css";
 import { useInstitutionById, useMyMemberships } from "../../../hooks/useInstitution";
+import { rolePillsStatusStyle } from "../../../utils/styleGuide";
 
 export default function DashboardTopNav({
   activeTab,
@@ -152,9 +154,9 @@ export default function DashboardTopNav({
               <div className="topnav-user-header">
                 <span className="dd-user-name">{user?.full_name || "Staff Member"}</span>
                 <span className="dd-user-email font-mono">{user?.email}</span>
-                <span className="status-pill status-pill-success">
-                  <Shield size={12} />
-                  <span>Authenticated Operator</span>
+                <span className={`status-pill ${rolePillsStatusStyle[primaryMembership?.role] || "status-pill status-pill-warning"}`}>
+                  {primaryMembership?.role === "Admin" && <ShieldCheck size={12} />}
+                  <span>{primaryMembership?.role || "Viewer"}</span>
                 </span>
               </div>
 

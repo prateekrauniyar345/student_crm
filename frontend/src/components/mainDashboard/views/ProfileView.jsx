@@ -15,21 +15,16 @@ import {
   Phone,
   Clock,
   Bell,
-  Ellipsis
+  Ellipsis,
+  ShieldCheck
 } from "lucide-react";
 import "./ProfileView.css";
 import { useToast } from "../../../context/ToastContext";
 import { useUpdateUser } from "../../../hooks/useCurrentUser";
 import { useMyMemberships, useInstitutionById, useUpdateInstitution } from "../../../hooks/useInstitution";
+import { rolePillsStatusStyle } from "../../../utils/styleGuide";
 
 
-const rolePillsStatusStyle = {
-  "Admin": "status-pill status-pill-danger",
-  "Analyst": "status-pill status-pill-danger",
-  "Advisor": "status-pill status-pill-success",
-  "Faculty": "status-pill status-pill-success",
-  "Viewer": "status-pill status-pill-warning",
-}
 
 
 
@@ -208,7 +203,7 @@ export default function ProfileView({ currentUser }) {
         <div className="profile-hero-meta">
           <div className="hero-name-row">
             <h2>{formState.full_name || currentUser?.email?.split("@")[0] || "Staff Member"}</h2>
-            <span className={`status-pill ${rolePillsStatusStyle[formState.role] || ""}`}>
+            <span className={`status-pill ${rolePillsStatusStyle[formState.role] || "status-pill status-pill-warning"}`}>
               <CheckCircle2 size={12} />
               <span>{formState.role}</span>
             </span>
