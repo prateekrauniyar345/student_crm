@@ -22,7 +22,7 @@ user_routes = APIRouter(prefix=f"{os.getenv('API_PREFIX')}/users", tags=["users"
 
 @user_routes.get("/")
 async def get_users(
-        # current_user: Annotated[UserResponse, Depends(get_current_user)],
+        current_user: Annotated[UserResponse, Depends(get_current_user)],
         id: UUID | None = None,
         full_name: str | None = None, 
         preferred_first_name: str | None = None,
@@ -33,8 +33,8 @@ async def get_users(
         session: AsyncSession = Depends(get_session)
     ) -> list[UserResponse]:
     """
-    Get all active users from the database.
-    This is a public endpoint - returns only non-sensitive fields.
+    Get users from the database with optional filters.
+    Requires authentication.
     """
     try:
         # Query users from Supabase (will be from the student_crm.users table)
@@ -99,6 +99,7 @@ async def create_user(
 
         return UserResponse.model_validate(new_user)
     except Exception as e:
+        await session.rollback()
         print(f"Error creating user: {e}")
         raise HTTPException(status_code=500, detail="Error creating user")
 
@@ -126,16 +127,16 @@ async def update_user_partial(
                 detail="User not found"
             )
 
-        if user_update.full_name is not None:
-            db_user.full_name = user_update.full_name
-        if user_update.preferred_first_name is not None:
-            db_user.preferred_first_name = user_update.preferred_first_name
-        if user_update.phone_number is not None:
-            db_user.phone_number = user_update.phone_number
-        if user_update.is_active is not None:
-            db_user.is_active = user_update.is_active
-        if user_update.user_timezone is not None:
-            db_user.user_timezone = user_update.user_timezone
+        update_data = user_update.model_dump(exclude_unset=True)
+
+        if "full_name" in update_data and update_data["full_name"] is None:
+            raise HTTPException(
+                status_code=400,
+                detail="full_name cannot be null"
+            )
+
+        for field, value in update_data.items():
+            setattr(db_user, field, value)
 
         await session.commit()
         await session.refresh(db_user)
@@ -143,7 +144,8 @@ async def update_user_partial(
     
     except HTTPException:
         raise
-    except Exception as e:  
+    except Exception as e:
+        await session.rollback()
         print(f"Error updating user: {e}")
         raise HTTPException(status_code=500, detail="Error updating user")
 
@@ -189,5 +191,6 @@ async def delete_user(
     except HTTPException:
         raise
     except Exception as e:
+        await session.rollback()
         print(f"Error deleting user: {e}")
         raise HTTPException(status_code=500, detail="Error deleting user")

@@ -18,8 +18,8 @@ full_name: User's complete display name (VARCHAR 100, NOT NULL).
 preferred_first_name: User's preferred first name for personalization (VARCHAR 50, nullable).
 email: User's email address. Must be unique in public.users (VARCHAR 100, UNIQUE, NOT NULL).
 phone_number: User's phone number in any format (VARCHAR 20, nullable).
-is_active: Boolean flag indicating if the user account is active (BOOLEAN, NOT NULL, DEFAULT TRUE).
-user_timezone: User's timezone for personalization (VARCHAR 100, NOT NULL, DEFAULT 'America/New_York'). Allowed values: America/New_York, America/Chicago, America/Denver, America/Los_Angeles, America/Anchorage, America/Phoenix, Pacific/Honolulu.
+is_active: Boolean flag indicating if the user account is active (BOOLEAN, DEFAULT TRUE).
+user_timezone: User's timezone for personalization (VARCHAR 100, DEFAULT 'America/New_York'). Allowed values: America/New_York, America/Chicago, America/Denver, America/Los_Angeles, America/Anchorage, America/Phoenix, Pacific/Honolulu.
 created_at: Timestamp when the user row was created (TIMESTAMPTZ, DEFAULT NOW()).
 """
 
@@ -43,7 +43,7 @@ CREATE TABLE users (
     preferred_first_name VARCHAR(50),
     email VARCHAR(100) NOT NULL UNIQUE,
     phone_number VARCHAR(20),
-    is_active BOOLEAN NOT NULL DEFAULT TRUE,
+    is_active BOOLEAN DEFAULT TRUE,
     user_timezone VARCHAR(100) DEFAULT 'America/New_York' CHECK (
         user_timezone IN (
             'America/New_York',
@@ -87,7 +87,7 @@ class User(Base):
 
     full_name = Column(
         String(100), 
-        nullable=False
+        nullable=False,
     )
 
     preferred_first_name = Column(
@@ -109,13 +109,13 @@ class User(Base):
 
     is_active = Column(
         Boolean,
-        nullable=False, 
+        nullable=True,
         server_default=text("true")
     )
 
     user_timezone = Column(
         String(100),
-        nullable=False,
+        nullable=True,
         server_default=text("'America/New_York'")
     )
     
@@ -123,5 +123,5 @@ class User(Base):
     created_at = Column(
         DateTime(timezone=True),
         server_default=func.now(),
-        nullable=False
+        nullable=False,
     )
