@@ -15,7 +15,7 @@ COLUMN MEANING
 id: Unique UUID identifying the institution.
 name: Full institution name.
 code: Short unique identifier for the institution. Example: UI, CU.
-timezone: Timezone used by the institution. Defaults to UTC if not supplied.
+timezone: Timezone used by the institution. Defaults to 'America/New_York' if not supplied.
 created_at: Timestamp when the institution was created.
 """
 

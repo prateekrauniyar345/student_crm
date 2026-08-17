@@ -48,3 +48,72 @@ export function useUserById(userId) {
   });
 }
 
+// Hook to update a user profile
+export function useUpdateUser() {
+  const queryClient = useQueryClient();
+  const { success, error: showError } = useToast();
+
+  return useMutation({
+    mutationFn: ({ userId, updatePayload }) => updateUser(userId, updatePayload),
+    onSuccess: (updatedUser, variables) => {
+      // Invalidate all users list and specific user detail query
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.users.all(),
+      });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.users.detail(variables.userId),
+      });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.me(),
+      });
+      success("User profile updated successfully");
+      return updatedUser;
+    },
+    onError: (err) => {
+      const message = err.response?.data?.detail || err.message || "Failed to update user";
+      showError(message);
+    },
+  });
+}
+
+// Hook to create a new user
+export function useCreateUser() {
+  const queryClient = useQueryClient();
+  const { success, error: showError } = useToast();
+
+  return useMutation({
+    mutationFn: (createUserPayload) => createUser(createUserPayload),
+    onSuccess: (newUser) => {
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.users.all(),
+      });
+      success("User created successfully");
+      return newUser;
+    },
+    onError: (err) => {
+      const message = err.response?.data?.detail || err.message || "Failed to create user";
+      showError(message);
+    },
+  });
+}
+
+// Hook to delete a user
+export function useDeleteUser() {
+  const queryClient = useQueryClient();
+  const { success, error: showError } = useToast();
+
+  return useMutation({
+    mutationFn: ({ email, id }) => deleteUser(email, id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.users.all(),
+      });
+      success("User deleted successfully");
+    },
+    onError: (err) => {
+      const message = err.response?.data?.detail || err.message || "Failed to delete user";
+      showError(message);
+    },
+  });
+}
+

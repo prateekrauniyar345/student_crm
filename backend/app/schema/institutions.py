@@ -15,7 +15,7 @@ COLUMN MEANING
 id: Unique UUID identifying the institution.
 name: Full institution name.
 code: Short unique identifier for the institution. Example: UI, CU.
-timezone: Timezone used by the institution. Defaults to UTC if not supplied.
+timezone: Timezone used by the institution (VARCHAR 100, NOT NULL, DEFAULT 'America/New_York'). Allowed values: America/New_York, America/Chicago, America/Denver, America/Los_Angeles, America/Anchorage, America/Phoenix, Pacific/Honolulu.
 created_at: Timestamp when the institution was created.
 """
 
@@ -36,7 +36,17 @@ CREATE TABLE institutions (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     name VARCHAR(200) NOT NULL,
     code VARCHAR(30) NOT NULL UNIQUE,
-    timezone VARCHAR(100),
+    timezone VARCHAR(100) DEFAULT 'america/New_York' CHECK (
+        timezone IN (
+            'America/New_York',
+            'America/Chicago',
+            'America/Denver',
+            'America/Los_Angeles',
+            'America/Anchorage',
+            'America/Phoenix',
+            'Pacific/Honolulu'
+        )
+    ),
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 '''
@@ -78,9 +88,11 @@ class Institution(Base):
         unique=True
     )
 
+    # Default timezone is set to 'America/New_York' if not provided
     timezone = Column(
         String(100),
-        nullable=True,
+        nullable=False,
+        server_default=text("'America/New_York'")
     )
 
     created_at = Column(

@@ -28,6 +28,8 @@ async def get_users(
         preferred_first_name: str | None = None,
         email: str | None = None,
         phone_number: str | None = None,
+        is_active: bool | None = None,
+        user_timezone: str | None = None,
         session: AsyncSession = Depends(get_session)
     ) -> list[UserResponse]:
     """
@@ -53,7 +55,11 @@ async def get_users(
             statement = statement.where(User.preferred_first_name.ilike(f"%{preferred_first_name}%"))
         if phone_number:
             statement = statement.where(User.phone_number.ilike(f"%{phone_number}%"))
-            
+        if is_active is not None:
+            statement = statement.where(User.is_active == is_active)
+        if user_timezone:
+            statement = statement.where(User.user_timezone.ilike(f"%{user_timezone}%"))
+
         result = await session.execute(statement)
         users = result.scalars().all()
 
@@ -81,7 +87,9 @@ async def create_user(
             email=user_data.email, 
             full_name=user_data.full_name,
             preferred_first_name=user_data.preferred_first_name,
-            phone_number=user_data.phone_number
+            phone_number=user_data.phone_number,
+            is_active=user_data.is_active,
+            user_timezone=user_data.user_timezone
         )
 
         # Add the new user to the session and commit
@@ -124,6 +132,10 @@ async def update_user_partial(
             db_user.preferred_first_name = user_update.preferred_first_name
         if user_update.phone_number is not None:
             db_user.phone_number = user_update.phone_number
+        if user_update.is_active is not None:
+            db_user.is_active = user_update.is_active
+        if user_update.user_timezone is not None:
+            db_user.user_timezone = user_update.user_timezone
 
         await session.commit()
         await session.refresh(db_user)

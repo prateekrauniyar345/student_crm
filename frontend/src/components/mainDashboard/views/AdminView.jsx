@@ -14,15 +14,19 @@ import {
   Filter,
   Building,
   Clock,
+  Lock,
+  Save,
 } from "lucide-react";
 import "./AdminView.css";
 
 // TanStack Query Hooks
-import { useAllUsers } from "../../../hooks/useUsers";
+import { useAllUsers, useUpdateUser } from "../../../hooks/useUsers";
 import {
   useInstitutionMemberships,
   useAllInstitutions,
+  useUpdateMembership,
   useCreateMembership,
+  useUpdateInstitution,
 } from "../../../hooks/useInstitution";
 import { useToast } from "../../../context/ToastContext";
 
@@ -48,12 +52,13 @@ import {
 } from "../../../ui";
 
 export default function AdminView({ currentUser }) {
-  // State for search, filters, copy actions, and modal
+  // State for search, filters, copy actions, and modals
   const [searchQuery, setSearchQuery] = useState("");
-  const [roleFilter, setRoleFilter] = useState("all");
+  const [roleFilter, setRoleFilter] = useState("All");
   const [copiedId, setCopiedId] = useState(null);
-  const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
 
+  // Invite Modal State
+  const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
   const [inviteForm, setInviteForm] = useState({
     fullName: "",
     email: "",
@@ -62,9 +67,35 @@ export default function AdminView({ currentUser }) {
     institutionId: "",
   });
 
+  // Manage User Modal State
+  const [isManageModalOpen, setIsManageModalOpen] = useState(false);
+  const [selectedUser, setSelectedUser] = useState(null);
+  const [isSavingManage, setIsSavingManage] = useState(false);
+  const [manageForm, setManageForm] = useState({
+    userId: "",
+    fullName: "",
+    preferredFirstName: "",
+    email: "",
+    phoneNumber: "",
+    role: "Advisor",
+    department: "Academic Advising",
+    institutionId: "",
+    institutionName: "",
+    timezone: "America/New_York",
+    original: {
+      fullName: "",
+      preferredFirstName: "",
+      phoneNumber: "",
+      role: "Advisor",
+      department: "Academic Advising",
+      timezone: "America/New_York",
+    },
+  });
+
+  // toast for notifications
   const { success, info, error: showError } = useToast();
 
-  // 1. TanStack Query Hooks for reactive, cached data
+  // gettting all the users
   const {
     data: allUsersData = [],
     isLoading: isUsersLoading,
@@ -72,6 +103,8 @@ export default function AdminView({ currentUser }) {
     refetch: refetchUsers,
   } = useAllUsers();
 
+
+  // get all memberships and institutions
   const {
     data: membershipsData = [],
     isLoading: isMembershipsLoading,
@@ -79,9 +112,15 @@ export default function AdminView({ currentUser }) {
     refetch: refetchMemberships,
   } = useInstitutionMemberships();
 
+
+  // get all the institutions 
   const { data: institutionsData = [] } = useAllInstitutions();
 
+  // Mutations for updating users, memberships, and institutions
+  const updateUserMutation = useUpdateUser();
+  const updateMembershipMutation = useUpdateMembership();
   const createMembershipMutation = useCreateMembership();
+  const updateInstitutionMutation = useUpdateInstitution();
 
   const isLoading = isUsersLoading || isMembershipsLoading;
   const isRefetching = isUsersRefetching || isMembershipsRefetching;
@@ -130,7 +169,7 @@ export default function AdminView({ currentUser }) {
       const membership = membershipsByUser.get(user.id);
       const institution = membership ? institutionsMap.get(membership.institutionId) : null;
 
-      // Determine role from membership or fallback
+      // Determine role and department from membership or user fallback
       const role = membership?.role || user.role || "Viewer";
       const department = membership?.department || "General Operations";
       const institutionName = institution?.name
@@ -185,8 +224,7 @@ export default function AdminView({ currentUser }) {
       const matchesSearch = nameMatch || emailMatch;
 
       const matchesRole =
-        roleFilter === "all" ||
-        (u.role || "").toLowerCase() === roleFilter.toLowerCase();
+        roleFilter === "All" || roleFilter === "all" || (u.role || "").toLowerCase() === roleFilter.toLowerCase();
 
       return matchesSearch && matchesRole;
     });
@@ -201,6 +239,152 @@ export default function AdminView({ currentUser }) {
       setTimeout(() => setCopiedId(null), 2000);
     } catch (err) {
       showError("Failed to copy UUID");
+    }
+  };
+
+  console.log("selected user is : ", selectedUser);
+
+  // Open Manage Modal for a specific selected user
+  const handleOpenManage = (user) => {
+    setSelectedUser(user);
+
+    //instId = institution id of the user memebership institution
+    const instId = user.membership?.institutionId || user.membership?.institution_id || institutionsData?.[0]?.id || "";
+    console.log("instId is : ", instId);
+    // get the matched institution from the institutionsMap using the instId
+    const matchedInst = institutionsMap.get(instId);
+    console.log("matchedInst is : ", matchedInst);
+    const currentTz = matchedInst?.timezone || user.timezone || "America/New_York";
+    const currentRole = user.membership?.role || user.role || "Viewer";
+    const currentDept = user.membership?.department || user.department || "General Operations";
+
+    const initialValues = {
+      userId: user.id,
+      fullName: user.full_name || "",
+      preferredFirstName: user.preferred_first_name || "",
+      email: user.email || "",
+      phoneNumber: user.phone_number || "",
+      role: currentRole,
+      department: currentDept,
+      institutionId: instId,
+      institutionName: user.institutionName || (matchedInst ? `${matchedInst.name} (${matchedInst.code})` : "Columbia University (CU)"),
+      timezone: currentTz,
+    };
+
+    setManageForm({
+      ...initialValues,
+      original: {
+        fullName: initialValues.fullName,
+        preferredFirstName: initialValues.preferredFirstName,
+        phoneNumber: initialValues.phoneNumber,
+        role: initialValues.role,
+        department: initialValues.department,
+        timezone: initialValues.timezone,
+      },
+    });
+    setIsManageModalOpen(true);
+  };
+
+  // Handle saving updates from Manage User Modal
+  const handleSaveManage = async (e) => {
+    e.preventDefault();
+    if (!manageForm.userId) return;
+
+    const updateUserPayload = {};
+    let hasUserChanges = false;
+    let hasMembershipChanges = false;
+    let hasTimezoneChanges = false;
+
+    // Detect individual user profile changes
+    if (manageForm.fullName !== manageForm.original.fullName) {
+      updateUserPayload.full_name = manageForm.fullName;
+      hasUserChanges = true;
+    }
+    if (manageForm.preferredFirstName !== manageForm.original.preferredFirstName) {
+      updateUserPayload.preferred_first_name = manageForm.preferredFirstName || "";
+      hasUserChanges = true;
+    }
+    if (manageForm.phoneNumber !== manageForm.original.phoneNumber) {
+      updateUserPayload.phone_number = manageForm.phoneNumber || "";
+      hasUserChanges = true;
+    }
+
+    // Detect membership (role / department) changes
+    if (
+      manageForm.role !== manageForm.original.role ||
+      manageForm.department !== manageForm.original.department
+    ) {
+      hasMembershipChanges = true;
+    }
+
+    // Detect timezone changes (institution level)
+    if (manageForm.timezone !== manageForm.original.timezone) {
+      hasTimezoneChanges = true;
+    }
+
+    if (!hasUserChanges && !hasMembershipChanges && !hasTimezoneChanges) {
+      info("No changes to save");
+      setIsManageModalOpen(false);
+      return;
+    }
+
+    setIsSavingManage(true);
+    try {
+      const promises = [];
+
+      // 1. Update specific user profile fields
+      if (hasUserChanges) {
+        promises.push(
+          updateUserMutation.mutateAsync({
+            userId: manageForm.userId,
+            updatePayload: updateUserPayload,
+          })
+        );
+      }
+
+      // 2. Update or create membership for specific user's role and department
+      if (hasMembershipChanges && manageForm.institutionId) {
+        if (selectedUser?.membership) {
+          promises.push(
+            updateMembershipMutation.mutateAsync({
+              institutionId: manageForm.institutionId,
+              userId: manageForm.userId,
+              data: {
+                role: manageForm.role,
+                department: manageForm.department,
+              },
+            })
+          );
+        } else {
+          promises.push(
+            createMembershipMutation.mutateAsync({
+              institution_id: manageForm.institutionId,
+              user_id: manageForm.userId,
+              role: manageForm.role,
+              department: manageForm.department,
+            })
+          );
+        }
+      }
+
+      // 3. Update institution timezone (only if explicitly modified)
+      if (hasTimezoneChanges && manageForm.institutionId) {
+        promises.push(
+          updateInstitutionMutation.mutateAsync({
+            institutionId: manageForm.institutionId,
+            updates: {
+              timezone: manageForm.timezone,
+            },
+          })
+        );
+      }
+
+      await Promise.all(promises);
+      setIsManageModalOpen(false);
+    } catch (err) {
+      console.error("Failed to update staff member:", err);
+    } finally {
+      setIsSavingManage(false);
     }
   };
 
@@ -224,14 +408,33 @@ export default function AdminView({ currentUser }) {
     }
   };
 
-  // Role options for select dropdown
+  // Role options for select dropdowns
   const roleSelectOptions = [
-    { value: "all", label: "All Roles" },
-    { value: "admin", label: "Admin" },
-    { value: "analyst", label: "Analyst" },
-    { value: "advisor", label: "Advisor" },
-    { value: "faculty", label: "Faculty" },
-    { value: "viewer", label: "Viewer" },
+    { value: "All", label: "All Roles" },
+    { value: "Admin", label: "Admin" },
+    { value: "Analyst", label: "Analyst" },
+    { value: "Advisor", label: "Advisor" },
+    { value: "Faculty", label: "Faculty" },
+    { value: "Viewer", label: "Viewer" },
+  ];
+
+  const roleAssignmentOptions = [
+    { value: "Admin", label: "Admin - Full Management" },
+    { value: "Analyst", label: "Analyst - Yield & SQL Reporting" },
+    { value: "Advisor", label: "Advisor - Advising & Interactions" },
+    { value: "Faculty", label: "Faculty - Academic Review" },
+    { value: "Viewer", label: "Viewer - Audit & Read-Only" },
+  ];
+
+  // Timezone options for select dropdown
+  const timezoneOptions = [
+    { value: "America/New_York", label: "America/New_York (Eastern Time - UTC-5)" },
+    { value: "America/Chicago", label: "America/Chicago (Central Time - UTC-6)" },
+    { value: "America/Denver", label: "America/Denver (Mountain Time - UTC-7)" },
+    { value: "America/Phoenix", label: "America/Phoenix (Mountain Standard - UTC-7)" },
+    { value: "America/Los_Angeles", label: "America/Los_Angeles (Pacific Time - UTC-8)" },
+    { value: "America/Anchorage", label: "America/Anchorage (Alaska Time - UTC-9)" },
+    { value: "Pacific/Honolulu", label: "Pacific/Honolulu (Hawaii Time - UTC-10)" },
   ];
 
   // Institution options for invite modal dropdown
@@ -281,9 +484,9 @@ export default function AdminView({ currentUser }) {
           label="Total Analysts"
           value={roleStats.analysts}
           icon={<TrendingUp size={16} />}
-          iconVariant="amber"
+          iconVariant="purple"
           loading={isLoading}
-          pill={<StatusPill variant="danger">Yield & Reports</StatusPill>}
+          pill={<StatusPill variant="purple">Yield & Reports</StatusPill>}
           subtext="Ad-hoc SQL & analytics"
         />
 
@@ -292,9 +495,9 @@ export default function AdminView({ currentUser }) {
           label="Total Faculty"
           value={roleStats.faculty}
           icon={<GraduationCap size={16} />}
-          iconVariant="green"
+          iconVariant="blue"
           loading={isLoading}
-          pill={<StatusPill variant="success">Academic Units</StatusPill>}
+          pill={<StatusPill variant="info">Academic Units</StatusPill>}
           subtext="Instructors & chairs"
         />
 
@@ -314,7 +517,7 @@ export default function AdminView({ currentUser }) {
           label="Total Viewers"
           value={roleStats.viewers}
           icon={<Eye size={16} />}
-          iconVariant="neutral"
+          iconVariant="amber"
           loading={isLoading}
           pill={<StatusPill variant="warning">Read-Only</StatusPill>}
           subtext="Auditors & stakeholders"
@@ -455,14 +658,12 @@ export default function AdminView({ currentUser }) {
                       : "Active"}
                   </TableCell>
 
-                  {/* Actions */}
+                  {/* Manage Button */}
                   <TableCell align="right">
                     <Button
                       variant="outline"
                       size="xs"
-                      onClick={() =>
-                        info(`Viewing access scopes for ${u.full_name || u.email}`)
-                      }
+                      onClick={() => handleOpenManage(u)}
                     >
                       Manage
                     </Button>
@@ -544,6 +745,135 @@ export default function AdminView({ currentUser }) {
         </div>
       </Card>
 
+      {/* 🛠️ Reusable Manage Staff Member Modal */}
+      <Modal
+        isOpen={isManageModalOpen}
+        onClose={() => setIsManageModalOpen(false)}
+        title="Manage Staff Member"
+        subtitle={`Adjust role, department, and operational settings for ${manageForm.fullName || manageForm.email}`}
+        icon={<UserCheck size={18} />}
+        size="md"
+      >
+        <form onSubmit={handleSaveManage} className="modal-form">
+          {/* Read-Only Operator Identity Summary */}
+          <div className="manage-identity-banner">
+            <div className="manage-identity-meta">
+              <span className="manage-identity-label">System User</span>
+              <strong className="manage-identity-val">{manageForm.fullName || "Operator"}</strong>
+              <span className="manage-identity-sub font-mono">{manageForm.email}</span>
+            </div>
+            <div className="manage-identity-id">
+              <span className="manage-identity-label">UUID</span>
+              <span className="font-mono user-id-pill">
+                {manageForm.userId ? `${manageForm.userId.slice(0, 8)}...${manageForm.userId.slice(-4)}` : "—"}
+              </span>
+            </div>
+          </div>
+
+          {/* Full Name Input */}
+          <Input
+            label="Full Legal / Display Name *"
+            required
+            placeholder="e.g. Jordan Reed"
+            value={manageForm.fullName}
+            onChange={(e) =>
+              setManageForm({ ...manageForm, fullName: e.target.value })
+            }
+            fullWidth
+          />
+
+          {/* Preferred Name & Phone */}
+          <div className="form-row">
+            <Input
+              label="Preferred First Name"
+              placeholder="e.g. Jordan"
+              value={manageForm.preferredFirstName}
+              onChange={(e) =>
+                setManageForm({ ...manageForm, preferredFirstName: e.target.value })
+              }
+              fullWidth
+            />
+
+            <Input
+              label="Contact Phone"
+              placeholder="+1 (212) 854-2772"
+              value={manageForm.phoneNumber}
+              onChange={(e) =>
+                setManageForm({ ...manageForm, phoneNumber: e.target.value })
+              }
+              fullWidth
+            />
+          </div>
+
+          {/* Role & Department */}
+          <div className="form-row">
+            {/* Reusable Select Dropdown for Role Assignment */}
+            <Select
+              label="Assigned CRM Role *"
+              value={manageForm.role}
+              onChange={(e) =>
+                setManageForm({ ...manageForm, role: e.target.value })
+              }
+              options={roleAssignmentOptions}
+              fullWidth
+            />
+
+            {/* Department Input */}
+            <Input
+              label="Department & Unit"
+              placeholder="e.g. Academic Advising"
+              value={manageForm.department}
+              onChange={(e) =>
+                setManageForm({ ...manageForm, department: e.target.value })
+              }
+              fullWidth
+            />
+          </div>
+
+          {/* Locked Institution Scope */}
+          <div className="locked-institution-group">
+            <Input
+              label="Institution"
+              disabled
+              value={manageForm.institutionName}
+              fullWidth
+            />
+          </div>
+
+          {/* Operational Timezone Dropdown */}
+          <Select
+            label="Operational Timezone"
+            value={manageForm.timezone}
+            onChange={(e) =>
+              setManageForm({ ...manageForm, timezone: e.target.value })
+            }
+            options={timezoneOptions}
+            icon={<Clock size={14} />}
+            helperText="Note: Institution timezone applies across all staff in this workspace"
+            fullWidth
+          />
+
+          <div className="modal-form-actions">
+            <Button
+              variant="secondary"
+              size="sm"
+              onClick={() => setIsManageModalOpen(false)}
+            >
+              Cancel
+            </Button>
+            <Button
+              type="submit"
+              variant="primary"
+              size="sm"
+              loading={isSavingManage}
+              icon={<Save size={14} />}
+            >
+              {isSavingManage ? "Saving Changes..." : "Save Changes"}
+            </Button>
+          </div>
+        </form>
+      </Modal>
+
       {/* Reusable Invite Staff Modal */}
       <Modal
         isOpen={isInviteModalOpen}
@@ -585,13 +915,7 @@ export default function AdminView({ currentUser }) {
               onChange={(e) =>
                 setInviteForm({ ...inviteForm, role: e.target.value })
               }
-              options={[
-                { value: "Admin", label: "Admin - Full Management" },
-                { value: "Analyst", label: "Analyst - Yield & SQL Reporting" },
-                { value: "Advisor", label: "Advisor - Advising & Interactions" },
-                { value: "Faculty", label: "Faculty - Academic Review" },
-                { value: "Viewer", label: "Viewer - Audit & Read-Only" },
-              ]}
+              options={roleAssignmentOptions}
               fullWidth
             />
 
@@ -606,7 +930,7 @@ export default function AdminView({ currentUser }) {
             />
           </div>
 
-          {/* Reusable Select Dropdown for Institution & Timezone Assignment */}
+          {/* Reusable Select Dropdown for Institution Assignment */}
           <Select
             label="Home Institution & Timezone"
             value={inviteForm.institutionId || (institutionsData?.[0]?.id ?? "")}

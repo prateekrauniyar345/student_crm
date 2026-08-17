@@ -57,6 +57,13 @@
   border: 1px solid rgba(220, 53, 69, 0.2);
 }
 
+/* Purple (Analyst) */
+.ui-status-pill-purple {
+  background-color: #F3E8FF;
+  color: #7E22CE;
+  border: 1px solid rgba(126, 34, 206, 0.25);
+}
+
 /* Neutral */
 .ui-status-pill-neutral {
   background-color: var(--color-bg-hover, #F1F3F5);
