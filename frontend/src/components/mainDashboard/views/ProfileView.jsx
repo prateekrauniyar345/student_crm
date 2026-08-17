@@ -42,8 +42,10 @@ export default function ProfileView({ currentUser }) {
     id: currentUser?.id || "",
     email: currentUser?.email || "",
     full_name: currentUser?.full_name || "",
-    preferred_first_name: currentUser?.preferred_first_name || "",
-    phone_number: currentUser?.phone_number || "",
+    preferred_first_name: currentUser?.preferred_first_name,
+    phone_number: currentUser?.phone_number,
+    is_active: currentUser?.is_active,
+    user_timezone: currentUser?.user_timezone || "America/New_York",
     // institution fields
     name: "",
     code: "",
@@ -62,8 +64,9 @@ export default function ProfileView({ currentUser }) {
   // Track original user values for change detection
   const [originalValues] = useState({
     full_name: currentUser?.full_name || "",
-    preferred_first_name: currentUser?.preferred_first_name || "",
-    phone_number: currentUser?.phone_number || "",
+    preferred_first_name: currentUser?.preferred_first_name,
+    phone_number: currentUser?.phone_number,
+    user_timezone: currentUser?.user_timezone || "America/New_York",
   });
 
   // Get memberships and institution
@@ -140,12 +143,17 @@ export default function ProfileView({ currentUser }) {
     }
 
     if (formState.preferred_first_name !== originalValues.preferred_first_name) {
-      updateUserPayload.preferred_first_name = formState.preferred_first_name || "";
+      updateUserPayload.preferred_first_name = formState.preferred_first_name;
       hasUserChanges = true;
     }
 
     if (formState.phone_number !== originalValues.phone_number) {
-      updateUserPayload.phone_number = formState.phone_number || "";
+      updateUserPayload.phone_number = formState.phone_number;
+      hasUserChanges = true;
+    }
+
+    if (formState.user_timezone !== originalValues.user_timezone) {
+      updateUserPayload.user_timezone = formState.user_timezone;
       hasUserChanges = true;
     }
 
@@ -218,12 +226,17 @@ export default function ProfileView({ currentUser }) {
                 "Staff Member"}
             </h2>
             <RolePill role={formState.role || "Viewer"} icon={<CheckCircle2 size={12} />} />
+            <StatusPill
+                  variant={formState.is_active ? "success" : "danger"}
+                  dot
+            >
+              {formState.is_active ? "Active" : "Inactive"}
+            </StatusPill>
+
           </div>
           <span className="hero-email font-mono">{currentUser?.email}</span>
           <div className="hero-tags">
             <span className="profile-tag">Columbia GS (CU)</span>
-            <span className="profile-tag">Advising & Admissions Staff</span>
-            <span className="profile-tag">PostgreSQL RLS Protected</span>
           </div>
         </div>
       </div>
@@ -278,13 +291,22 @@ export default function ProfileView({ currentUser }) {
               </div>
             </div>
 
-            {/* Home Institution */}
-            <div className="meta-field">
-              <span className="meta-label">Home Institution</span>
-              <div className="meta-val">
-                {institutionLoading
-                  ? "Loading..."
-                  : `${formState.name || "Columbia University"} (${formState.code || "CU"})`}
+            {/* Home Institution & Timezone - Same Line */}
+            <div className="meta-field" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "2rem" }}>
+              <div>
+                <span className="meta-label">Home Institution</span>
+                <div className="meta-val">
+                  {institutionLoading
+                    ? "Loading..."
+                    : `${formState.name || "Columbia University"} (${formState.code || "CU"})`}
+                </div>
+              </div>
+
+              <div>
+                <span className="meta-label">Institution Timezone</span>
+                <div className="meta-val">
+                  {institutionLoading ? "Loading..." : formState.timezone}
+                </div>
               </div>
             </div>
 
@@ -371,13 +393,13 @@ export default function ProfileView({ currentUser }) {
               />
             </div>
 
-            {/* Reusable Select Dropdown for Timezone */}
+            {/* User Personal Timezone */}
             <Select
-              label="Operational Timezone"
-              id="timezone"
-              name="timezone"
+              label="Your Timezone"
+              id="user_timezone"
+              name="user_timezone"
               icon={<Clock size={14} />}
-              value={formState.timezone}
+              value={formState.user_timezone}
               onChange={handleInputChange}
               options={timezoneOptions}
               fullWidth
