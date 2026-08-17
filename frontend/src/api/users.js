@@ -49,7 +49,7 @@ export const getUsers = async ({
             );
         }
         const query = urlParam.toString();
-        const { data } = await apiClient.get(query ? `/users?${query}` : "/users");
+        const { data } = await apiClient.get(query ? `/users/?${query}` : "/users/");
         if (Array.isArray(data)) {
             return data.map(
                 (item) => User.fromApiResponse(item)
@@ -74,7 +74,7 @@ export const getUserById = async (userID) => {
         const params = new URLSearchParams();
         params.append("id", userID);
         const { data } = await apiClient.get(
-            `/users?${params.toString()}`
+            `/users/?${params.toString()}`
         );
         if (Array.isArray(data) && data.length > 0) {
             return User.fromApiResponse(data[0]);
@@ -89,7 +89,7 @@ export const getUserById = async (userID) => {
 
 export const getAllUsers = async () => {
     try {
-        const { data } = await apiClient.get("/users");
+        const { data } = await apiClient.get("/users/");
         if (Array.isArray(data)) {
             return data.map(
                 (item) => User.fromApiResponse(item)
@@ -122,7 +122,7 @@ export const createUser = async (createUserPayload) => {
     }
 
     try {
-        const { data } = await apiClient.post("/users",createUserPayload);
+        const { data } = await apiClient.post("/users/",createUserPayload);
         return User.fromApiResponse(data);
     } catch (err) {
         console.error("Failed to create user:",err);
@@ -235,7 +235,7 @@ export const deleteUser = async (email = null, id = null ) => {
         param.append("user_id", id);
     }
     try {
-        const response = await apiClient.delete(`/users?${param.toString()}`);
+        const response = await apiClient.delete(`/users/?${param.toString()}`);
         return response.data;
     } catch (err) {
         console.error("Failed to delete user:",err);

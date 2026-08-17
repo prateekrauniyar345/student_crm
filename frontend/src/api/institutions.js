@@ -7,7 +7,7 @@ export const getInstitutions = async (filters = {}) => {
   try {
     const params = new URLSearchParams(filters);
     const queryString = params.toString();
-    const url = queryString ? `/institutions?${queryString}` : "/institutions";
+    const url = queryString ? `/institutions/?${queryString}` : "/institutions/";
 
     const { data } = await apiClient.get(url);
 
@@ -32,7 +32,7 @@ export const createInstitution = async (institutionData) => {
     throw new Error("Missing required institution fields");
   }
   try {
-    const { data } = await apiClient.post("/institutions", institutionData);
+    const { data } = await apiClient.post("/institutions/", institutionData);
     return Institution.fromApiResponse(data);
   } catch (err) {
     console.error("Failed to create institution:", err);

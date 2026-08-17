@@ -22,8 +22,9 @@ export const getInstitutionMemberships = async (filters = {}) => {
     }
 
     const queryString = params.toString();
-    const url = queryString ? `/institution-memberships?${queryString}` : "/institution-memberships";
-
+    console.log("Fetching institution memberships with query:", queryString);
+    const url = queryString ? `/institution-memberships/?${queryString}` : "/institution-memberships/";
+    console.log("Constructed URL for fetching institution memberships:", url);
     const { data } = await apiClient.get(url);
 
     // Map each API response item to an InstitutionMembership model instance
@@ -66,7 +67,7 @@ export const createInstitutionMembership = async (payload) => {
   }
 
   try {
-    const { data } = await apiClient.post("/institution-memberships", body);
+    const { data } = await apiClient.post("/institution-memberships/", body);
     return InstitutionMembership.fromApiResponse(data);
   } catch (err) {
     console.error("Failed to create institution membership:", err);
@@ -90,7 +91,7 @@ export const updateInstitutionMembership = async ({ institutionId, userId, data 
 
   try {
     const response = await apiClient.patch(
-      `/institution-memberships?institution_id=${targetInstitutionId}&user_id=${targetUserId}`,
+      `/institution-memberships/?institution_id=${targetInstitutionId}&user_id=${targetUserId}`,
       payload
     );
     return InstitutionMembership.fromApiResponse(response.data);
@@ -110,7 +111,7 @@ export const deleteInstitutionMembership = async ({ institutionId, userId }) => 
 
   try {
     const { data } = await apiClient.delete(
-      `/institution-memberships?institution_id=${institutionId}&user_id=${userId}`
+      `/institution-memberships/?institution_id=${institutionId}&user_id=${userId}`
     );
     return data;
   } catch (err) {

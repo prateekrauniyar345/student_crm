@@ -1,3 +1,4 @@
+// frontend/src/lib/apiClient.jsx
 import axios from "axios";
 import { supabase } from "./supabaseClient";
 

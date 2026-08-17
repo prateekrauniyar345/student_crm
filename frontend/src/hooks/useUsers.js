@@ -16,6 +16,8 @@ import { useToast } from "../context/ToastContext";
 export function useAllUsers() {
   const { session, isAuthenticated } = useAuth();
 
+  console.log("useAllUsers: session is ", session);
+
   return useQuery({
     queryKey: queryKeys.users.all(),
     queryFn: getAllUsers,

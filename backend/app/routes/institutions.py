@@ -24,7 +24,7 @@ institution_routes = APIRouter(prefix=f"{os.getenv('API_PREFIX')}/institutions",
 # get routes to get the institutions from the database
 @institution_routes.get("/")
 async def get_institutions(
-    # current_user: Annotated[UserResponse, Depends(get_current_user)],
+    current_user: Annotated[UserResponse, Depends(get_current_user)],
     id: UUID | None = None, 
     name: str | None = None,
     code : str | None = None,
@@ -65,9 +65,9 @@ async def get_institutions(
 
 @institution_routes.post("/")
 async def create_institution(
+    current_user: Annotated[UserResponse, Depends(get_current_user)],
     inst_data: InstitutionCreate,
     session: AsyncSession = Depends(get_session),
-    # current_user: Annotated[UserResponse, Depends(get_current_user)] = None
 ) -> InstitutionResponse:
     """
     Create a new institution in the database.
@@ -95,10 +95,10 @@ async def create_institution(
 
 @institution_routes.patch("/{institution_id}")
 async def update_institution(
+    current_user: Annotated[UserResponse, Depends(get_current_user)],
     institution_id: UUID,
     inst_update: InstitutionUpdate,
     session: AsyncSession = Depends(get_session),
-    # current_user: Annotated[UserResponse, Depends(get_current_user)] = None
 ) -> InstitutionResponse:
     """
     Partially updates an institution's information.
@@ -136,9 +136,9 @@ async def update_institution(
 
 @institution_routes.delete("/{institution_id}")
 async def delete_institution(
+    current_user: Annotated[UserResponse, Depends(get_current_user)],
     institution_id: UUID,
     session: AsyncSession = Depends(get_session),
-    # current_user: Annotated[UserResponse, Depends(get_current_user)] = None
 ) -> dict:
     """
     Deletes an institution from the database by its ID.

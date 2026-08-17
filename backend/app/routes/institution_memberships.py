@@ -23,6 +23,7 @@ institution_membership_routes = APIRouter(
 # GET all memberships with optional filters
 @institution_membership_routes.get("/")
 async def get_institution_memberships(
+    current_user: Annotated[UserResponse, Depends(get_current_user)],
     institution_id: UUID | None = None,
     user_id: UUID | None = None,
     role: str | None = None,
@@ -57,6 +58,7 @@ async def get_institution_memberships(
 # POST create new membership
 @institution_membership_routes.post("/")
 async def create_institution_membership(
+    current_user: Annotated[UserResponse, Depends(get_current_user)],
     membership_data: InstitutionMembershipCreate,
     session: AsyncSession = Depends(get_session),
 ) -> InstitutionMembershipResponse:
@@ -84,6 +86,7 @@ async def create_institution_membership(
 # PATCH update membership (by composite key: institution_id + user_id)
 @institution_membership_routes.patch("/")
 async def update_institution_membership(
+    current_user: Annotated[UserResponse, Depends(get_current_user)],
     institution_id: UUID,
     user_id: UUID,
     membership_update: InstitutionMembershipUpdate,
@@ -124,6 +127,7 @@ async def update_institution_membership(
 # DELETE membership (by composite key: institution_id + user_id)
 @institution_membership_routes.delete("/")
 async def delete_institution_membership(
+    current_user: Annotated[UserResponse, Depends(get_current_user)],
     institution_id: UUID,
     user_id: UUID,
     session: AsyncSession = Depends(get_session),

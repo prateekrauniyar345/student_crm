@@ -103,6 +103,8 @@ export default function AdminView({ currentUser }) {
     refetch: refetchUsers,
   } = useAllUsers();
 
+  console.log("allUsersData is : ", allUsersData);
+
 
   // get all memberships and institutions
   const {
