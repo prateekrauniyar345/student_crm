@@ -102,7 +102,6 @@ export default function AdminView({ currentUser }) {
     refetch: refetchUsers,
   } = useAllUsers();
 
-  console.log("allUsersData is : ", allUsersData);
 
 
   // get all memberships and institutions
@@ -240,7 +239,6 @@ export default function AdminView({ currentUser }) {
     }
   };
 
-  console.log("selected user is : ", selectedUser);
 
   // Open Manage Modal for a specific selected user
   const handleOpenManage = (user) => {
@@ -248,10 +246,8 @@ export default function AdminView({ currentUser }) {
 
     //instId = institution id of the user memebership institution
     const instId = user.membership?.institutionId || user.membership?.institution_id || institutionsData?.[0]?.id || "";
-    console.log("instId is : ", instId);
     // get the matched institution from the institutionsMap using the instId
     const matchedInst = institutionsMap.get(instId);
-    console.log("matchedInst is : ", matchedInst);
     const currentTz = user.user_timezone || "America/New_York";
     const currentRole = user.membership?.role || user.role || "Viewer";
     const currentDept = user.membership?.department || user.department || "General Operations";
