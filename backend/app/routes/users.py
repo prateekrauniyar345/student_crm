@@ -60,10 +60,12 @@ async def get_users(
         if user_timezone:
             statement = statement.where(User.user_timezone.ilike(f"%{user_timezone}%"))
 
+        statement = statement.order_by(User.full_name)
+
         result = await session.execute(statement)
         users = result.scalars().all()
 
-        
+
         return [UserResponse.model_validate(user) for user in users]
         
     except Exception as e:

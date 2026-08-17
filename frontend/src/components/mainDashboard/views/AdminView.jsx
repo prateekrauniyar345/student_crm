@@ -26,7 +26,6 @@ import {
   useAllInstitutions,
   useUpdateMembership,
   useCreateMembership,
-  useUpdateInstitution,
 } from "../../../hooks/useInstitution";
 import { useToast } from "../../../context/ToastContext";
 
@@ -81,14 +80,14 @@ export default function AdminView({ currentUser }) {
     department: "Academic Advising",
     institutionId: "",
     institutionName: "",
-    timezone: "America/New_York",
+    userTimezone: "America/New_York",
     original: {
       fullName: "",
       preferredFirstName: "",
       phoneNumber: "",
       role: "Advisor",
       department: "Academic Advising",
-      timezone: "America/New_York",
+      userTimezone: "America/New_York",
     },
   });
 
@@ -122,7 +121,6 @@ export default function AdminView({ currentUser }) {
   const updateUserMutation = useUpdateUser();
   const updateMembershipMutation = useUpdateMembership();
   const createMembershipMutation = useCreateMembership();
-  const updateInstitutionMutation = useUpdateInstitution();
 
   const isLoading = isUsersLoading || isMembershipsLoading;
   const isRefetching = isUsersRefetching || isMembershipsRefetching;
@@ -177,14 +175,12 @@ export default function AdminView({ currentUser }) {
       const institutionName = institution?.name
         ? `${institution.name} (${institution.code || "CU"})`
         : "Columbia GS (CU)";
-      const timezone = institution?.timezone || "America/New_York";
 
       return {
         ...user,
         role,
         department,
         institutionName,
-        timezone,
         membership,
       };
     });
@@ -256,7 +252,7 @@ export default function AdminView({ currentUser }) {
     // get the matched institution from the institutionsMap using the instId
     const matchedInst = institutionsMap.get(instId);
     console.log("matchedInst is : ", matchedInst);
-    const currentTz = matchedInst?.timezone || user.timezone || "America/New_York";
+    const currentTz = user.user_timezone || "America/New_York";
     const currentRole = user.membership?.role || user.role || "Viewer";
     const currentDept = user.membership?.department || user.department || "General Operations";
 
@@ -270,7 +266,7 @@ export default function AdminView({ currentUser }) {
       department: currentDept,
       institutionId: instId,
       institutionName: user.institutionName || (matchedInst ? `${matchedInst.name} (${matchedInst.code})` : "Columbia University (CU)"),
-      timezone: currentTz,
+      userTimezone: currentTz,
     };
 
     setManageForm({
@@ -281,7 +277,7 @@ export default function AdminView({ currentUser }) {
         phoneNumber: initialValues.phoneNumber,
         role: initialValues.role,
         department: initialValues.department,
-        timezone: initialValues.timezone,
+        userTimezone: initialValues.userTimezone,
       },
     });
     setIsManageModalOpen(true);
@@ -295,7 +291,6 @@ export default function AdminView({ currentUser }) {
     const updateUserPayload = {};
     let hasUserChanges = false;
     let hasMembershipChanges = false;
-    let hasTimezoneChanges = false;
 
     // Detect individual user profile changes
     if (manageForm.fullName !== manageForm.original.fullName) {
@@ -310,6 +305,10 @@ export default function AdminView({ currentUser }) {
       updateUserPayload.phone_number = manageForm.phoneNumber || "";
       hasUserChanges = true;
     }
+    if (manageForm.userTimezone !== manageForm.original.userTimezone) {
+      updateUserPayload.user_timezone = manageForm.userTimezone;
+      hasUserChanges = true;
+    }
 
     // Detect membership (role / department) changes
     if (
@@ -319,12 +318,7 @@ export default function AdminView({ currentUser }) {
       hasMembershipChanges = true;
     }
 
-    // Detect timezone changes (institution level)
-    if (manageForm.timezone !== manageForm.original.timezone) {
-      hasTimezoneChanges = true;
-    }
-
-    if (!hasUserChanges && !hasMembershipChanges && !hasTimezoneChanges) {
+    if (!hasUserChanges && !hasMembershipChanges) {
       info("No changes to save");
       setIsManageModalOpen(false);
       return;
@@ -367,18 +361,6 @@ export default function AdminView({ currentUser }) {
             })
           );
         }
-      }
-
-      // 3. Update institution timezone (only if explicitly modified)
-      if (hasTimezoneChanges && manageForm.institutionId) {
-        promises.push(
-          updateInstitutionMutation.mutateAsync({
-            institutionId: manageForm.institutionId,
-            updates: {
-              timezone: manageForm.timezone,
-            },
-          })
-        );
       }
 
       await Promise.all(promises);
@@ -580,7 +562,7 @@ export default function AdminView({ currentUser }) {
               <TableHead>System User ID</TableHead>
               <TableHead>Assigned Role</TableHead>
               <TableHead>Department</TableHead>
-              <TableHead>Institution & Timezone</TableHead>
+              <TableHead>Institution</TableHead>
               <TableHead>Joined</TableHead>
               <TableHead align="right">Actions</TableHead>
             </TableRow>
@@ -636,16 +618,10 @@ export default function AdminView({ currentUser }) {
                     <span className="dept-text">{u.department}</span>
                   </TableCell>
 
-                  {/* Institution & Timezone */}
+                  {/* Institution */}
                   <TableCell>
                     <div className="inst-meta-cell">
                       <span className="inst-badge">{u.institutionName}</span>
-                      {u.timezone && (
-                        <span className="inst-timezone-tag font-mono">
-                          <Clock size={11} />
-                          {u.timezone.split("/")[1] || u.timezone}
-                        </span>
-                      )}
                     </div>
                   </TableCell>
 
@@ -842,16 +818,16 @@ export default function AdminView({ currentUser }) {
             />
           </div>
 
-          {/* Operational Timezone Dropdown */}
+          {/* User's Personal Timezone Dropdown */}
           <Select
-            label="Operational Timezone"
-            value={manageForm.timezone}
+            label="Staff Member Timezone"
+            value={manageForm.userTimezone}
             onChange={(e) =>
-              setManageForm({ ...manageForm, timezone: e.target.value })
+              setManageForm({ ...manageForm, userTimezone: e.target.value })
             }
             options={timezoneOptions}
             icon={<Clock size={14} />}
-            helperText="Note: Institution timezone applies across all staff in this workspace"
+            helperText="Personal timezone for this staff member's notifications and scheduling"
             fullWidth
           />
 
