@@ -1,4 +1,4 @@
-# 🏛️ GS Enrollment Analytics & AI Co-Pilot
+# 🏛️ Higher Education Enrollment Analytics & AI Co-Pilot
 
 A **full-stack student CRM platform** designed for higher education enrollment management, built with modern technologies and AI-powered analytics. Specifically tailored for tracking non-traditional, transfer, and first-generation students through their complete lifecycle—from prospect to alumni.
 
@@ -33,7 +33,7 @@ A **full-stack student CRM platform** designed for higher education enrollment m
 
 ### Problem Statement
 
-Columbia University School of General Studies (and similar institutions) track student data across multiple systems:
+Higher education institutions often track student data across multiple fragmented systems:
 - **Slate** for admissions
 - **Salesforce Advisor Link** for advising
 - **Crystal Reports** for routine reporting
@@ -652,6 +652,6 @@ Platform information and additional resources footer.
 
 ---
 
-**Built with ❤️ for Columbia University School of General Studies**
+**Built with ❤️ for Higher Ed-Tech**
 
 *Last Updated: August 2026*
