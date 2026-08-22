@@ -65,7 +65,12 @@ export default function DashboardTopNav({
       case "reports":
         return "Routine Reports & Degree Audits";
       case "admin":
-        return "Administration & User Access";
+      case "admin-overview":
+        return "Admin Portal / Overview";
+      case "admin-users":
+        return "Admin Portal / Users & Access";
+      case "admin-programs-terms":
+        return "Admin Portal / Programs & Terms";
       case "profile":
         return "User Profile & Account";
       case "settings":

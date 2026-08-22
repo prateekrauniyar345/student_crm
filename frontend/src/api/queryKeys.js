@@ -29,6 +29,20 @@ export const queryKeys = {
     byUser: (userId) => ["memberships", "list", userId],
     byInstitution: (institutionId) => ["memberships", "list", { institution_id: institutionId }],
   },
-  
+
+  // Programs data
+  programs: {
+    all: () => ["programs"],
+    list: (filters = {}) => ["programs", "list", filters],
+    byInstitution: (institutionId) => ["programs", "list", { institution_id: institutionId }],
+  },
+
+  // Academic Terms data
+  academicTerms: {
+    all: () => ["academic-terms"],
+    list: (filters = {}) => ["academic-terms", "list", filters],
+    byInstitution: (institutionId) => ["academic-terms", "list", { institution_id: institutionId }],
+    byYear: (applicationYear) => ["academic-terms", "list", { application_year: applicationYear }],
+  },
 
 };

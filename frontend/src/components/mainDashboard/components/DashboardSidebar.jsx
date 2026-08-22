@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import {
   LayoutDashboard,
   Users,
@@ -11,9 +11,11 @@ import {
   Settings,
   ChevronLeft,
   ChevronRight,
+  ChevronDown,
   LogOut,
   Shield,
-  ExternalLink,
+  GraduationCap,
+  Calendar,
 } from "lucide-react";
 import "./DashboardSidebar.css";
 import { rolePillsStatusStyle } from "../../../utils/styleGuide";
@@ -74,7 +76,27 @@ export const navigationItems = [
         label: "Admin Portal",
         icon: ShieldCheck,
         badge: "Admin",
-        description: "Manage CRM user accounts, institution memberships & roles",
+        description: "Manage CRM user accounts, degree programs, and academic terms",
+        children: [
+          {
+            id: "admin-overview",
+            label: "Overview",
+            icon: LayoutDashboard,
+            description: "Admin overview, quick metrics across users, programs, terms",
+          },
+          {
+            id: "admin-users",
+            label: "Users & Roles",
+            icon: Users,
+            description: "Manage CRM user accounts, institution memberships & roles",
+          },
+          {
+            id: "admin-programs-terms",
+            label: "Programs & Terms",
+            icon: GraduationCap,
+            description: "Manage academic programs, degree levels, and academic term calendars",
+          },
+        ],
       },
       {
         id: "profile",
@@ -102,6 +124,39 @@ export default function DashboardSidebar({
   user,
   onSignOut,
 }) {
+  // Track open dropdowns
+  const [openDropdowns, setOpenDropdowns] = useState({
+    admin: true,
+  });
+
+  // Automatically keep admin dropdown open if an admin sub-tab is active
+  useEffect(() => {
+    if (
+      activeTab === "admin" ||
+      activeTab === "admin-overview" ||
+      activeTab === "admin-users" ||
+      activeTab === "admin-programs-terms"
+    ) {
+      setOpenDropdowns((prev) => ({ ...prev, admin: true }));
+    }
+  }, [activeTab]);
+
+  const toggleDropdown = (parentId, defaultChildId) => {
+    if (isCollapsed) {
+      setIsCollapsed(false);
+      setOpenDropdowns((prev) => ({ ...prev, [parentId]: true }));
+      if (defaultChildId) {
+        setActiveTab(defaultChildId);
+      }
+      return;
+    }
+
+    setOpenDropdowns((prev) => ({
+      ...prev,
+      [parentId]: !prev[parentId],
+    }));
+  };
+
   const getInitials = (name, email) => {
     if (name && name.trim()) {
       const parts = name.trim().split(" ");
@@ -150,20 +205,40 @@ export default function DashboardSidebar({
             <ul className="nav-list">
               {group.items.map((item) => {
                 const Icon = item.icon;
-                const isActive = activeTab === item.id;
+                const hasChildren = Boolean(item.children && item.children.length > 0);
+                const isChildActive =
+                  hasChildren &&
+                  item.children.some((child) => child.id === activeTab);
+                const isParentActive = activeTab === item.id || isChildActive;
+                const isDropdownOpen = Boolean(openDropdowns[item.id]);
+
                 return (
-                  <li key={item.id}>
+                  <li key={item.id} className="nav-list-item">
+                    {/* Main Nav Button */}
                     <button
-                      className={`nav-item-btn ${isActive ? "active" : ""}`}
-                      onClick={() => setActiveTab(item.id)}
+                      className={`nav-item-btn ${
+                        isParentActive ? "active" : ""
+                      } ${hasChildren ? "has-dropdown" : ""}`}
+                      onClick={() => {
+                        if (hasChildren) {
+                          toggleDropdown(item.id, item.children[0].id);
+                          if (!isChildActive && !isCollapsed) {
+                            setActiveTab(item.children[0].id);
+                          }
+                        } else {
+                          setActiveTab(item.id);
+                        }
+                      }}
                       title={isCollapsed ? item.label : undefined}
                     >
                       <span className="nav-icon-box">
                         <Icon size={18} />
                       </span>
+
                       {!isCollapsed && (
                         <span className="nav-item-label">{item.label}</span>
                       )}
+
                       {!isCollapsed && item.badge && (
                         <span
                           className={`nav-badge ${
@@ -177,7 +252,49 @@ export default function DashboardSidebar({
                           {item.badge}
                         </span>
                       )}
+
+                      {!isCollapsed && hasChildren && (
+                        <span
+                          className={`nav-chevron-icon ${
+                            isDropdownOpen ? "expanded" : ""
+                          }`}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            toggleDropdown(item.id);
+                          }}
+                        >
+                          <ChevronDown size={14} />
+                        </span>
+                      )}
                     </button>
+
+                    {/* Submenu Dropdown Items */}
+                    {!isCollapsed && hasChildren && isDropdownOpen && (
+                      <ul className="nav-sub-list">
+                        {item.children.map((child) => {
+                          const ChildIcon = child.icon;
+                          const isCurrentChildActive = activeTab === child.id;
+
+                          return (
+                            <li key={child.id}>
+                              <button
+                                className={`nav-sub-item-btn ${
+                                  isCurrentChildActive ? "active" : ""
+                                }`}
+                                onClick={() => setActiveTab(child.id)}
+                              >
+                                <span className="nav-sub-icon-box">
+                                  <ChildIcon size={15} />
+                                </span>
+                                <span className="nav-sub-item-label">
+                                  {child.label}
+                                </span>
+                              </button>
+                            </li>
+                          );
+                        })}
+                      </ul>
+                    )}
                   </li>
                 );
               })}

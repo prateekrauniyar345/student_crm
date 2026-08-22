@@ -145,6 +145,11 @@
   gap: 2px;
 }
 
+.nav-list-item {
+  display: flex;
+  flex-direction: column;
+}
+
 .nav-item-btn {
   width: 100%;
   background: transparent;
@@ -193,6 +198,25 @@
   text-overflow: ellipsis;
 }
 
+.nav-chevron-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-text-tertiary);
+  transition: transform var(--transition-fast);
+  padding: 2px;
+  border-radius: var(--radius-sm);
+}
+
+.nav-chevron-icon:hover {
+  color: var(--color-text-primary);
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+.nav-chevron-icon.expanded {
+  transform: rotate(180deg);
+}
+
 .nav-badge {
   font-size: 0.65rem;
   font-weight: var(--font-weight-semibold);
@@ -220,6 +244,72 @@
   color: var(--color-text-secondary);
   border: 1px solid var(--color-border);
   font-family: var(--font-family-mono);
+}
+
+/* Submenu Dropdown List */
+.nav-sub-list {
+  list-style: none;
+  padding: 4px 0 4px 18px;
+  margin: 2px 0 0 10px;
+  border-left: 1.5px solid var(--color-border, #E0E0E0);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  animation: nav-sub-fade-in 0.15s ease-out;
+}
+
+@keyframes nav-sub-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.nav-sub-item-btn {
+  width: 100%;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm, 4px);
+  padding: 6px 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--color-text-secondary, #757575);
+  font-size: var(--font-size-xs, 0.75rem);
+  font-weight: var(--font-weight-medium, 500);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  text-align: left;
+}
+
+.nav-sub-item-btn:hover {
+  background-color: var(--color-bg-hover, #F1F3F5);
+  color: var(--color-text-primary, #212121);
+}
+
+.nav-sub-item-btn.active {
+  background-color: var(--color-primary-light, #E7F1FF);
+  color: var(--color-primary, #007BFF);
+  font-weight: var(--font-weight-semibold, 600);
+  border-color: rgba(0, 123, 255, 0.2);
+}
+
+.nav-sub-icon-box {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.nav-sub-item-label {
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 /* Sidebar Footer */

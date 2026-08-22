@@ -6,7 +6,9 @@ import DashboardSidebar from "../../components/mainDashboard/components/Dashboar
 import DashboardTopNav from "../../components/mainDashboard/components/DashboardTopNav";
 import OverviewView from "../../components/mainDashboard/views/OverviewView";
 import ProfileView from "../../components/mainDashboard/views/ProfileView";
-import AdminView from "../../components/mainDashboard/views/AdminView";
+import AdminOverviewView from "../../components/mainDashboard/views/AdminOverviewView";
+import AdminUsersView from "../../components/mainDashboard/views/AdminUsersView";
+import AdminProgramsTermsView from "../../components/mainDashboard/views/AdminProgramsTermsView";
 import SettingsView from "../../components/mainDashboard/views/SettingsView";
 import ComingSoonView from "../../components/mainDashboard/views/ComingSoonView";
 import "./DashboardPage.css";
@@ -14,8 +16,7 @@ import { useCurrentUser } from "../../hooks/useCurrentUser";
 import { Spinner } from "react-bootstrap";
 
 export default function DashboardPage() {
-
-  const { data: currentUser, isLoading, isPending, isError, error } = useCurrentUser();
+  const { data: currentUser, isLoading, isPending } = useCurrentUser();
   
   const navigate = useNavigate();
 
@@ -23,7 +24,7 @@ export default function DashboardPage() {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isMobileOpen, setIsMobileOpen] = useState(false);
 
-  // Sync title with active view
+  // Sync document title with active view
   useEffect(() => {
     const tabTitles = {
       overview: "Workspace Overview | GS Student CRM",
@@ -32,7 +33,10 @@ export default function DashboardPage() {
       advising: "Advising & Tasks | GS Student CRM",
       "ai-copilot": "AI SQL Co-Pilot | GS Student CRM",
       reports: "Reports & Audits | GS Student CRM",
-      admin: "Admin Management | GS Student CRM",
+      admin: "Admin Overview | GS Student CRM",
+      "admin-overview": "Admin Overview | GS Student CRM",
+      "admin-users": "Staff & User Management | GS Student CRM",
+      "admin-programs-terms": "Programs & Terms | GS Student CRM",
       profile: "My Profile | GS Student CRM",
       settings: "System Settings | GS Student CRM",
     };
@@ -52,11 +56,21 @@ export default function DashboardPage() {
   const renderActiveView = () => {
     switch (activeTab) {
       case "overview":
-        return <OverviewView currentUser={currentUser} setActiveTab={setActiveTab} />;
+        return <OverviewView user={currentUser} setActiveTab={setActiveTab} />;
       case "profile":
         return <ProfileView currentUser={currentUser} />;
       case "admin":
-        return <AdminView currentUser={currentUser} />;
+      case "admin-overview":
+        return (
+          <AdminOverviewView
+            currentUser={currentUser}
+            setActiveTab={setActiveTab}
+          />
+        );
+      case "admin-users":
+        return <AdminUsersView currentUser={currentUser} />;
+      case "admin-programs-terms":
+        return <AdminProgramsTermsView currentUser={currentUser} />;
       case "settings":
         return <SettingsView />;
       case "students":
