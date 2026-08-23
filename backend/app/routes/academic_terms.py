@@ -8,6 +8,7 @@ from sqlalchemy.exc import IntegrityError
 import os
 from uuid import UUID
 from typing import Annotated
+from datetime import datetime
 
 from app.db.db import get_session
 from app.models.academic_term import (
@@ -30,24 +31,69 @@ academic_term_routes = APIRouter(
 @academic_term_routes.get("/")
 async def get_academic_terms(
     current_user: Annotated[UserResponse, Depends(get_current_user)],
+    # Exact match filters
+    id: UUID | None = None,
     institution_id: UUID | None = None,
-    code: str | None = None,
     application_year: int | None = None,
+    # LIKE filters
+    code: str | None = None,
+    name: str | None = None,
+    # Date range filters
+    start_date_from: datetime | None = None,
+    start_date_to: datetime | None = None,
+    end_date_from: datetime | None = None,
+    end_date_to: datetime | None = None,
+    created_at_from: datetime | None = None,
+    created_at_to: datetime | None = None,
     session: AsyncSession = Depends(get_session),
 ) -> list[AcademicTermResponse]:
     """
-    Get all academic terms with optional filters.
+    Get all academic terms with advanced filtering options.
     Requires authentication.
+    
+    Query Parameters:
+    - id: Exact UUID match for academic term ID
+    - institution_id: Exact UUID match for institution
+    - application_year: Exact match for application year (integer)
+    - code: Partial match for term code (case-insensitive)
+    - name: Partial match for term name (case-insensitive)
+    - start_date_from: Filter terms starting on or after this date (ISO format)
+    - start_date_to: Filter terms starting on or before this date (ISO format)
+    - end_date_from: Filter terms ending on or after this date (ISO format)
+    - end_date_to: Filter terms ending on or before this date (ISO format)
+    - created_at_from: Filter terms created after this date (ISO format)
+    - created_at_to: Filter terms created before this date (ISO format)
     """
     try:
         statement = select(AcademicTerm)
 
+        # Exact match filters
+        if id:
+            statement = statement.where(AcademicTerm.id == id)
         if institution_id:
             statement = statement.where(AcademicTerm.institution_id == institution_id)
-        if code:
-            statement = statement.where(AcademicTerm.code.ilike(f"%{code}%"))
         if application_year is not None:
             statement = statement.where(AcademicTerm.application_year == application_year)
+
+        # LIKE filters
+        if code:
+            statement = statement.where(AcademicTerm.code.ilike(f"%{code}%"))
+        if name:
+            statement = statement.where(AcademicTerm.name.ilike(f"%{name}%"))
+
+        # Date range filters
+        if start_date_from:
+            statement = statement.where(AcademicTerm.start_date >= start_date_from)
+        if start_date_to:
+            statement = statement.where(AcademicTerm.start_date <= start_date_to)
+        if end_date_from:
+            statement = statement.where(AcademicTerm.end_date >= end_date_from)
+        if end_date_to:
+            statement = statement.where(AcademicTerm.end_date <= end_date_to)
+        if created_at_from:
+            statement = statement.where(AcademicTerm.created_at >= created_at_from)
+        if created_at_to:
+            statement = statement.where(AcademicTerm.created_at <= created_at_to)
 
         statement = statement.order_by(AcademicTerm.start_date.desc())
 

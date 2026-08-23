@@ -8,6 +8,7 @@ from sqlalchemy.exc import IntegrityError
 import os
 from uuid import UUID
 from typing import Annotated
+from datetime import datetime
 
 from app.db.db import get_session
 from app.models.program import ProgramResponse, ProgramCreate, ProgramUpdate
@@ -26,24 +27,57 @@ program_routes = APIRouter(
 @program_routes.get("/")
 async def get_programs(
     current_user: Annotated[UserResponse, Depends(get_current_user)],
+    # Exact match filters
+    id: UUID | None = None,
     institution_id: UUID | None = None,
-    code: str | None = None,
     is_active: bool | None = None,
+    # LIKE filters
+    code: str | None = None,
+    name: str | None = None,
+    degree_level: str | None = None,
+    # Date range filters
+    created_at_from: datetime | None = None,
+    created_at_to: datetime | None = None,
     session: AsyncSession = Depends(get_session),
 ) -> list[ProgramResponse]:
     """
-    Get all programs with optional filters.
+    Get all programs with advanced filtering options.
     Requires authentication.
+    
+    Query Parameters:
+    - id: Exact UUID match for program ID
+    - institution_id: Exact UUID match for institution
+    - code: Partial match for program code (case-insensitive)
+    - name: Partial match for program name (case-insensitive)
+    - degree_level: Exact match for degree level (e.g., Bachelor, Master, PhD, Certificate)
+    - is_active: Filter by active status (true/false)
+    - created_at_from: Filter programs created after this date (ISO format)
+    - created_at_to: Filter programs created before this date (ISO format)
     """
     try:
         statement = select(Program)
 
+        # Exact match filters
+        if id:
+            statement = statement.where(Program.id == id)
         if institution_id:
             statement = statement.where(Program.institution_id == institution_id)
-        if code:
-            statement = statement.where(Program.code.ilike(f"%{code}%"))
         if is_active is not None:
             statement = statement.where(Program.is_active == is_active)
+
+        # LIKE filters
+        if code:
+            statement = statement.where(Program.code.ilike(f"%{code}%"))
+        if name:
+            statement = statement.where(Program.name.ilike(f"%{name}%"))
+        if degree_level:
+            statement = statement.where(Program.degree_level.ilike(f"%{degree_level}%"))
+
+        # Date range filters
+        if created_at_from:
+            statement = statement.where(Program.created_at >= created_at_from)
+        if created_at_to:
+            statement = statement.where(Program.created_at <= created_at_to)
 
         statement = statement.order_by(Program.name)
 
