@@ -45,4 +45,40 @@ export const queryKeys = {
     byYear: (applicationYear) => ["academic-terms", "list", { application_year: applicationYear }],
   },
 
+  // People data (CRM contacts)
+  people: {
+    all: () => ["people"],
+    detail: (id) => ["people", "detail", id],
+    list: (filters = {}) => ["people", "list", filters],
+    byInstitution: (institutionId) => ["people", "list", { institution_id: institutionId }],
+    byLifecycleStage: (stage) => ["people", "list", { lifecycle_stage: stage }],
+  },
+
+  // Student Profiles data
+  studentProfiles: {
+    all: () => ["student-profiles"],
+    detail: (personId) => ["student-profiles", "detail", personId],
+    list: (filters = {}) => ["student-profiles", "list", filters],
+    byPersonId: (personId) => ["student-profiles", "list", { person_id: personId }],
+  },
+
+  // Applications data
+  applications: {
+    all: () => ["applications"],
+    detail: (id) => ["applications", "detail", id],
+    list: (filters = {}) => ["applications", "list", filters],
+    byPersonId: (personId) => ["applications", "list", { person_id: personId }],
+    byProgramId: (programId) => ["applications", "list", { program_id: programId }],
+    byStage: (stage) => ["applications", "list", { stage: stage }],
+  },
+
+  // Student Term Records data
+  studentTermRecords: {
+    all: () => ["student-term-records"],
+    detail: (id) => ["student-term-records", "detail", id],
+    list: (filters = {}) => ["student-term-records", "list", filters],
+    byPersonId: (personId) => ["student-term-records", "list", { person_id: personId }],
+    byTermId: (termId) => ["student-term-records", "list", { term_id: termId }],
+  },
+
 };
