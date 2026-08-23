@@ -27,6 +27,26 @@ created_at: When application record was created.
 UNIQUE RULE: person_id + program_id + application_year must be unique.
 """
 
+
+'''
+DECISION CODES
+-------------
+AC: ACCEPTED
+AP: ACCEPTED PROVISIONALLY
+WL: WAITLISTED
+RH: REJECTED - HIGHER PRIORITY
+
+
+REPLY CODES
+-----------
+Y: Yes/Accept
+DF: Defer to a future term
+NC: Not Coming
+NS: Initially said yes, but never came (No Show)
+NR: Never responded to offer (No Response)
+
+'''
+
 from sqlalchemy import (
     Column,
     String,

@@ -9,6 +9,10 @@ from app.routes import (
     institution_membership_routes,
     program_routes,
     academic_term_routes,
+    people_routes,
+    application_routes,
+    student_profile_routes,
+    student_term_record_routes,
 )
 from fastapi.middleware.cors import CORSMiddleware
 import os
@@ -91,6 +95,10 @@ app.include_router(institution_routes)
 app.include_router(institution_membership_routes)
 app.include_router(program_routes)
 app.include_router(academic_term_routes)
+app.include_router(people_routes)
+app.include_router(application_routes)
+app.include_router(student_profile_routes)
+app.include_router(student_term_record_routes)
 
 
 
