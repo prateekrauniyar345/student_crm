@@ -10,6 +10,7 @@ import AdminOverviewView from "../../components/mainDashboard/views/AdminOvervie
 import AdminUsersView from "../../components/mainDashboard/views/AdminUsersView";
 import AdminProgramsTermsView from "../../components/mainDashboard/views/AdminProgramsTermsView";
 import SettingsView from "../../components/mainDashboard/views/SettingsView";
+import StudentsRosterView from "../../components/mainDashboard/views/StudentsRosterView";
 import ComingSoonView from "../../components/mainDashboard/views/ComingSoonView";
 import "./DashboardPage.css";
 import { useCurrentUser } from "../../hooks/useCurrentUser";
@@ -57,6 +58,8 @@ export default function DashboardPage() {
     switch (activeTab) {
       case "overview":
         return <OverviewView user={currentUser} setActiveTab={setActiveTab} />;
+      case "students":
+        return <StudentsRosterView currentUser={currentUser} />;
       case "profile":
         return <ProfileView currentUser={currentUser} />;
       case "admin":
@@ -73,7 +76,6 @@ export default function DashboardPage() {
         return <AdminProgramsTermsView currentUser={currentUser} />;
       case "settings":
         return <SettingsView />;
-      case "students":
       case "admissions":
       case "advising":
       case "ai-copilot":
