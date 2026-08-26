@@ -1463,22 +1463,22 @@ export default function AdmissionsView({ currentUser }) {
                               <div className="cohort-tags-row">
                                 {attrs.veteran && (
                                   <span className="cohort-tag tag-veteran">
-                                    🎖️ Veteran
+                                    Veteran
                                   </span>
                                 )}
                                 {attrs.transfer && (
                                   <span className="cohort-tag tag-transfer">
-                                    🔄 Transfer
+                                    Transfer
                                   </span>
                                 )}
                                 {attrs.first_gen && (
                                   <span className="cohort-tag tag-firstgen">
-                                    🌟 First-Gen
+                                    First-Gen
                                   </span>
                                 )}
                                 {attrs.international && (
                                   <span className="cohort-tag tag-international">
-                                    🌐 International
+                                    International
                                   </span>
                                 )}
                               </div>

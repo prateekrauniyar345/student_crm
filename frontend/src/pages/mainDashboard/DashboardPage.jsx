@@ -12,6 +12,8 @@ import AdminProgramsTermsView from "../../components/mainDashboard/views/AdminPr
 import SettingsView from "../../components/mainDashboard/views/SettingsView";
 import StudentsRosterView from "../../components/mainDashboard/views/StudentsRosterView";
 import AdmissionsView from "../../components/mainDashboard/views/AdmissionsView";
+import ReportsView from "../../components/mainDashboard/views/ReportsView";
+import AICopilotView from "../../components/mainDashboard/views/AICopilotView";
 import ComingSoonView from "../../components/mainDashboard/views/ComingSoonView";
 import "./DashboardPage.css";
 import { useCurrentUser } from "../../hooks/useCurrentUser";
@@ -63,6 +65,10 @@ export default function DashboardPage() {
         return <StudentsRosterView currentUser={currentUser} />;
       case "admissions":
         return <AdmissionsView currentUser={currentUser} />;
+      case "reports":
+        return <ReportsView currentUser={currentUser} />;
+      case "ai-copilot":
+        return <AICopilotView currentUser={currentUser} />;
       case "profile":
         return <ProfileView currentUser={currentUser} />;
       case "admin":
@@ -80,8 +86,6 @@ export default function DashboardPage() {
       case "settings":
         return <SettingsView />;
       case "advising":
-      case "ai-copilot":
-      case "reports":
       default:
         return <ComingSoonView tabId={activeTab} setActiveTab={setActiveTab} />;
     }

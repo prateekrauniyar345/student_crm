@@ -13,6 +13,7 @@ from app.routes import (
     application_routes,
     student_profile_routes,
     student_term_record_routes,
+    sql_copilot_routes,
 )
 from fastapi.middleware.cors import CORSMiddleware
 import os
@@ -99,6 +100,7 @@ app.include_router(people_routes)
 app.include_router(application_routes)
 app.include_router(student_profile_routes)
 app.include_router(student_term_record_routes)
+app.include_router(sql_copilot_routes)
 
 
 

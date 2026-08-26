@@ -650,11 +650,11 @@ export default function StudentsRosterView({ currentUser }) {
                 aria-label="Filter by cohort badge"
               >
                 <option value="all">All Cohorts</option>
-                <option value="veteran">🎖️ Veteran</option>
-                <option value="transfer">🔄 Transfer</option>
-                <option value="first_gen">🌟 First-Gen</option>
-                <option value="international">🌐 International</option>
-                <option value="honors">🏆 GS Honors</option>
+                <option value="veteran">Veteran</option>
+                <option value="transfer">Transfer</option>
+                <option value="first_gen">First-Gen</option>
+                <option value="international">International</option>
+                <option value="honors">GS Honors</option>
               </select>
             </div>
 
@@ -750,7 +750,7 @@ export default function StudentsRosterView({ currentUser }) {
                                 className="cohort-tag tag-veteran"
                                 title="U.S. Military Veteran"
                               >
-                                🎖️ Veteran
+                                Veteran
                               </span>
                             )}
                             {st.cohorts.isTransfer && (
@@ -766,7 +766,7 @@ export default function StudentsRosterView({ currentUser }) {
                                 className="cohort-tag tag-firstgen"
                                 title="First-Generation College Student"
                               >
-                                🌟 First-Gen
+                                First-Gen
                               </span>
                             )}
                             {st.cohorts.isInternational && (
@@ -774,7 +774,7 @@ export default function StudentsRosterView({ currentUser }) {
                                 className="cohort-tag tag-international"
                                 title="International Student"
                               >
-                                🌐 International
+                                International
                               </span>
                             )}
                             {st.cohorts.isHonors && (
@@ -782,7 +782,7 @@ export default function StudentsRosterView({ currentUser }) {
                                 className="cohort-tag tag-honors"
                                 title="School of General Studies Honors"
                               >
-                                🏆 Honors
+                                Honors
                               </span>
                             )}
                           </div>

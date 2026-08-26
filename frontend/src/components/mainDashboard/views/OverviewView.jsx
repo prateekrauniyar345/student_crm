@@ -737,7 +737,7 @@ export default function OverviewView({ user, setActiveTab }) {
           </div>
 
           <div className="trend-footer-note">
-            <span>💡 Tip: Click any year column above to filter the dashboard.</span>
+            <span>Tip: Click any year column above to filter the dashboard.</span>
           </div>
         </div>
       </div>

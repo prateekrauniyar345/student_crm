@@ -6,9 +6,15 @@ from sqlalchemy.ext.asyncio import (
     AsyncSession,
     async_sessionmaker
 )
-from dotenv import load_dotenv
-from typing import AsyncGenerator
+from pathlib import Path
 import os
+from typing import AsyncGenerator
+from dotenv import load_dotenv
+
+env_path = Path(__file__).resolve().parent.parent.parent / ".env"
+load_dotenv(dotenv_path=env_path)
+load_dotenv()
+
 from app.db.base import Base
 
 # Important: import models so SQLAlchemy registers them
@@ -16,9 +22,9 @@ from app.schema.user import User
 from app.schema.institutions import Institution
 
 
-load_dotenv()
-
 database_url = os.getenv("SUPABASE_ASYNC_DATABASE_URL")
+if not database_url:
+    database_url = "postgresql+asyncpg://postgres:postgres@localhost:5432/postgres"
 
 
 engine = create_async_engine(

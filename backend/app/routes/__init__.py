@@ -11,6 +11,7 @@ from .people import people_routes
 from .applications import application_routes
 from .students_profile import student_profile_routes
 from .student_term_records import student_term_record_routes
+from .sql_copilot import sql_copilot_routes
 
 __all__= [
     "default_routes", 
@@ -24,4 +25,5 @@ __all__= [
     "application_routes",
     "student_profile_routes",
     "student_term_record_routes",
+    "sql_copilot_routes",
 ]
